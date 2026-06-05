@@ -1,0 +1,469 @@
+/* Hub page specific styling */
+@keyframes slideIn {
+    to {
+        width: 56%;
+    }
+}
+
+:root {
+    --rr-primary: #ff6b35;
+    --rr-primary-2: #f7931e;
+    --rr-muted: #9ca3af;
+    --rr-text: #111827;
+    --rr-surface: #ffffff;
+    --rr-surface-alt: #f5f7fa;
+}
+
+body.dark {
+    --rr-text: #ffffff;
+    --rr-surface: #161a22;
+    --rr-surface-alt: #1e2530;
+}
+
+body {
+    background-color: var(--rr-surface);
+    color: var(--rr-text);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body:not(.light) {
+    background-color: #0f1419;
+}
+
+body.light {
+    background-color: #f5f7fa;
+}
+
+body:not(.light) .hub-wrapper {
+    background-color: #0f1419;
+}
+
+body:not(.light) .hub-hero {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+}
+
+body:not(.light) .custom-tab-nav {
+    background-color: #1a1a2e !important;
+}
+
+body:not(.light) .rr-premium-cta {
+    background-color: #1a1a2e !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body:not(.light) #hubSection,
+body:not(.light) .hub-section {
+    background-color: #0f1419 !important;
+    color: #ffffff !important;
+}
+
+body:not(.light) .card,
+body:not(.light) .fantasy-card {
+    background-color: #1a1a2e !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+}
+
+body:not(.light) .table {
+    color: #ffffff !important;
+}
+
+body:not(.light) .table thead th {
+    background-color: #1a1a2e !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body:not(.light) .table tbody td {
+    background-color: #16213e !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.custom-tab-nav {
+    position: relative;
+    height: 80px;
+    width: 100%;
+    max-width: none;
+    background-color: #1a1a2e;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+}
+
+body:not(.dark) .custom-tab-nav {
+    background-color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.border-effect {
+    display: none;
+}
+
+.rr-premium-cta {
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.12) 0%, rgba(247, 147, 30, 0.08) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    padding: 0.9rem 1.1rem;
+    font-size: 0.95rem;
+}
+
+.rr-btn-primary {
+    background: linear-gradient(135deg, var(--rr-primary) 0%, var(--rr-primary-2) 100%);
+    color: #111827;
+    font-weight: 700;
+    border: none;
+    border-radius: 10px;
+    padding: 0.65rem 1rem;
+}
+
+.rr-btn-primary:hover {
+    filter: brightness(1.06);
+}
+
+.hub-section {
+    transition: opacity 0.3s ease;
+}
+
+.hub-wrapper a,
+.hub-wrapper a:visited,
+.hub-wrapper a:active,
+.hub-wrapper .nav-link,
+.hub-wrapper .text-primary,
+.hub-wrapper .text--base,
+.hub-wrapper .base--color {
+    color: #ffffff !important;
+}
+
+.hub-wrapper a:hover {
+    color: var(--rr-primary) !important;
+}
+
+.hub-wrapper .text-muted {
+    color: var(--rr-muted) !important;
+}
+
+.hub-wrapper ::-webkit-scrollbar {
+    width: 10px;
+}
+
+.hub-wrapper ::-webkit-scrollbar-track {
+    background: #0f0f0f;
+}
+
+.hub-wrapper ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #ff7a00, #ffb347);
+    border-radius: 999px;
+    border: 2px solid #0f0f0f;
+}
+
+.custom-tab-nav ul {
+    display: flex;
+    justify-content: flex-start;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.custom-tab-nav-wrapper {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+}
+
+.custom-tab-item {
+    display: flex;
+    flex: 0 0 33.3333%;
+    max-width: 33.3333%;
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    color: #9ca3af;
+    transition: color 0.3s ease;
+    position: relative;
+}
+
+.custom-tab-item::after {
+    content: '';
+    position: absolute;
+    left: 22%;
+    right: 22%;
+    bottom: 0;
+    height: 2px;
+    border-radius: 999px;
+    background: transparent;
+    box-shadow: none;
+    transition: all 0.25s ease;
+}
+
+.custom-tab-item i {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+    color: #9ca3af;
+    transition: all 0.3s ease;
+}
+
+.custom-tab-item.active {
+    transform: translateY(-1px);
+}
+
+.custom-tab-item[data-section="equipes"].active,
+.custom-tab-item[data-section="equipes"].active i {
+    color: #22c55e;
+}
+
+.custom-tab-item[data-section="equipes"].active::after {
+    background: #22c55e;
+    box-shadow: 0 0 6px rgba(34, 197, 94, 0.7);
+}
+
+.custom-tab-item[data-section="x1"].active,
+.custom-tab-item[data-section="x1"].active i {
+    color: #facc15;
+}
+
+.custom-tab-item[data-section="x1"].active::after {
+    background: #facc15;
+    box-shadow: 0 0 6px rgba(250, 204, 21, 0.8);
+}
+
+.custom-tab-item[data-section="estatisticas"].active,
+.custom-tab-item[data-section="estatisticas"].active i {
+    color: #f97373;
+}
+
+.custom-tab-item[data-section="estatisticas"].active::after {
+    background: #f97373;
+    box-shadow: 0 0 6px rgba(248, 113, 113, 0.8);
+}
+
+.hub-wrapper {
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+.hub-wrapper .hub-hero {
+    max-width: 100%;
+}
+
+.rr-auth-modal {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    color: #fff;
+}
+
+.rr-auth-modal .form-label {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+body:not(.dark) .rr-auth-modal {
+    background: linear-gradient(135deg, #ffffff 0%, #f5f5f9 100%);
+    border-color: rgba(0, 0, 0, 0.08);
+    color: var(--rr-text);
+}
+
+body:not(.dark) .rr-auth-modal .form-label {
+    color: var(--rr-text);
+}
+
+.rr-auth-modal .modal-header {
+    background: rgba(255, 107, 53, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body:not(.dark) .rr-auth-modal .modal-header {
+    background: rgba(255, 107, 53, 0.12);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.rr-auth-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+.rr-auth-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: var(--rr-primary);
+    color: #fff;
+}
+
+/* User card CSS removido - login agora só via botão perfil do menu */
+
+.rr-badge-online {
+    background: rgba(34, 197, 94, 0.15);
+    color: #38ef7d;
+    border: 1px solid rgba(34, 197, 94, 0.35);
+}
+
+.auth-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 1rem;
+}
+
+.step-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.step-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.step-indicator.active .step-circle {
+    background: linear-gradient(135deg, var(--rr-primary) 0%, var(--rr-primary-2) 100%);
+    border-color: var(--rr-primary);
+    color: #111827;
+    transform: scale(1.1);
+}
+
+.step-indicator.completed .step-circle {
+    background: #22c55e;
+    border-color: #22c55e;
+    color: #fff;
+}
+
+.step-label {
+    font-size: 0.75rem;
+    margin-top: 0.5rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.step-indicator.active .step-label {
+    color: var(--rr-primary);
+    font-weight: 700;
+}
+
+.step-line {
+    width: 80px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.2);
+    position: relative;
+    top: -20px;
+}
+
+.auth-choice-btn {
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.auth-choice-btn:hover {
+    border-color: var(--rr-primary);
+    background: rgba(255, 107, 53, 0.1);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(255, 107, 53, 0.2);
+}
+
+.auth-choice-btn i {
+    color: var(--rr-primary);
+}
+
+.rr-auth-modal .form-control,
+.rr-auth-modal .input-group-text {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+body:not(.dark) .rr-auth-modal .form-control,
+body:not(.dark) .rr-auth-modal .input-group-text {
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    color: var(--rr-text);
+}
+
+.rr-auth-modal .form-control:focus {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--rr-primary);
+    color: #fff;
+    box-shadow: 0 0 0 0.25rem rgba(255, 107, 53, 0.15);
+}
+
+body:not(.dark) .rr-auth-modal .form-control:focus {
+    background: #fff;
+    color: var(--rr-text);
+}
+
+.rr-auth-modal .input-group-text {
+    color: var(--rr-primary);
+}
+
+.rr-auth-modal .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+body:not(.dark) .rr-auth-modal .form-control::placeholder {
+    color: rgba(0, 0, 0, 0.4);
+}
+
+.review-data {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.review-item {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.review-item:last-child {
+    border-bottom: none;
+}
+
+.review-item i {
+    color: var(--rr-primary);
+}
+
+.dropdown-menu {
+    background: #1a1a2e;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 0.5rem;
+}
+
+.dropdown-item {
+    color: #fff;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background: rgba(255, 107, 53, 0.1);
+    color: var(--rr-primary);
+}
+
+.dropdown-item i {
+    width: 20px;
+}
+
+.dropdown-divider {
+    border-color: rgba(255, 255, 255, 0.1);
+}

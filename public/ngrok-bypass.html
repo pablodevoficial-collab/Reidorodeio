@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carregando...</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #f97316;
+        }
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(249, 115, 22, 0.2);
+            border-top-color: #f97316;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        p {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.95rem;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body>
+    <img class="logo" src="/assets/images/logo_icon/logo.png" alt="Rei do Rodeio">
+    <h1>🔥 Rei do Rodeio</h1>
+    <div class="loader"></div>
+    <p>Preparando tudo para você...</p>
+
+    <script>
+        (function() {
+            // Redirecionar com header bypass
+            const targetUrl = window.location.origin + '/inicio';
+            const urlWithBypass = targetUrl + '?ngrok-skip-browser-warning=true';
+            
+            console.log('🔥 Redirecionando com bypass...');
+            
+            // Tentar fazer requisição com header primeiro
+            fetch(urlWithBypass, {
+                method: 'GET',
+                headers: {
+                    'ngrok-skip-browser-warning': 'true'
+                }
+            })
+            .then(() => {
+                // Redirecionar após 500ms
+                setTimeout(() => {
+                    window.location.href = urlWithBypass;
+                }, 500);
+            })
+            .catch(() => {
+                // Se falhar, redirecionar direto
+                setTimeout(() => {
+                    window.location.href = urlWithBypass;
+                }, 500);
+            });
+        })();
+    </script>
+</body>
+</html>

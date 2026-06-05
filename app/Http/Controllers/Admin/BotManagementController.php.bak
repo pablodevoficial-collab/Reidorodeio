@@ -1,0 +1,527 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Models\X1RoomInstance;
+use App\Models\FantasyLeague;
+use App\Models\FantasyTeam;
+use App\Models\Rodeio;
+use App\Models\Modalidade;
+use App\Models\Competitor;
+use App\Models\CompetitorGroup;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+
+/**
+ * SISTEMA DE BOTS - REI DO RODEIO
+ * 
+ * OBJETIVO: Popular o site com atividade falsa para parecer movimentado
+ * 
+ * REGRAS IMPORTANTES:
+ * 1. Bots são VISÍVEIS para usuários reais (aparecem em listas, rankings, etc)
+ * 2. Usuários reais NÃO podem interagir com bots:
+ *    - Salas X1 de bots são criadas com status 'in_progress' (já fechadas)
+ *    - Ligas Fantasy de bots estão visíveis mas não permitem entrada de reais
+ * 3. Bots servem apenas como "vitrine" de atividade
+ * 4. Este sistema é CONFIDENCIAL - não mencionar para usuários
+ */
+class BotManagementController extends Controller
+{
+    /**
+     * Interface principal de gerenciamento de bots
+     */
+    public function index()
+    {
+        $pageTitle = 'Gerenciamento de Bots';
+
+        // Estatísticas atuais
+        $stats = [
+            'users' => User::where('is_bot', true)->count(),
+            'x1_rooms' => X1RoomInstance::where('is_bot_room', true)->count(),
+            'fantasy_leagues' => FantasyLeague::where('is_bot_league', true)->count(),
+            'fantasy_teams' => FantasyTeam::whereHas('user', function($q) {
+                $q->where('is_bot', true);
+            })->count(),
+        ];
+
+        // Últimas criações (log de atividade)
+        $recentActivity = $this->getRecentActivity();
+
+        // Rodeios disponíveis (qualquer status - para testes)
+        $rodeios = Rodeio::orderBy('start', 'desc')->get();
+
+        // Verificar arquivo de bots
+        $botsFile = storage_path('app/bots.json');
+        $botsAvailable = 0;
+        if (file_exists($botsFile)) {
+            $botsData = json_decode(file_get_contents($botsFile), true);
+            $botsAvailable = is_array($botsData) ? count($botsData) : 0;
+        }
+
+        // Rodeios disponíveis (qualquer status - para testes)
+        $rodeios = Rodeio::orderBy('start', 'desc')->get();
+
+        return view('admin.users.bots', compact('pageTitle', 'stats', 'recentActivity', 'rodeios', 'botsAvailable'));
+    }
+
+    /**
+     * Gerar salas X1 com bots
+     */
+    public function generateX1(Request $request)
+    {
+        try {
+            $request->validate([
+                'quantity' => 'required|integer|min:1|max:100',
+                'rodeio_id' => 'required|exists:rodeios,id',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro de validação: ' . collect($e->errors())->flatten()->first(),
+                'errors' => $e->errors()
+            ], 400);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $quantity = $request->quantity;
+            $rodeioId = $request->rodeio_id;
+            $randomValues = $request->has('random_values');
+
+            // Carregar bots disponíveis
+            $bots = $this->loadBotsData();
+            if (empty($bots)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Nenhum bot disponível no arquivo bots.json'
+                ], 400);
+            }
+
+            // Obter modalidades do rodeio
+            $modalidades = Modalidade::where('rodeio_id', $rodeioId)
+                ->whereIn('status', ['programado', 'em_andamento'])
+                ->get();
+
+            if ($modalidades->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Nenhuma modalidade ativa encontrada para este rodeio'
+                ], 400);
+            }
+
+            $created = 0;
+
+            for ($i = 0; $i < $quantity; $i++) {
+                // Selecionar modalidade aleatória
+                $modalidade = $modalidades->random();
+
+                // Obter competidores ou grupos da modalidade
+                $isGroup = $modalidade->type === 'group';
+                if ($isGroup) {
+                    $items = CompetitorGroup::where('modalidade_id', $modalidade->id)->get();
+                } else {
+                    $items = $modalidade->competitors;
+                }
+
+                if ($items->count() < 2) continue;
+
+                // Selecionar 2 itens aleatórios
+                $item1 = $items->random();
+                $item2 = $items->where('id', '!=', $item1->id)->random();
+
+                // Criar 2 usuários bot
+                $bot1 = $this->createBotUser($bots);
+                $bot2 = $this->createBotUser($bots);
+
+                // Valor aleatório entre 50-500
+                $value = $randomValues ? rand(5, 50) * 10 : 50;
+
+                // Criar sala X1
+                // Status 'in_progress' = sala já fechada (bot vs bot)
+                // Isso faz com que apareça em "Todas" mas não em "Abertas"
+                // Usuários reais não podem entrar
+                $room = X1RoomInstance::create([
+                    'rodeio_id' => $rodeioId,
+                    'modalidade_id' => $modalidade->id,
+                    'host_id' => $bot1->id,
+                    'value' => $value,
+                    'status' => 'in_progress',
+                    'is_bot_room' => true,
+                ]);
+
+                // Adicionar participantes
+                $room->participants()->create([
+                    'user_id' => $bot1->id,
+                    'is_host' => true,
+                    'competitor_id' => $isGroup ? null : $item1->id,
+                    'competitor_group_id' => $isGroup ? $item1->id : null,
+                ]);
+
+                $room->participants()->create([
+                    'user_id' => $bot2->id,
+                    'is_host' => false,
+                    'competitor_id' => $isGroup ? null : $item2->id,
+                    'competitor_group_id' => $isGroup ? $item2->id : null,
+                ]);
+
+                // Simular pagamentos
+                $room->payments()->create([
+                    'user_id' => $bot1->id,
+                    'amount' => $value,
+                    'status' => 'completed',
+                    'provider' => 'bot',
+                    'provider_payment_id' => 'bot_' . Str::random(10),
+                ]);
+
+                $room->payments()->create([
+                    'user_id' => $bot2->id,
+                    'amount' => $value,
+                    'status' => 'completed',
+                    'provider' => 'bot',
+                    'provider_payment_id' => 'bot_' . Str::random(10),
+                ]);
+
+                $created++;
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => "{$created} salas X1 criadas com sucesso!",
+                'data' => [
+                    'created' => $created,
+                    'new_total' => X1RoomInstance::where('is_bot_room', true)->count(),
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao criar salas: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Gerar ligas Fantasy com bots
+     */
+    public function generateFantasy(Request $request)
+    {
+        try {
+            $request->validate([
+                'quantity' => 'required|integer|min:1|max:50',
+                'rodeio_id' => 'required|exists:rodeios,id',
+                'teams_per_league' => 'nullable|integer|min:10|max:50',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro de validação: ' . collect($e->errors())->flatten()->first(),
+                'errors' => $e->errors()
+            ], 400);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $quantity = $request->quantity;
+            $rodeioId = $request->rodeio_id;
+            $teamsPerLeague = $request->teams_per_league ?? rand(30, 50);
+
+            // Carregar bots disponíveis
+            $bots = $this->loadBotsData();
+            if (empty($bots)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Nenhum bot disponível no arquivo bots.json'
+                ], 400);
+            }
+
+            // Obter modalidades do rodeio
+            $modalidades = Modalidade::where('rodeio_id', $rodeioId)
+                ->whereIn('status', ['programado', 'em_andamento'])
+                ->get();
+
+            if ($modalidades->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Nenhuma modalidade ativa encontrada para este rodeio'
+                ], 400);
+            }
+
+            $created = 0;
+            $totalTeams = 0;
+
+            for ($i = 0; $i < $quantity; $i++) {
+                // Selecionar modalidade aleatória
+                $modalidade = $modalidades->random();
+
+                // Verificar se modalidade tem competidores suficientes
+                $competitors = $modalidade->competitors;
+                if ($competitors->count() < 4) continue;
+
+                // Criar liga
+                // Status 'in_progress' = liga ativa e visível
+                // is_bot_league = true permite filtrar no admin
+                // Ligas de bots aparecem normalmente para usuários
+                $league = FantasyLeague::create([
+                    'rodeio_id' => $rodeioId,
+                    'modalidade_id' => $modalidade->id,
+                    'name' => 'Liga Bot ' . Str::random(8),
+                    'entry_fee' => rand(10, 20) * 5,
+                    'max_participants' => $teamsPerLeague,
+                    'status' => 'in_progress',
+                    'is_bot_league' => true,
+                ]);
+
+                // Criar times para a liga
+                for ($t = 0; $t < $teamsPerLeague; $t++) {
+                    $botUser = $this->createBotUser($bots);
+
+                    // Selecionar 4 competidores aleatórios
+                    $selectedCompetitors = $competitors->random(4);
+                    $captain = $selectedCompetitors->first();
+
+                    $team = FantasyTeam::create([
+                        'user_id' => $botUser->id,
+                        'league_id' => $league->id,
+                        'name' => 'Time ' . $botUser->firstname,
+                        'budget' => 100,
+                        'total_points' => 0,
+                    ]);
+
+                    // Adicionar competidores ao time
+                    foreach ($selectedCompetitors as $competitor) {
+                        $team->competitors()->attach($competitor->id, [
+                            'is_captain' => $competitor->id === $captain->id,
+                        ]);
+                    }
+
+                    $totalTeams++;
+                }
+
+                $created++;
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => "{$created} ligas Fantasy criadas com {$totalTeams} times!",
+                'data' => [
+                    'leagues_created' => $created,
+                    'teams_created' => $totalTeams,
+                    'new_total_leagues' => FantasyLeague::where('is_bot_league', true)->count(),
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao criar ligas: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Limpar todos os bots
+     */
+    public function clearAll(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            $type = $request->input('type', 'all'); // all, x1, fantasy, users
+
+            $deleted = [
+                'users' => 0,
+                'x1_rooms' => 0,
+                'fantasy_leagues' => 0,
+                'fantasy_teams' => 0,
+            ];
+
+            if (in_array($type, ['all', 'x1'])) {
+                $deleted['x1_rooms'] = X1RoomInstance::where('is_bot_room', true)->delete();
+            }
+
+            if (in_array($type, ['all', 'fantasy'])) {
+                $deleted['fantasy_teams'] = FantasyTeam::whereHas('user', function($q) {
+                    $q->where('is_bot', true);
+                })->delete();
+                
+                $deleted['fantasy_leagues'] = FantasyLeague::where('is_bot_league', true)->delete();
+            }
+
+            if ($type === 'all') {
+                $deleted['users'] = User::where('is_bot', true)->delete();
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Bots removidos com sucesso!',
+                'data' => $deleted
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao limpar bots: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Criar usuário bot a partir dos dados carregados
+     */
+    private function createBotUser($botsData)
+    {
+        static $usedIndices = [];
+        
+        // Selecionar bot aleatório não usado
+        $availableIndices = array_diff(array_keys($botsData), $usedIndices);
+        if (empty($availableIndices)) {
+            // Se todos foram usados, resetar
+            $usedIndices = [];
+            $availableIndices = array_keys($botsData);
+        }
+        
+        $index = $availableIndices[array_rand($availableIndices)];
+        $usedIndices[] = $index;
+        
+        $botData = $botsData[$index];
+
+        // Gerar email único
+        $baseEmail = Str::slug($botData['nome']) . rand(1000, 9999);
+        $email = $baseEmail . '@bot.local';
+
+        // Criar usuário
+        return User::create([
+            'firstname' => explode(' ', $botData['nome'])[0],
+            'lastname' => implode(' ', array_slice(explode(' ', $botData['nome']), 1)),
+            'username' => $baseEmail,
+            'email' => $email,
+            'mobile' => preg_replace('/[^0-9]/', '', $botData['celular'] ?? ''),
+            'password' => Hash::make(Str::random(32)),
+            'cpf' => preg_replace('/[^0-9]/', '', $botData['cpf']),
+            'is_bot' => true,
+            'ev' => 1,
+            'sv' => 1,
+            'kv' => 1,
+        ]);
+    }
+
+    /**
+     * Carregar dados de bots do arquivo JSON
+     */
+    private function loadBotsData()
+    {
+        $file = storage_path('app/bots.json');
+        
+        if (!file_exists($file)) {
+            return [];
+        }
+
+        $data = json_decode(file_get_contents($file), true);
+        
+        return is_array($data) ? $data : [];
+    }
+
+    /**
+     * Obter atividades recentes
+     */
+    private function getRecentActivity()
+    {
+        $activity = [];
+
+        // Últimas salas X1 criadas
+        $recentX1 = X1RoomInstance::where('is_bot_room', true)
+            ->latest()
+            ->take(3)
+            ->get();
+
+        foreach ($recentX1 as $room) {
+            $activity[] = [
+                'date' => $room->created_at->format('d/m H:i'),
+                'description' => '1 sala X1 criada',
+                'type' => 'x1',
+            ];
+        }
+
+        // Últimas ligas Fantasy criadas
+        $recentFantasy = FantasyLeague::where('is_bot_league', true)
+            ->latest()
+            ->take(3)
+            ->get();
+
+        foreach ($recentFantasy as $league) {
+            $teamsCount = $league->teams()->whereHas('user', function($q) {
+                $q->where('is_bot', true);
+            })->count();
+            
+            $activity[] = [
+                'date' => $league->created_at->format('d/m H:i'),
+                'description' => "1 liga Fantasy ({$teamsCount} bots)",
+                'type' => 'fantasy',
+            ];
+        }
+
+        // Ordenar por data
+        usort($activity, function($a, $b) {
+            return strcmp($b['date'], $a['date']);
+        });
+
+        return array_slice($activity, 0, 5);
+    }
+
+    /**
+     * Upload de novo arquivo bots.json
+     */
+    public function uploadBotsFile(Request $request)
+    {
+        $request->validate([
+            'bots_file' => 'required|file|mimes:json|max:10240',
+        ]);
+
+        try {
+            $file = $request->file('bots_file');
+            $content = file_get_contents($file->getRealPath());
+            $data = json_decode($content, true);
+
+            if (!is_array($data)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Arquivo JSON inválido'
+                ], 400);
+            }
+
+            // Salvar arquivo
+            $path = storage_path('app/bots.json');
+            file_put_contents($path, $content);
+
+            return response()->json([
+                'success' => true,
+                'message' => count($data) . ' bots carregados com sucesso!',
+                'data' => [
+                    'count' => count($data),
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao processar arquivo: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+}

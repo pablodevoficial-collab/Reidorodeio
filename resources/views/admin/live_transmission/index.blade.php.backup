@@ -1,0 +1,2328 @@
+@extends('admin.layouts.app')
+@section('panel')
+
+<style>
+.badge-current-modality {
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.scoring-btn {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    border-width: 2px;
+}
+
+.scoring-btn:active {
+    transform: scale(0.96);
+}
+
+.scoring-btn.saving {
+    opacity: 0.7 !important;
+    pointer-events: none !important;
+}
+
+.scoring-btn.saving::after {
+    content: "";
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    top: 50%;
+    right: 10px;
+    margin-top: -7px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: btn-spin 0.6s linear infinite;
+}
+
+@keyframes btn-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.scoring-btn.success-hit {
+    animation: success-pulse 0.5s ease;
+    background-color: #28a745 !important;
+    color: white !important;
+}
+
+@keyframes success-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+}
+
+#scoringModal .modal-header {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+#scoringModal .modal-content {
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.competitor-info-bar {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #eee;
+}
+
+/* Safety: keep modal hidden even if Bootstrap CSS fails to load */
+#scoringModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(0,0,0,.55);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+#scoringModal.show {
+    display: block;
+}
+
+/* Ensure dialog looks like a centered popout even with template CSS */
+#scoringModal .modal-dialog {
+    margin: 2rem auto;
+    max-width: min(1140px, calc(100% - 2rem));
+    pointer-events: none;
+}
+
+#scoringModal .modal-content {
+    pointer-events: auto;
+}
+
+/* Keep backdrop behind this modal but above the page */
+.modal-backdrop {
+    z-index: 1990;
+}
+
+/* Fallback: ensure accordion/collapse stays hidden if Bootstrap CSS isn't loaded */
+.collapse:not(.show) {
+    display: none;
+}
+
+/* === Live Transmission UI polish (scoped) === */
+:root {
+    --lt-surface: rgba(255, 255, 255, 0.06);
+    --lt-surface-2: rgba(255, 255, 255, 0.09);
+    --lt-border: rgba(255, 255, 255, 0.12);
+    --lt-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+    --lt-radius: 14px;
+    --lt-radius-sm: 12px;
+    --lt-text: rgba(255, 255, 255, 0.92);
+    --lt-muted: rgba(255, 255, 255, 0.65);
+}
+
+#competitorsList {
+    padding: 10px;
+    padding-bottom: 10px;
+}
+
+/* Nicer scrolling on Windows */
+#competitorsList,
+#activityLogs {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.25) transparent;
+}
+#competitorsList::-webkit-scrollbar,
+#activityLogs::-webkit-scrollbar {
+    width: 10px;
+}
+#competitorsList::-webkit-scrollbar-thumb,
+#activityLogs::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.22);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+
+/* Accordion items (competitors) */
+#competitorsList .accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start; /* allow cards to shrink */
+}
+
+#competitorsList .accordion-item {
+    position: relative; /* anchor for popout */
+    border: 1px solid var(--lt-border);
+    border-radius: var(--lt-radius);
+    overflow: visible; /* allow popout to render outside card */
+    background: linear-gradient(180deg, var(--lt-surface), rgba(255, 255, 255, 0.03));
+    box-shadow: var(--lt-shadow);
+    width: fit-content;
+    max-width: 100%;
+}
+
+#competitorsList .accordion-header {
+    margin: 0;
+}
+
+/* Competitor header button */
+#competitorsList .accordion-button.competitor-toggle {
+    background: transparent;
+    color: var(--lt-text);
+    padding: 12px 14px;
+    border: 0;
+    box-shadow: none;
+    width: auto;
+    border-radius: var(--lt-radius);
+}
+
+#competitorsList .accordion-button.competitor-toggle:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+#competitorsList .accordion-button.competitor-toggle:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 130, 46, 0.25);
+}
+
+/* Remove Bootstrap default caret if present */
+#competitorsList .accordion-button::after {
+    display: none;
+}
+
+#competitorsList .accordion-button .text-muted {
+    color: var(--lt-muted) !important;
+}
+
+/* Compact text handling */
+#competitorsList .competitor-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+}
+
+#competitorsList .competitor-text {
+    min-width: 200px;
+    max-width: 360px;
+}
+
+#competitorsList .competitor-name {
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#competitorsList .competitor-total {
+    font-size: 12px;
+    color: var(--lt-muted);
+    white-space: nowrap;
+}
+
+/* Smooth rotate of the chevron icon */
+#competitorsList .competitor-toggle i.las {
+    transition: transform 160ms ease;
+}
+#competitorsList .competitor-toggle[aria-expanded="true"] i.las {
+    transform: rotate(180deg);
+}
+
+/* Body */
+#competitorsList .accordion-body {
+    padding: 12px 14px 14px;
+    background: rgba(0, 0, 0, 0.12);
+    border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Keep accordion bodies as templates only (we render them in a floating popout) */
+#competitorsList .accordion-collapse {
+    display: none !important;
+}
+
+/* Score buttons grid */
+#competitorsList .accordion-body .row.g-2 {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+#competitorsList .inline-score-btn {
+    border-radius: var(--lt-radius-sm);
+    border-width: 1px !important;
+    padding: 10px 10px !important;
+    min-height: 46px;
+    gap: 10px;
+    box-shadow: none;
+    transition: transform 120ms ease, background-color 120ms ease, border-color 120ms ease;
+}
+
+#competitorsList .inline-score-btn small {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+
+#competitorsList .inline-score-btn:active {
+    transform: translateY(1px);
+}
+
+/* Solid green/red buttons (requested) */
+#competitorsList .inline-score-btn.btn-success,
+#competitorsList .inline-score-btn.btn-danger,
+#ltCompetitorPopout .inline-score-btn.btn-success,
+#ltCompetitorPopout .inline-score-btn.btn-danger {
+    border-width: 0 !important;
+    color: #fff !important;
+}
+
+#competitorsList .inline-score-btn.btn-success,
+#ltCompetitorPopout .inline-score-btn.btn-success {
+    background: #28a745 !important;
+}
+#competitorsList .inline-score-btn.btn-success:hover,
+#ltCompetitorPopout .inline-score-btn.btn-success:hover {
+    background: #23923d !important;
+}
+
+#competitorsList .inline-score-btn.btn-danger,
+#ltCompetitorPopout .inline-score-btn.btn-danger {
+    background: #dc3545 !important;
+}
+#competitorsList .inline-score-btn.btn-danger:hover,
+#ltCompetitorPopout .inline-score-btn.btn-danger:hover {
+    background: #c82f3e !important;
+}
+
+#competitorsList .inline-score-btn .badge,
+#ltCompetitorPopout .inline-score-btn .badge {
+    font-weight: 800;
+    border-radius: 999px;
+    padding: 6px 10px;
+}
+
+/* Keep badge readable on solid buttons */
+#competitorsList .inline-score-btn.btn-success .badge,
+#competitorsList .inline-score-btn.btn-danger .badge,
+#ltCompetitorPopout .inline-score-btn.btn-success .badge,
+#ltCompetitorPopout .inline-score-btn.btn-danger .badge {
+    background: rgba(255,255,255,0.92) !important;
+    color: rgba(0,0,0,0.85) !important;
+}
+
+/* Loading/success feedback for inline buttons (they use the same classes as modal buttons) */
+#competitorsList .inline-score-btn.saving {
+    opacity: 0.75 !important;
+    pointer-events: none !important;
+    position: relative;
+}
+#competitorsList .inline-score-btn.saving::after {
+    content: "";
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    top: 50%;
+    right: 10px;
+    margin-top: -7px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: btn-spin 0.6s linear infinite;
+}
+
+#competitorsList .inline-score-btn.success-hit {
+    animation: success-pulse 0.5s ease;
+    background-color: rgba(40, 167, 69, 0.22) !important;
+    border-color: rgba(40, 167, 69, 0.65) !important;
+}
+
+/* Custom score CTA */
+#competitorsList .inline-custom-score {
+    border-radius: var(--lt-radius-sm);
+    padding: 11px 12px;
+    box-shadow: none;
+}
+
+/* Inline custom score form */
+#competitorsList .inline-custom-form {
+    padding: 10px 10px 12px;
+    border-radius: var(--lt-radius);
+    border: 1px solid rgba(255,255,255,0.10);
+    background: rgba(255,255,255,0.04);
+}
+
+#competitorsList .inline-custom-title {
+    font-weight: 800;
+    font-size: 12px;
+    letter-spacing: 0.2px;
+    color: var(--lt-text);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#competitorsList .inline-custom-label {
+    font-size: 11px;
+    color: var(--lt-muted);
+}
+
+#competitorsList .inline-custom-form .form-control {
+    border-radius: 12px;
+    background: rgba(0,0,0,0.18);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.92);
+}
+
+#competitorsList .inline-custom-form .form-control::placeholder {
+    color: rgba(255,255,255,0.45);
+}
+
+#competitorsList .inline-custom-add {
+    border-radius: 12px;
+    padding: 9px 10px;
+}
+
+/* Search input looks better on dark cards */
+#competitorSearch {
+    border-radius: 12px;
+}
+
+/* === Competitor scoring popout (floating, over everything; no backdrop) === */
+#ltCompetitorPopout {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1985; /* below #scoringModal (2000) + .modal-backdrop (1990) */
+    pointer-events: none; /* allow clicking page except on panel */
+}
+#ltCompetitorPopout.show {
+    display: block;
+}
+#ltCompetitorPopout .lt-popout-panel {
+    position: fixed;
+    width: min(560px, calc(100vw - 24px));
+    max-height: min(78vh, 720px);
+    overflow: auto;
+    border-radius: var(--lt-radius);
+    border: 1px solid rgba(255,255,255,0.14);
+    background: radial-gradient(900px 420px at 20% 0%, rgba(255,130,46,.14), transparent 55%),
+        linear-gradient(180deg, rgba(30, 27, 38, 0.98), rgba(20, 18, 26, 0.98));
+    box-shadow: 0 22px 60px rgba(0,0,0,0.55);
+    color: var(--lt-text);
+    pointer-events: auto;
+}
+
+#ltCompetitorPopout .lt-popout-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.10);
+}
+
+#ltCompetitorPopout .lt-popout-title {
+    margin: 0;
+    font-weight: 900;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#ltCompetitorPopout .lt-popout-sub {
+    margin: 0;
+    font-size: 12px;
+    color: var(--lt-muted);
+}
+
+#ltCompetitorPopout .lt-popout-close {
+    border: 1px solid rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.92);
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    font-size: 22px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#ltCompetitorPopout .lt-popout-undo {
+    border: 1px solid rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.92);
+    height: 36px;
+    border-radius: 12px;
+    padding: 0 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 800;
+    font-size: 12px;
+}
+
+#ltCompetitorPopout .lt-popout-undo:hover {
+    background: rgba(255,255,255,0.10);
+}
+
+#ltCompetitorPopout .lt-popout-undo.saving {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+#ltCompetitorPopout .lt-popout-close:hover {
+    background: rgba(255,255,255,0.10);
+}
+
+#ltCompetitorPopout .lt-popout-body {
+    padding: 12px 14px 14px;
+}
+
+/* Large side-by-side event control + logs */
+.lt-event-row {
+    --lt-gap: 1rem;
+}
+.lt-large-card {
+    min-height: 520px;
+}
+.lt-log-card {
+    min-height: 520px;
+    overflow-y: auto;
+}
+/* Stream + Competitors large cards */
+.lt-stream-card {
+    min-height: 520px;
+    display: flex;
+    flex-direction: column;
+}
+.lt-competitors-card {
+    min-height: 520px;
+    display: flex;
+    flex-direction: column;
+}
+#youtubePlayer .embed-responsive {
+    height: 420px;
+    min-height: 420px;
+    max-height: 720px;
+}
+#competitorsList {
+    max-height: 520px;
+    overflow-y: auto;
+}
+@media (min-width: 1200px) {
+    .lt-large-card, .lt-stream-card, .lt-competitors-card { min-height: 600px; }
+    #youtubePlayer .embed-responsive { height: 520px; min-height: 520px; }
+    #competitorsList { max-height: 600px; }
+}
+</style>
+
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+<!-- Transmissão + Competidores (lado a lado) -->
+<div class="row lt-event-row">
+    <!-- Stream -->
+    <div class="col-12 col-lg-6 mb-3">
+        <div class="card lt-stream-card">
+            <div class="card-header">
+                <h4 class="card-title">@lang('Transmissão Ao Vivo')</h4>
+            </div>
+            <div class="card-body p-0 d-flex flex-column">
+                <!-- Player do YouTube -->
+                <div id="youtubePlayer" class="embed-responsive embed-responsive-16by9">
+                    <div class="d-flex align-items-center justify-content-center bg-dark text-white" style="height: 100%;">
+                        <div class="text-center">
+                            <i class="las la-video" style="font-size: 4rem;"></i>
+                            <p class="mt-2">@lang('Selecione um rodeio para iniciar a transmissão')</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controles de Vídeo -->
+                <div class="p-3 bg-light border-top mt-auto">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="form-group mb-0">
+                                <label class="form-label">@lang('URL da Transmissão')</label>
+                                <input type="url" id="streamUrl" class="form-control" placeholder="https://youtube.com/watch?v=...">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">@lang('Qualidade')</label>
+                            <select id="streamQuality" class="form-control">
+                                <option value="720p">720p HD</option>
+                                <option value="1080p">1080p Full HD</option>
+                                <option value="480p">480p</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">&nbsp;</label>
+                            <button class="btn btn--primary d-block w-100" onclick="loadStream()">
+                                <i class="las la-sync"></i> @lang('Carregar Stream')
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Competidores (Pontuar) -->
+    <div class="col-12 col-lg-6 mb-3">
+        <div class="card lt-competitors-card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">@lang('Competidores')</h5>
+                <div class="input-group mt-2">
+                    <span class="input-group-text">
+                        <i class="las la-search"></i>
+                    </span>
+                    <input type="text" id="competitorSearch" class="form-control" placeholder="@lang('Pesquisar competidores...')">
+                </div>
+            </div>
+            <div class="card-body p-0 d-flex flex-column">
+                <div id="competitorsList" class="flex-fill" style="max-height: 600px; overflow-y: auto;">
+                    <div class="text-center p-4 text-muted">
+                        <i class="las la-users"></i>
+                        <p class="mb-0">@lang('Selecione um rodeio e modalidade para carregar os competidores')</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Controle do Evento + Logs (embaixo) -->
+<div class="row mt-4 lt-event-row gx-4">
+    <!-- Controle do Evento (left, large) -->
+    <div class="col-12 col-lg-6 mb-3">
+        <div class="card lt-large-card">
+            <div class="card-header">
+                <h5 class="card-title">@lang('Controle do Evento')</h5>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label>@lang('Rodeio Ativo')</label>
+                    <select id="activeRodeio" class="form-control" onchange="loadRodeioData()">
+                        <option value="">@lang('Selecione o Rodeio')</option>
+                        @foreach(\App\Models\Rodeio::orderBy('name')->get() as $rodeio)
+                            <option value="{{ $rodeio->id }}">{{ $rodeio->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>@lang('Modalidade Atual')</label>
+                    <select id="currentModalidade" class="form-control" onchange="loadModalidadeCompetitors()">
+                        <option value="">@lang('Selecione a Modalidade')</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="divisaoGroup" style="display:none;">
+                    <label>@lang('Divisão')</label>
+                    <select id="currentDivisao" class="form-control" onchange="onDivisaoChanged()">
+                        <option value="">@lang('Selecione a Divisão')</option>
+                    </select>
+                    <small class="text-muted">@lang('Obrigatório para exibir competidores quando a modalidade possui divisões')</small>
+                </div>
+
+                <div class="form-group mb-0">
+                    <label>@lang('Status do Evento')</label>
+                    <select id="eventStatus" class="form-control">
+                        <option value="">@lang('Selecione o Status')</option>
+                        <option value="programado">@lang('Programado')</option>
+                        <option value="ao_vivo">@lang('Ao Vivo')</option>
+                        <option value="pausado">@lang('Pausado')</option>
+                        <option value="finalizado">@lang('Finalizado')</option>
+                    </select>
+                </div>
+
+                <!-- Ações Rápidas -->
+                <div class="mt-3">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn--primary btn-sm" type="button" onclick="saveEventConfig()">
+                            <i class="las la-save"></i> @lang('Salvar')
+                        </button>
+                        <button class="btn btn--dark btn-sm" onclick="quickAction('finish_modalidade')">
+                            <i class="las la-flag-checkered"></i> @lang('Fim da modalidade')
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Log de Atividades (right, large) -->
+    <div class="col-12 col-lg-6">
+        <div class="card lt-large-card lt-log-card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h5 class="card-title mb-0">@lang('Log de Atividades')</h5>
+                <button class="btn btn-sm btn--secondary" onclick="clearLogs()">
+                    <i class="las la-trash"></i> @lang('Limpar')
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="activityLogs" style="height: 420px; overflow-y: auto;" class="bg-dark text-light p-3 rounded">
+                    <div class="text-muted">@lang('Logs aparecerão aqui...')</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Pontuação -->
+<div class="modal fade" id="scoringModal" data-bs-backdrop="static" tabindex="-1" aria-labelledby="scoringModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white py-3">
+                <div class="d-flex align-items-center gap-3">
+                    <h5 class="modal-title text-white mb-0" id="scoringModalLabel">@lang('Pontuar Competidor')</h5>
+                    <div id="modalRodeioBadge" class="badge bg--primary">@lang('Rodeio')</div>
+                    <div class="badge-current-modality">
+                        <i class="las la-bullseye"></i>
+                        <span>@lang('Pontuação')</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body p-4">
+                <div class="competitor-info-bar">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                            <i class="las la-user-ninja la-2x"></i>
+                        </div>
+                        <div>
+                            <h4 id="modalCompetitorName" class="mb-0 fw-bold text-dark">-</h4>
+                            <small class="text-muted fw-semibold" id="modalModalidadeLabel">@lang('Modalidade não definida')</small>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 10px;">@lang('Pontuação Total')</small>
+                        <h4 class="mb-0 fw-bold text-primary" id="modalCompetitorTotal">0</h4>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Pontuações Positivas -->
+                    <div class="col-lg-6">
+                        <div class="card shadow-none border-0 h-100">
+                            <div class="card-header bg-success-light border-0 rounded-top">
+                                <h6 class="mb-0 text-success fw-bold"><i class="las la-plus-circle me-1"></i> @lang('Pontuações Positivas')</h6>
+                            </div>
+                            <div class="card-body bg-white border border-top-0 rounded-bottom">
+                                <div class="mb-4">
+                                    <h6 class="small fw-bold text-uppercase text-muted mb-3">@lang('Armadas')</h6>
+                                    <div class="d-grid">
+                                        <button class="btn btn-outline-success scoring-btn mb-2 text-start d-flex justify-content-between align-items-center py-2 px-3" 
+                                                data-action="boa" data-pontos="50" data-label="@lang('Boa')">
+                                            <span class="fw-bold">@lang('Boa')</span>
+                                            <span class="badge bg-success shadow-sm">+50</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h6 class="small fw-bold text-uppercase text-muted mb-3">@lang('Destrezas')</h6>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <button class="btn btn-outline-success scoring-btn w-100 mb-1 text-start d-flex justify-content-between align-items-center py-2 px-3" 
+                                                    data-action="limpou_garupa" data-pontos="200" data-label="@lang('Limpou: Garupa')">
+                                                <small class="fw-bold">@lang('Limpou: Garupa')</small>
+                                                <span class="badge bg-success shadow-sm">+200</span>
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button class="btn btn-outline-success scoring-btn w-100 mb-1 text-start d-flex justify-content-between align-items-center py-2 px-3" 
+                                                    data-action="cola" data-pontos="100" data-label="@lang('Cola')">
+                                                <small class="fw-bold">@lang('Cola')</small>
+                                                <span class="badge bg-success shadow-sm">+100</span>
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button class="btn btn-outline-success scoring-btn w-100 mb-1 text-start d-flex justify-content-between align-items-center py-2 px-3" 
+                                                    data-action="cupim" data-pontos="200" data-label="@lang('Cupim')">
+                                                <small class="fw-bold">@lang('Cupim')</small>
+                                                <span class="badge bg-success shadow-sm">+200</span>
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button class="btn btn-outline-success scoring-btn w-100 mb-1 text-start d-flex justify-content-between align-items-center py-2 px-3" 
+                                                    data-action="top" data-pontos="500" data-label="@lang('Top')">
+                                                <small class="fw-bold">@lang('Top')</small>
+                                                <span class="badge bg-success shadow-sm">+500</span>
+                                            </button>
+                                        </div>
+                                        <div class="col-12">
+                                            <button class="btn btn-outline-success scoring-btn w-100 mb-1 text-start d-flex justify-content-between align-items-center py-2 px-3" 
+                                                    data-action="limpou_cupim_longe" data-pontos="50" data-label="@lang('Limpou cupim (Longe)')">
+                                                <small class="fw-bold">@lang('Limpou cupim (Longe)')</small>
+                                                <span class="badge bg-success shadow-sm">+50</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pontuações Negativas -->
+                    <div class="col-lg-6">
+                        <div class="card shadow-none border-0 h-100">
+                            <div class="card-header bg-danger-light border-0 rounded-top">
+                                <h6 class="mb-0 text-danger fw-bold"><i class="las la-minus-circle me-1"></i> @lang('Pontuações Negativas')</h6>
+                            </div>
+                            <div class="card-body bg-white border border-top-0 rounded-bottom">
+                                <div class="mb-4">
+                                    <h6 class="small fw-bold text-uppercase text-muted mb-3">@lang('Armadas')</h6>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <button class="btn btn-outline-danger scoring-btn w-100 mb-1 text-start d-flex justify-content-between align-items-center py-2 px-3" 
+                                                    data-action="errou_pescoco" data-pontos="-100" data-label="@lang('Errou: Pescoço')">
+                                                <small class="fw-bold">@lang('Errou: Pescoço')</small>
+                                                <span class="badge bg-danger shadow-sm">-100</span>
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button class="btn btn-outline-danger scoring-btn w-100 mb-1 text-start d-flex justify-content-between align-items-center py-2 px-3" 
+                                                    data-action="errou_pata" data-pontos="-250" data-label="@lang('Errou: Pata')">
+                                                <small class="fw-bold">@lang('Errou: Pata')</small>
+                                                <span class="badge bg-danger shadow-sm">-250</span>
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button class="btn btn-outline-danger scoring-btn w-100 mb-1 text-start d-flex justify-content-between align-items-center py-2 px-3" 
+                                                    data-action="errou_top" data-pontos="-500" data-label="@lang('Errou Top')">
+                                                <small class="fw-bold">@lang('Errou Top')</small>
+                                                <span class="badge bg-danger shadow-sm">-500</span>
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button class="btn btn-outline-danger scoring-btn w-100 mb-1 text-start d-flex justify-content-between align-items-center py-2 px-3" 
+                                                    data-action="dobrada" data-pontos="-150" data-label="@lang('Dobrada')">
+                                                <small class="fw-bold">@lang('Dobrada')</small>
+                                                <span class="badge bg-danger shadow-sm">-150</span>
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button class="btn btn-outline-danger scoring-btn w-100 mb-1 text-start d-flex justify-content-between align-items-center py-2 px-3" 
+                                                    data-action="cabresteou" data-pontos="-200" data-label="@lang('Cabresteou')">
+                                                <small class="fw-bold">@lang('Cabresteou')</small>
+                                                <span class="badge bg-danger shadow-sm">-200</span>
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button class="btn btn-outline-danger scoring-btn w-100 mb-1 text-start d-flex justify-content-between align-items-center py-2 px-3" 
+                                                    data-action="duas_voltas" data-pontos="-250" data-label="@lang('Duas Voltas')">
+                                                <small class="fw-bold">@lang('Duas Voltas')</small>
+                                                <span class="badge bg-danger shadow-sm">-250</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <h6 class="small fw-bold text-uppercase text-muted mb-3">@lang('Destrezas')</h6>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <button class="btn btn-outline-danger scoring-btn w-100 mb-1 text-start d-flex justify-content-between align-items-center py-2 px-3" 
+                                                    data-action="garupa" data-pontos="-300" data-label="@lang('Garupa')">
+                                                <small class="fw-bold">@lang('Garupa')</small>
+                                                <span class="badge bg-danger shadow-sm">-300</span>
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button class="btn btn-outline-danger scoring-btn w-100 mb-1 text-start d-flex justify-content-between align-items-center py-2 px-3" 
+                                                    data-action="cola_neg" data-pontos="-150" data-label="@lang('Cola')">
+                                                <small class="fw-bold">@lang('Cola')</small>
+                                                <span class="badge bg-danger shadow-sm">-150</span>
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button class="btn btn-outline-danger scoring-btn w-100 mb-1 text-start d-flex justify-content-between align-items-center py-2 px-3" 
+                                                    data-action="uma_aspa" data-pontos="-250" data-label="@lang('Uma aspa')">
+                                                <small class="fw-bold">@lang('Uma aspa')</small>
+                                                <span class="badge bg-danger shadow-sm">-250</span>
+                                            </button>
+                                        </div>
+                                        <div class="col-6">
+                                            <button class="btn btn-outline-danger scoring-btn w-100 mb-1 text-start d-flex justify-content-between align-items-center py-2 px-3" 
+                                                    data-action="por_cima" data-pontos="-350" data-label="@lang('Por cima')">
+                                                <small class="fw-bold">@lang('Por cima')</small>
+                                                <span class="badge bg-danger shadow-sm">-350</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pontuação Personalizada -->
+                <div class="card shadow-none border-primary border-opacity-25 mt-4">
+                    <div class="card-header bg-primary bg-opacity-10 py-2">
+                        <h6 class="mb-0 text-primary fw-bold"><i class="las la-keyboard me-1"></i> @lang('Pontuação Personalizada')</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-3">
+                                <label class="form-label small fw-bold text-muted">@lang('Pontos')</label>
+                                <input type="number" id="customScore" class="form-control form-control-sm" placeholder="Ex: 150">
+                            </div>
+                            <div class="col-md-7">
+                                <label class="form-label small fw-bold text-muted">@lang('Descrição da Ação')</label>
+                                <input type="text" id="customAction" class="form-control form-control-sm" placeholder="Ex: Pescou limpo">
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn--primary btn-sm w-100" onclick="addCustomScore()">
+                                    <i class="las la-plus"></i> @lang('Adicionar')
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer bg-light border-0 py-3">
+                <button type="button" class="btn btn-dark px-4" data-bs-dismiss="modal">@lang('Fechar Painel')</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@php
+    $select = ['id', 'rodeio_id', 'nome', 'status', 'inicio'];
+    if (\Illuminate\Support\Facades\Schema::hasColumn('modalidades', 'tem_divisoes')) {
+        $select[] = 'tem_divisoes';
+    }
+    if (\Illuminate\Support\Facades\Schema::hasColumn('modalidades', 'divisoes')) {
+        $select[] = 'divisoes';
+    }
+
+    $preloadedModalidadesByRodeio = \App\Models\Modalidade::select($select)
+        ->orderBy('rodeio_id')
+        ->orderBy('inicio')
+        ->orderBy('nome')
+        ->orderBy('id')
+        ->get()
+        ->groupBy('rodeio_id')
+        ->map(function ($items) {
+            return $items->map(function ($m) {
+                return [
+                    'id' => $m->id,
+                    'nome' => $m->nome,
+                    'status' => $m->status,
+                    'tem_divisoes' => (bool) ($m->tem_divisoes ?? false),
+                    'divisoes' => is_array($m->divisoes ?? null) ? $m->divisoes : [],
+                ];
+            })->values();
+        });
+@endphp
+
+<script>
+// Variáveis globais
+let currentCompetitor = null;
+let selectedRodeio = null;
+let selectedModalidade = null;
+let hasSavedLiveConfig = false;
+let selectedDivisao = null;
+let modalidadeRequiresDivisao = false;
+
+// Botões do submenu (estatísticas/pontuação inline)
+const INLINE_SCORE_BUTTONS = [
+    { action: 'boa', points: 50, label: @json(__('Boa')), variant: 'success' },
+    { action: 'limpou_garupa', points: 200, label: @json(__('Limpou: Garupa')), variant: 'success' },
+    { action: 'cola', points: 100, label: @json(__('Limpou cola')), variant: 'success' },
+    { action: 'cupim', points: 200, label: @json(__('Limpou cupim (Mão)')), variant: 'success' },
+    { action: 'limpou_cupim_longe', points: 50, label: @json(__('Limpou cupim (Longe)')), variant: 'success' },
+    { action: 'pescou_uma_aspa', points: 400, label: @json(__('Pescou uma aspa')), variant: 'success' },
+    { action: 'limpou_top', points: 1000, label: @json(__('Limpou um top')), variant: 'success' },
+    { action: 'limpou_top_mao', points: 1500, label: @json(__('Limpou um top (Mão)')), variant: 'success' },
+
+    { action: 'errou_pescoco', points: -100, label: @json(__('Errou: Pescoço')), variant: 'danger' },
+    { action: 'errou_pata', points: -250, label: @json(__('Errou: Pata')), variant: 'danger' },
+    { action: 'errou_top', points: -500, label: @json(__('Errou Top')), variant: 'danger' },
+    { action: 'dobrada', points: -150, label: @json(__('Dobrada')), variant: 'danger' },
+    { action: 'cabresteou', points: -200, label: @json(__('Cabresteou')), variant: 'danger' },
+    { action: 'duas_voltas', points: -250, label: @json(__('Duas Voltas')), variant: 'danger' },
+    { action: 'garupa', points: -300, label: @json(__('Garupa')), variant: 'danger' },
+    { action: 'cola_neg', points: -150, label: @json(__('Cola')), variant: 'danger' },
+    { action: 'uma_aspa', points: -250, label: @json(__('Uma aspa')), variant: 'danger' },
+    { action: 'por_cima', points: -350, label: @json(__('Por cima')), variant: 'danger' },
+    { action: 'boi_tirou', points: -500, label: @json(__('Boi tirou')), variant: 'danger' },
+    { action: 'boi_pulou', points: -500, label: @json(__('Boi pulou')), variant: 'danger' },
+    { action: 'queimou_raia', points: -300, label: @json(__('Queimou raia')), variant: 'danger' },
+    { action: 'caiu_do_cavalo', points: -1000, label: @json(__('Caiu do cavalo')), variant: 'danger' },
+    { action: 'saiu_enrolado', points: -1000, label: @json(__('Saiu enrolado')), variant: 'danger' },
+];
+
+// Fallback local: lista de modalidades por rodeio (evita depender de fetch em ambientes instáveis)
+const PRELOADED_MODALIDADES_BY_RODEIO = @json($preloadedModalidadesByRodeio);
+
+// Strings seguras (evita quebrar JS com aspas em traduções)
+const I18N = {
+    rodeio: @json(__('Rodeio')),
+    modalidadeNaoDefinida: @json(__('Modalidade não definida')),
+    pontuar: @json(__('Pontuar')),
+    modalAbertoPara: @json(__('Modal de pontuação aberto para')),
+};
+
+const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+function setCurrentCompetitor(competitorId, competitorName, currentTotal = 0) {
+    window.currentCompetitor = { id: competitorId, name: competitorName, total: currentTotal };
+}
+
+function el(id) {
+    return document.getElementById(id);
+}
+
+function getBaseUrl() {
+    // Se o APP_URL no .env for diferente de onde estamos acessando, 
+    // forçamos o uso do origin atual para evitar bloqueios de rede.
+    const origin = window.location.origin;
+    const path = window.location.pathname;
+    
+    // Se o caminho contém /admin/, a base é o que vem antes.
+    if (path.includes('/admin/')) {
+        return origin + path.split('/admin/')[0];
+    }
+    return origin;
+}
+
+function getVal(id) {
+    return (el(id)?.value || '').toString().trim();
+}
+
+function setVal(id, value) {
+    const node = el(id);
+    if (node) node.value = value;
+}
+
+function setHtml(id, html) {
+    const node = el(id);
+    if (node) node.innerHTML = html;
+}
+
+function buildUrl(url, params) {
+    const base = getBaseUrl();
+    // Garante que não duplique barras e que use o origin atual
+    let path = url;
+    if (url.startsWith('http')) {
+        const urlObj = new URL(url);
+        path = urlObj.pathname + urlObj.search;
+    }
+    
+    // Remove a base se ela já estiver no início do path para não duplicar
+    const baseUrlPath = new URL(base).pathname;
+    if (baseUrlPath !== '/' && path.startsWith(baseUrlPath)) {
+        path = path.substring(baseUrlPath.length);
+    }
+
+    const fullUrl = base + (path.startsWith('/') ? '' : '/') + path;
+    const u = new URL(fullUrl);
+    Object.entries(params || {}).forEach(([k, v]) => {
+        if (v === undefined || v === null) return;
+        u.searchParams.set(k, String(v));
+    });
+    return u.toString();
+}
+
+async function fetchJson(url, options) {
+    const base = getBaseUrl();
+    let path = url;
+    if (url.startsWith('http')) {
+        const urlObj = new URL(url);
+        path = urlObj.pathname + urlObj.search;
+    }
+
+    const baseUrlPath = new URL(base).pathname;
+    if (baseUrlPath !== '/' && path.startsWith(baseUrlPath)) {
+        path = path.substring(baseUrlPath.length);
+    }
+
+    const fullUrl = base + (path.startsWith('/') ? '' : '/') + path;
+    
+    try {
+        const res = await fetch(fullUrl, {
+            credentials: 'same-origin',
+            redirect: 'follow',
+            cache: 'no-store',
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                ...(options?.headers || {})
+            },
+            ...options,
+        });
+
+        const contentType = (res.headers.get('content-type') || '').toLowerCase();
+        const isJson = contentType.includes('application/json');
+
+        const data = isJson ? await res.json().catch(() => null) : null;
+
+        if (!res.ok) {
+            const msg = data?.message || `HTTP ${res.status}`;
+            throw new Error(msg);
+        }
+
+        if (!isJson) {
+            // Quando a sessão expira / middleware redireciona, muitas vezes vem HTML.
+            // Como este helper é usado apenas para endpoints JSON, tratamos como erro.
+            const hint = contentType.includes('text/html') ? 'Resposta HTML (talvez login/sessão expirada)' : 'Resposta não-JSON';
+            throw new Error(hint);
+        }
+
+        return data;
+    } catch (err) {
+        console.error('Fetch error:', err, 'URL:', url);
+        throw err;
+    }
+}
+
+// Logs de atividade
+function addLog(type, message) {
+    const logRoot = el('activityLogs');
+    if (!logRoot) return;
+
+    if (message && message.includes('Failed to fetch')) {
+        console.error('Fetch error reported to log:', message);
+    }
+
+    const time = new Date().toLocaleTimeString();
+    const colors = {
+        'success': 'text-success',
+        'warning': 'text-warning',
+        'danger': 'text-danger',
+        'info': 'text-info'
+    };
+
+    const logEntry = `<div class="${colors[type] || 'text-light'}">[${time}] ${message}</div>`;
+    logRoot.insertAdjacentHTML('beforeend', logEntry);
+    logRoot.scrollTop = logRoot.scrollHeight;
+}
+
+function clearLogs() {
+    const msg = @json(__('Logs aparecerão aqui...'));
+    setHtml('activityLogs', `<div class="text-muted">${msg}</div>`);
+}
+
+// Carregar stream (funciona mesmo sem jQuery)
+async function loadStream() {
+    const url = getVal('streamUrl');
+    if (!url) return;
+
+    const rodeioId = getVal('activeRodeio');
+
+    // Aceitar formatos: watch?v=, youtu.be/, /embed/, /live/
+    const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|live\/)|youtu\.be\/)([^&\n?#\/]+)/);
+    if (!match || !match[1]) {
+        alert('@lang('URL do YouTube inválida')');
+        return;
+    }
+
+    const embedUrl = `https://www.youtube.com/embed/${match[1]}?autoplay=1`;
+    const embed = `<iframe width="100%" height="400" src="${embedUrl}" frameborder="0" allowfullscreen></iframe>`;
+    setHtml('youtubePlayer', embed);
+
+    if (!rodeioId) {
+        addLog('warning', "@lang('Stream carregado (selecione um rodeio para salvar no frontend)')");
+        return;
+    }
+
+    try {
+        const data = await fetchJson("{{ route('admin.live_transmission.stream_url', [], false) }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+            },
+            body: JSON.stringify({ rodeio_id: rodeioId, stream_url: url }),
+        });
+        if (!data?.success) throw new Error(data?.message || '@lang('Falha ao salvar URL da transmissão')');
+        addLog('success', '@lang('Stream carregado e salvo para o frontend')');
+    } catch (e) {
+        addLog('danger', e?.message || "@lang('Falha ao salvar URL da transmissão')");
+    }
+}
+
+// Carregar dados do rodeio
+async function loadRodeioData() {
+    console.log('loadRodeioData called');
+
+    const rodeioId = getVal('activeRodeio');
+    console.log('loadRodeioData chamado com rodeioId:', rodeioId);
+
+    if (!rodeioId) {
+        // Sem rodeio selecionado, não faz chamadas.
+        setHtml('currentModalidade', '<option value="">@lang('Selecione o Rodeio')</option>');
+        setHtml('currentDivisao', '<option value="">@lang('Selecione a Divisão')</option>');
+        const divGroup = el('divisaoGroup');
+        if (divGroup) divGroup.style.display = 'none';
+        selectedDivisao = null;
+        modalidadeRequiresDivisao = false;
+        selectedRodeio = null;
+        selectedModalidade = null;
+        hasSavedLiveConfig = false;
+        setVal('eventStatus', '');
+        setHtml('competitorsList', `
+            <div class="text-center p-4 text-muted">
+                <i class="las la-users"></i>
+                <p class="mb-0">@lang('Selecione um rodeio para carregar as modalidades')</p>
+            </div>
+        `);
+        return;
+    }
+
+    selectedRodeio = rodeioId;
+    selectedModalidade = null;
+    hasSavedLiveConfig = false;
+    selectedDivisao = null;
+    modalidadeRequiresDivisao = false;
+    setVal('eventStatus', '');
+    addLog('info', `@lang('Carregando modalidades para rodeio ID'): ${rodeioId}`);
+
+    // IMPORTANTE: não carregar stream/status automaticamente aqui.
+    // O player de YouTube é independente e só deve carregar via botão "Carregar Stream".
+
+    // Carregar modalidades
+    try {
+        setHtml('currentModalidade', '<option value="">@lang('Carregando modalidades...')</option>');
+        const url = buildUrl("{{ route('admin.live_transmission.modalidades_by_rodeio', [], false) }}", { rodeio_id: rodeioId });
+        let resp = null;
+        try {
+            resp = await fetchJson(url);
+        } catch (e) {
+            const fallback = PRELOADED_MODALIDADES_BY_RODEIO?.[String(rodeioId)] || [];
+            if (Array.isArray(fallback)) {
+                resp = { success: true, count: fallback.length, modalidades: fallback, _fallback: true };
+                addLog('warning', '@lang('Falha no fetch; usando dados locais para modalidades')');
+            } else {
+                throw e;
+            }
+        }
+
+        const select = el('currentModalidade');
+        if (!select) return;
+        select.innerHTML = '<option value="">@lang('Selecione a Modalidade')</option>';
+
+        if (resp?.success && Array.isArray(resp.modalidades) && resp.modalidades.length > 0) {
+            resp.modalidades.forEach(m => {
+                let statusSuffix = '';
+                if (m.status === 'finalizado') statusSuffix = ' (Finalizada)';
+                else if (m.status === 'ao_vivo') statusSuffix = ' (AO VIVO)';
+                else if (m.status === 'pausado') statusSuffix = ' (Pausada)';
+                
+                const opt = document.createElement('option');
+                opt.value = String(m.id);
+                opt.textContent = `${m.nome}${statusSuffix}`;
+                opt.dataset.temDivisoes = (m.tem_divisoes ? '1' : '0');
+                try {
+                    opt.dataset.divisoesJson = JSON.stringify(Array.isArray(m.divisoes) ? m.divisoes : []);
+                } catch (_) {
+                    opt.dataset.divisoesJson = '[]';
+                }
+                select.appendChild(opt);
+            });
+
+            // Não auto-seleciona modalidade.
+            select.value = '';
+            selectedModalidade = null;
+            setHtml('currentDivisao', '<option value="">@lang('Selecione a Divisão')</option>');
+            const divGroup = el('divisaoGroup');
+            if (divGroup) divGroup.style.display = 'none';
+            selectedDivisao = null;
+            modalidadeRequiresDivisao = false;
+            addLog('success', `@lang('Rodeio carregado'): ${resp.count || resp.modalidades.length} @lang('modalidades encontradas')`);
+        } else {
+            addLog('warning', '@lang('Nenhuma modalidade encontrada para este rodeio')');
+        }
+
+        // Competidores só depois de SALVAR com status Ao Vivo.
+        setHtml('competitorsList', `
+            <div class="text-center p-4 text-muted">
+                <i class="las la-users"></i>
+                <p class="mb-0">@lang('Selecione modalidade, escolha status e clique em Salvar')</p>
+            </div>
+        `);
+    } catch (e) {
+        addLog('danger', `@lang('Erro ao carregar modalidades do rodeio') (${e?.message || 'erro'})`);
+    }
+}
+
+function updateDivisaoUIFromSelectedModalidade() {
+    const select = el('currentModalidade');
+    const divGroup = el('divisaoGroup');
+    const divSelect = el('currentDivisao');
+    if (!select || !divGroup || !divSelect) return;
+
+    const opt = select.selectedOptions?.[0];
+    if (!opt || !opt.value) {
+        divGroup.style.display = 'none';
+        divSelect.innerHTML = '<option value="">@lang('Selecione a Divisão')</option>';
+        selectedDivisao = null;
+        modalidadeRequiresDivisao = false;
+        return;
+    }
+
+    const temDiv = (opt.dataset.temDivisoes === '1');
+    modalidadeRequiresDivisao = temDiv;
+
+    if (!temDiv) {
+        divGroup.style.display = 'none';
+        divSelect.innerHTML = '<option value="">@lang('Selecione a Divisão')</option>';
+        selectedDivisao = null;
+        return;
+    }
+
+    let divs = [];
+    try {
+        divs = JSON.parse(opt.dataset.divisoesJson || '[]');
+    } catch (_) {
+        divs = [];
+    }
+    if (!Array.isArray(divs)) divs = [];
+
+    divSelect.innerHTML = '<option value="">@lang('Selecione a Divisão')</option>';
+    divs.forEach((d) => {
+        const o = document.createElement('option');
+        o.value = String(d);
+        o.textContent = String(d);
+        divSelect.appendChild(o);
+    });
+
+    divGroup.style.display = 'block';
+    selectedDivisao = '';
+}
+
+function onDivisaoChanged() {
+    selectedDivisao = getVal('currentDivisao');
+    // Qualquer mudança de divisão invalida o "salvo" para evitar inconsistências
+    hasSavedLiveConfig = false;
+    setHtml('competitorsList', `
+        <div class="text-center p-4 text-muted">
+            <i class="las la-users"></i>
+            <p class="mb-0">@lang('Clique em Salvar com status Ao Vivo para exibir os competidores')</p>
+        </div>
+    `);
+}
+
+function loadModalidadeCompetitors() {
+    selectedModalidade = getVal('currentModalidade');
+
+    // Atualiza UI de divisão quando a modalidade muda
+    updateDivisaoUIFromSelectedModalidade();
+    selectedDivisao = getVal('currentDivisao');
+
+    // Mudou modalidade => precisa salvar novamente
+    hasSavedLiveConfig = false;
+
+    if (hasSavedLiveConfig && getVal('eventStatus') === 'ao_vivo') {
+        loadCompetitors();
+        return;
+    }
+    setHtml('competitorsList', `
+        <div class="text-center p-4 text-muted">
+            <i class="las la-users"></i>
+            <p class="mb-0">@lang('Clique em Salvar com status Ao Vivo para exibir os competidores')</p>
+        </div>
+    `);
+}
+
+// Atualizar status do evento no banco de dados
+async function updateEventStatus() {
+    const rodeioId = getVal('activeRodeio');
+    const status = getVal('eventStatus');
+
+    if (!rodeioId) {
+        alert("@lang('Selecione um rodeio primeiro')");
+        return;
+    }
+    if (!status) {
+        alert("@lang('Selecione um status')");
+        return;
+    }
+
+    addLog('info', `@lang('Atualizando status para'): ${status}`);
+
+    try {
+        const resp = await fetchJson("{{ route('admin.live_transmission.event_status', [], false) }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+            },
+            body: JSON.stringify({ rodeio_id: rodeioId, status }),
+        });
+        if (resp?.success) {
+            addLog('success', `@lang('Status atualizado para'): ${status}`);
+            updateUIForStatus(status);
+
+            if (status === 'ao_vivo') {
+                loadCompetitors();
+            } else {
+                setHtml('competitorsList', `
+                    <div class="text-center p-4 text-muted">
+                        <i class="las la-users"></i>
+                        <p class="mb-0">@lang('Competidores ocultos enquanto não estiver Ao Vivo')</p>
+                    </div>
+                `);
+            }
+        } else {
+            addLog('danger', `@lang('Erro ao atualizar status'): ${resp?.message || '@lang('Erro desconhecido')'}`);
+        }
+    } catch (e) {
+        addLog('danger', `@lang('Erro ao atualizar status') (${e?.message || 'erro'})`);
+    }
+}
+
+async function saveEventConfig() {
+    const rodeioId = getVal('activeRodeio');
+    const modalidadeId = getVal('currentModalidade');
+    const status = getVal('eventStatus');
+    const divisao = getVal('currentDivisao');
+
+    if (!rodeioId) {
+        alert("@lang('Selecione um rodeio primeiro')");
+        return;
+    }
+    if (!modalidadeId) {
+        alert("@lang('Selecione uma modalidade')");
+        return;
+    }
+    if (!status) {
+        alert("@lang('Selecione um status')");
+        return;
+    }
+
+    if (modalidadeRequiresDivisao && !divisao) {
+        alert("@lang('Selecione uma divisão')");
+        return;
+    }
+
+    addLog('info', '@lang('Salvando configurações do evento...')');
+
+    try {
+        const respModalidade = await fetchJson("{{ route('admin.live_transmission.save_modalidade', [], false) }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+            },
+            body: JSON.stringify({ rodeio_id: rodeioId, modalidade_id: modalidadeId, divisao: divisao || null }),
+        });
+        if (!respModalidade?.success) {
+            throw new Error(respModalidade?.message || '@lang('Falha ao salvar modalidade atual')');
+        }
+
+        const respStatus = await fetchJson("{{ route('admin.live_transmission.event_status', [], false) }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+            },
+            body: JSON.stringify({ rodeio_id: rodeioId, status, modalidade_id: modalidadeId }),
+        });
+        if (!respStatus?.success) {
+            throw new Error(respStatus?.message || '@lang('Falha ao salvar status do evento')');
+        }
+
+        addLog('success', '@lang('Configurações salvas para o frontend')');
+        updateUIForStatus(status);
+
+        hasSavedLiveConfig = (status === 'ao_vivo');
+        if (hasSavedLiveConfig) {
+            loadCompetitors();
+        } else {
+            setHtml('competitorsList', `
+                <div class="text-center p-4 text-muted">
+                    <i class="las la-users"></i>
+                    <p class="mb-0">@lang('Competidores só aparecem após salvar como Ao Vivo')</p>
+                </div>
+            `);
+        }
+    } catch (e) {
+        addLog('danger', e?.message || '@lang('Falha ao salvar configurações')');
+    }
+}
+
+// Atualizar interface baseado no status
+function updateUIForStatus(status) {
+    const statusMap = {
+        'programado': { color: 'warning', text: '@lang('Programado')' },
+        'ao_vivo': { color: 'success', text: '@lang('Ao Vivo')' },
+        'pausado': { color: 'info', text: '@lang('Pausado')' },
+        'finalizado': { color: 'secondary', text: '@lang('Finalizado')' }
+    };
+
+    const statusInfo = statusMap[status] || { color: 'secondary', text: status };
+
+    const badge = el('currentStatusBadge');
+    if (badge) {
+        badge.classList.remove('bg-warning', 'bg-success', 'bg-info', 'bg-secondary');
+        badge.classList.add(`bg-${statusInfo.color}`);
+        badge.textContent = statusInfo.text;
+    }
+
+    const shouldDisable = (status === 'finalizado');
+    document.querySelectorAll('.scoring-controls').forEach((node) => {
+        node.disabled = shouldDisable;
+    });
+
+    if (shouldDisable) {
+        addLog('warning', '@lang('Controles de pontuação desabilitados - Evento finalizado')');
+    }
+}
+
+// Carregar lista de competidores
+async function loadCompetitors() {
+    const rodeioId = getVal('activeRodeio');
+    const modalidadeId = getVal('currentModalidade');
+    const status = getVal('eventStatus');
+    const divisao = getVal('currentDivisao');
+
+    if (!hasSavedLiveConfig || status !== 'ao_vivo') {
+        setHtml('competitorsList', `
+            <div class="text-center p-4 text-muted">
+                <i class="las la-users"></i>
+                <p class="mb-0">@lang('Clique em Salvar com status Ao Vivo para carregar competidores')</p>
+            </div>
+        `);
+        return;
+    }
+
+    if (modalidadeRequiresDivisao && !divisao) {
+        setHtml('competitorsList', `
+            <div class="text-center p-4 text-muted">
+                <i class="las la-users"></i>
+                <p class="mb-0">@lang('Selecione uma divisão e clique em Salvar para exibir competidores')</p>
+            </div>
+        `);
+        return;
+    }
+
+    if (status !== 'ao_vivo') {
+        setHtml('competitorsList', `
+            <div class="text-center p-4 text-muted">
+                <i class="las la-users"></i>
+                <p class="mb-0">@lang('Competidores só são exibidos quando o evento estiver Ao Vivo')</p>
+            </div>
+        `);
+        return;
+    }
+
+    if (!rodeioId || !modalidadeId) {
+        setHtml('competitorsList', `
+            <div class="text-center p-4 text-muted">
+                <i class="las la-users"></i>
+                <p>@lang('Selecione um rodeio e modalidade para carregar os competidores')</p>
+            </div>
+        `);
+        return;
+    }
+
+    addLog('info', `@lang('Carregando competidores - Rodeio'): ${rodeioId}, @lang('Modalidade'): ${modalidadeId}`);
+    setHtml('competitorsList', `
+        <div class="text-center p-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">@lang('Carregando...')</span>
+            </div>
+            <p class="mt-2">@lang('Carregando competidores...')</p>
+        </div>
+    `);
+
+    try {
+        const url = buildUrl("{{ route('admin.live_transmission.competitors_stats', [], false) }}", {
+            rodeio_id: rodeioId,
+            modalidade_id: modalidadeId,
+        });
+        const response = await fetchJson(url);
+
+        if (response?.success && Array.isArray(response.competitors) && response.competitors.length > 0) {
+            const renderInlineScoreButtons = (competitorId, competitorName, total) => {
+                const safeName = String(competitorName).replace(/"/g, '&quot;');
+                return INLINE_SCORE_BUTTONS.map((b) => {
+                    const sign = (b.points > 0) ? '+' : '';
+                    const btnClass = (b.variant === 'danger') ? 'btn-danger' : 'btn-success';
+                    const badgeClass = 'bg-light';
+                    const safeLabel = String(b.label).replace(/"/g, '&quot;');
+                    return `
+                        <div class="col-6">
+                            <button type="button" class="btn ${btnClass} w-100 py-2 px-2 inline-score-btn d-flex justify-content-between align-items-center"
+                                data-competitor-id="${competitorId}"
+                                data-competitor-display-name="${safeName}"
+                                data-competitor-total="${total}"
+                                data-action="${b.action}"
+                                data-pontos="${b.points}"
+                                data-label="${safeLabel}">
+                                <small class="fw-bold text-start" style="line-height:1.1">${b.label}</small>
+                                <span class="badge ${badgeClass} shadow-sm">${sign}${b.points}</span>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+            };
+
+            const html = response.competitors.map((competitor) => {
+                const name = (competitor.nome || competitor.name || 'Sem nome');
+                const total = (competitor.pontuacao_total ?? 0);
+                const safeName = String(name).replace(/"/g, '&quot;');
+                const itemId = `comp-${competitor.id}`;
+                return `
+                    <div class="accordion-item competitor-row" data-competitor-name="${String(name).toLowerCase()}">
+                        <h2 class="accordion-header" id="${itemId}-heading">
+                            <button class="accordion-button collapsed competitor-toggle" type="button" aria-expanded="false" aria-controls="${itemId}-collapse"
+                                data-competitor-id="${competitor.id}" data-competitor-display-name="${safeName}" data-competitor-total="${total}">
+                                <div class="competitor-main">
+                                    <div class="competitor-text">
+                                        <div class="competitor-name">${name}</div>
+                                        <div class="competitor-total">@lang('Pontuação Total'): ${total}</div>
+                                    </div>
+                                    <div class="text-muted">
+                                        <i class="las la-angle-down"></i>
+                                    </div>
+                                </div>
+                            </button>
+                        </h2>
+                        <div id="${itemId}-collapse" class="accordion-collapse collapse" aria-labelledby="${itemId}-heading">
+                            <div class="accordion-body pt-2">
+                                <div class="row g-2">
+                                    ${renderInlineScoreButtons(competitor.id, name, total)}
+                                </div>
+                                <div class="mt-3 inline-custom-form" data-competitor-id="${competitor.id}" data-competitor-display-name="${safeName}" data-competitor-total="${total}">
+                                    <div class="inline-custom-title">
+                                        <i class="las la-keyboard"></i> @lang('Pontuação Personalizada')
+                                    </div>
+                                    <div class="row g-2 align-items-end">
+                                        <div class="col-4">
+                                            <label class="form-label mb-1 inline-custom-label">@lang('Pontos')</label>
+                                            <input type="number" inputmode="numeric" class="form-control form-control-sm inline-custom-points" placeholder="@lang('Ex: 150')">
+                                        </div>
+                                        <div class="col-5">
+                                            <label class="form-label mb-1 inline-custom-label">@lang('Descrição da Ação')</label>
+                                            <input type="text" class="form-control form-control-sm inline-custom-desc" placeholder="@lang('Ex: Pescou limpo')">
+                                        </div>
+                                        <div class="col-3">
+                                            <button type="button" class="btn btn-sm btn--primary w-100 inline-custom-add">
+                                                <i class="las la-plus"></i> @lang('Adicionar')
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            setHtml('competitorsList', `<div class="accordion accordion-flush" id="competitorsAccordion">${html}</div>`);
+            closeAllCompetitorSubmenus();
+            addLog('success', `${response.competitors.length} @lang('competidores carregados')`);
+        } else if (response?.success) {
+            setHtml('competitorsList', `
+                <div class="text-center p-4 text-muted">
+                    <i class="las la-user-slash"></i>
+                    <p>@lang('Nenhum competidor encontrado para esta modalidade')</p>
+                    <small>@lang('Modalidade'): ${response.modalidade_nome || modalidadeId}</small>
+                </div>
+            `);
+            addLog('warning', '@lang('Nenhum competidor encontrado para esta modalidade')');
+        } else {
+            setHtml('competitorsList', `
+                <div class="text-center p-4 text-danger">
+                    <i class="las la-exclamation-triangle"></i>
+                    <p>@lang('Erro na resposta do servidor')</p>
+                    <small>${response?.message || '@lang('Erro desconhecido')'}</small>
+                </div>
+            `);
+            addLog('danger', `@lang('Erro na resposta'): ${response?.message || '@lang('Erro desconhecido')'}`);
+        }
+    } catch (e) {
+        setHtml('competitorsList', `
+            <div class="text-center p-4 text-danger">
+                <i class="las la-exclamation-triangle"></i>
+                <p>@lang('Erro ao carregar competidores')</p>
+                <small>${e?.message || 'erro'}</small>
+            </div>
+        `);
+        addLog('danger', `@lang('Erro ao carregar competidores') (${e?.message || 'erro'})`);
+    }
+}
+
+function resetLiveTransmissionUI() {
+    window.currentCompetitor = null;
+    selectedRodeio = null;
+    selectedModalidade = null;
+    window.__preferredModalidadeId = null;
+    hasSavedLiveConfig = false;
+
+    // Limpa selects/inputs visíveis
+    setVal('activeRodeio', '');
+    setHtml('currentModalidade', '<option value="">@lang('Selecione o Rodeio')</option>');
+    setVal('eventStatus', '');
+    setVal('streamUrl', '');
+
+    // Player é independente: mantém só o placeholder inicial.
+
+    // Limpa lista
+    setHtml('competitorsList', `
+        <div class="text-center p-4 text-muted">
+            <i class="las la-users"></i>
+            <p class="mb-0">@lang('Selecione um rodeio para começar')</p>
+        </div>
+    `);
+
+    // Reset badge
+    const badge = el('currentStatusBadge');
+    if (badge) {
+        badge.classList.remove('bg-warning', 'bg-success', 'bg-info', 'bg-secondary');
+        badge.classList.add('bg-secondary');
+        badge.textContent = '—';
+    }
+}
+
+function closeAllCompetitorSubmenus() {
+    // Garante que todos os submenus iniciem fechados
+    document.querySelectorAll('#competitorsList .accordion-collapse').forEach((node) => {
+        node.classList.remove('show');
+        node.style.height = '';
+        try {
+            const instance = bootstrap.Collapse.getOrCreateInstance(node, { toggle: false });
+            instance.hide();
+        } catch (_) {
+            // fallback: já removemos o estado visual
+        }
+    });
+
+    document.querySelectorAll('#competitorsList .accordion-button').forEach((btn) => {
+        btn.classList.add('collapsed');
+        btn.setAttribute('aria-expanded', 'false');
+    });
+}
+    
+    // Ações rápidas
+    function quickAction(action) {
+            const actions = {
+                'finish_modalidade': "@lang('Modalidade finalizada')"
+            };
+        
+        if (action === 'finish_modalidade') {
+            const modalidadeId = document.getElementById('currentModalidade')?.value;
+            if (!modalidadeId) {
+                alert("@lang('Selecione uma modalidade primeiro')");
+                return;
+            }
+            fetch(`{{ route('admin.live_transmission.finish_modalidade', [], false) }}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                body: JSON.stringify({ modalidade_id: modalidadeId })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (!data.success) throw new Error();
+                addLog('success', actions[action]);
+            })
+            .catch(() => addLog('danger', "@lang('Falha ao finalizar a modalidade')"));
+            return;
+        }
+        
+        addLog('warning', actions[action] || "@lang('Ação executada')");
+    }
+
+    // Abrir modal de pontuação
+    function openScoringModal(competitorId, competitorName, currentTotal = 0) {
+        console.log('Abrindo modal de pontuação para:', competitorId, competitorName);
+        
+        window.currentCompetitor = { id: competitorId, name: competitorName, total: currentTotal };
+        
+        const rodeioNode = el('activeRodeio');
+        const rodeioName = (rodeioNode?.selectedOptions?.[0]?.textContent || I18N.rodeio).trim();
+        const modalidadeNode = el('currentModalidade');
+        const modalidadeName = (modalidadeNode?.selectedOptions?.[0]?.textContent || I18N.modalidadeNaoDefinida).trim();
+        
+        // Atualizar elementos do modal
+        setHtml('modalCompetitorName', competitorName);
+        setHtml('modalCompetitorTotal', currentTotal);
+        setHtml('modalModalidadeLabel', modalidadeName);
+        setHtml('modalRodeioBadge', rodeioName);
+        
+        const labelEl = el('scoringModalLabel');
+        if (labelEl) labelEl.textContent = `${I18N.pontuar} - ${competitorName}`;
+        
+        // Mostrar o modal
+        const modalEl = document.getElementById('scoringModal');
+        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+        modal.show();
+        
+        addLog('info', `${I18N.modalAbertoPara}: ${competitorName}`);
+    }
+
+    // Adicionar pontuação
+    async function addScore(action, points, notes, buttonEl = null) {
+        if (!window.currentCompetitor) return;
+        
+        const rodeioId = getVal('activeRodeio');
+        const modalidadeId = getVal('currentModalidade');
+
+        if (buttonEl) buttonEl.classList.add('saving');
+
+        try {
+            const response = await fetchJson("{{ route('admin.live_transmission.add_score', [], false) }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                body: JSON.stringify({
+                    competitor_id: window.currentCompetitor.id,
+                    rodeio_id: rodeioId,
+                    modalidade_id: modalidadeId,
+                    action: action,
+                    points: points,
+                    notes: notes || null
+                })
+            });
+
+            if (buttonEl) {
+                buttonEl.classList.remove('saving');
+                buttonEl.classList.add('success-hit');
+                setTimeout(() => buttonEl.classList.remove('success-hit'), 1000);
+            }
+
+            const label = notes ? `${notes} (${points > 0 ? '+' : ''}${points})` : `${action} (${points > 0 ? '+' : ''}${points})`;
+            addLog('success', `${window.currentCompetitor.name}: ${label}`);
+
+            // Regra de negócio: qualquer pontuação negativa é um ERRO.
+            // Após registrar o erro, perguntar se o competidor "caiu fora".
+            try {
+                const pts = parseInt(points, 10) || 0;
+                if (pts < 0) {
+                    const caiuFora = confirm('Erro registrado. O competidor caiu fora?\n\nSe confirmar, ele ficará indisponível para equipes e salas X1.');
+                    if (caiuFora) {
+                        await fetchJson("{{ route('admin.live_transmission.mark_competitor_out', [], false) }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken,
+                            },
+                            body: JSON.stringify({
+                                competitor_id: window.currentCompetitor.id,
+                                rodeio_id: rodeioId,
+                                modalidade_id: modalidadeId,
+                                reason: action,
+                            })
+                        });
+                        addLog('warning', `${window.currentCompetitor.name}: marcado como FORA (indisponível)`);
+
+                        // Opcional: desabilitar botões de pontuação no popout
+                        try {
+                            const pop = document.getElementById('ltCompetitorPopout');
+                            pop?.querySelectorAll?.('button').forEach(b => {
+                                if (b.classList.contains('lt-score-btn') || b.classList.contains('inline-score-btn') || b.classList.contains('scoring-btn')) {
+                                    b.disabled = true;
+                                }
+                            });
+                        } catch (_) {}
+                    }
+                }
+            } catch (_) {}
+            
+            // Atualizar o total no modal se a API retornou
+            if (response?.new_score !== undefined) {
+                setHtml('modalCompetitorTotal', response.new_score);
+                try {
+                    const pop = document.getElementById('ltCompetitorPopout');
+                    const subEl = pop?.querySelector?.('#ltPopoutSub');
+                    if (subEl) subEl.textContent = `Pontuação Total: ${parseInt(response.new_score) || 0}`;
+                } catch (_) {}
+            }
+
+            // Se pontuou via popout, agora existe ação para desfazer
+            try {
+                const pop = document.getElementById('ltCompetitorPopout');
+                if (pop && typeof pop._ltSetUndoAvailable === 'function') {
+                    pop._ltSetUndoAvailable(true);
+                }
+            } catch (_) {}
+
+            // Recarregar lista ao fundo para manter sincronizado
+            loadCompetitors();
+
+        } catch (e) {
+            if (buttonEl) buttonEl.classList.remove('saving');
+            addLog('danger', `@lang('Falha ao pontuar') (${e?.message || 'erro'})`);
+        }
+    }
+
+    // Adicionar pontuação personalizada
+    function addCustomScore() {
+        const pts = parseInt(getVal('customScore'));
+        const desc = getVal('customAction');
+        if (!pts || !desc) {
+            alert("@lang('Preencha a pontuação e descrição')");
+            return;
+        }
+
+        // Usar action estável e gravar a descrição em notes
+        addScore('custom', pts, desc);
+        setVal('customScore', '');
+        setVal('customAction', '');
+    }
+
+// === TORNAR FUNÇÕES GLOBAIS ===
+window.loadRodeioData = loadRodeioData;
+window.loadModalidadeCompetitors = loadModalidadeCompetitors;
+window.updateEventStatus = updateEventStatus;
+window.updateUIForStatus = updateUIForStatus;
+window.loadCompetitors = loadCompetitors;
+window.quickAction = quickAction;
+window.loadStream = loadStream;
+window.saveEventConfig = saveEventConfig;
+window.openScoringModal = openScoringModal;
+window.addScore = addScore;
+window.addCustomScore = addCustomScore;
+window.addLog = addLog;
+window.clearLogs = clearLogs;
+
+// === INICIALIZAÇÃO ===
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Página carregada, inicializando sistema de transmissão...');
+
+    // Ao recarregar a página, mantém o painel em branco e sem chamadas.
+    resetLiveTransmissionUI();
+
+    // Garante que o modal esteja no <body> (popout real), não dentro de containers da view.
+    // Alguns templates aplicam overflow/transform nos cards/rows e isso "prende" o modal.
+    const modalEl = document.getElementById('scoringModal');
+    if (modalEl && modalEl.parentElement !== document.body) {
+        document.body.appendChild(modalEl);
+    }
+
+    // Delegação de cliques para botões de pontuação no modal
+    if (modalEl) {
+        modalEl.addEventListener('shown.bs.modal', function() {
+            document.body.classList.add('modal-open');
+        });
+        modalEl.addEventListener('hidden.bs.modal', function() {
+            document.body.classList.remove('modal-open');
+        });
+
+        modalEl.addEventListener('click', function(e) {
+            const btn = e.target.closest('.scoring-btn');
+            if (btn) {
+                const action = btn.getAttribute('data-action');
+                const points = parseInt(btn.getAttribute('data-pontos'));
+                const label = btn.getAttribute('data-label');
+                if (action && !isNaN(points)) {
+                    addScore(action, points, label, btn);
+                }
+            }
+        });
+    }
+
+    const competitorSearch = el('competitorSearch');
+    if (competitorSearch) {
+        competitorSearch.addEventListener('input', function() {
+            const searchTerm = (this.value || '').toString().toLowerCase();
+            document.querySelectorAll('.competitor-row').forEach((row) => {
+                const competitorName = (row.getAttribute('data-competitor-name') || '').toString().toLowerCase();
+                row.style.display = (!searchTerm || competitorName.includes(searchTerm)) ? '' : 'none';
+            });
+        });
+    }
+
+    // Popout flutuante (sobreposto) para pontuar competidor, sem expandir collapse dentro da lista.
+    let ltPopout = null;
+    let ltPopoutAnchorBtn = null;
+    let ltPopoutHandlersBound = false;
+
+    const ensureCompetitorPopout = () => {
+        if (ltPopout && document.body.contains(ltPopout)) return ltPopout;
+
+        const el = document.createElement('div');
+        el.id = 'ltCompetitorPopout';
+        el.innerHTML = `
+            <div class="lt-popout-panel" role="dialog" aria-modal="false" aria-label="Pontuar competidor">
+                <div class="lt-popout-header">
+                    <div style="min-width:0;">
+                        <p class="lt-popout-title" id="ltPopoutTitle">Competidor</p>
+                        <p class="lt-popout-sub" id="ltPopoutSub">Pontuação Total: 0</p>
+                    </div>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <button type="button" class="lt-popout-undo" data-action="lt-popout-undo" aria-label="Desfazer última ação" style="display:none;">
+                            <i class="las la-undo"></i> @lang('Desfazer')
+                        </button>
+                        <button type="button" class="lt-popout-close" data-action="lt-popout-close" aria-label="Fechar">×</button>
+                    </div>
+                </div>
+                <div class="lt-popout-body" id="ltPopoutBody"></div>
+            </div>
+        `;
+        document.body.appendChild(el);
+        ltPopout = el;
+
+        const panel = ltPopout.querySelector('.lt-popout-panel');
+
+        const close = () => {
+            if (!ltPopout) return;
+            ltPopout.classList.remove('show');
+            ltPopoutAnchorBtn = null;
+            document.querySelectorAll('.competitor-toggle[aria-expanded="true"]').forEach((b) => {
+                b.classList.add('collapsed');
+                b.setAttribute('aria-expanded', 'false');
+            });
+        };
+
+        const positionFromAnchor = () => {
+            if (!ltPopout || !ltPopout.classList.contains('show') || !panel || !ltPopoutAnchorBtn) return;
+
+            const a = ltPopoutAnchorBtn.getBoundingClientRect();
+            const vw = window.innerWidth || document.documentElement.clientWidth || 0;
+            const vh = window.innerHeight || document.documentElement.clientHeight || 0;
+            const margin = 12;
+
+            // Responsive width
+            const desiredWidth = Math.min(560, Math.max(340, Math.floor(vw * 0.44)));
+            panel.style.width = desiredWidth + 'px';
+
+            // Top aligned to the clicked button
+            let top = Math.round(a.top);
+            const maxTop = Math.max(margin, vh - 140);
+            top = Math.max(margin, Math.min(top, maxTop));
+
+            // Stick to the right edge (encostado na extremidade)
+            panel.style.left = '';
+            panel.style.right = margin + 'px';
+            panel.style.top = top + 'px';
+        };
+
+        const updatePopoutTotal = (newTotal) => {
+            try {
+                const subEl = ltPopout.querySelector('#ltPopoutSub');
+                if (subEl) subEl.textContent = `Pontuação Total: ${parseInt(newTotal) || 0}`;
+            } catch (_) {}
+        };
+
+        const setUndoAvailable = (available) => {
+            try {
+                const undoEl = ltPopout?.querySelector?.('.lt-popout-undo');
+                if (!undoEl) return;
+                undoEl.style.display = available ? '' : 'none';
+            } catch (_) {}
+        };
+
+        const refreshUndoAvailability = async () => {
+            if (!window.currentCompetitor?.id) {
+                setUndoAvailable(false);
+                return;
+            }
+
+            const rodeioId = getVal('activeRodeio');
+            const modalidadeId = getVal('currentModalidade');
+
+            try {
+                const response = await fetchJson("{{ route('admin.live_transmission.can_undo_last_score', [], false) }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                    body: JSON.stringify({
+                        competitor_id: window.currentCompetitor.id,
+                        rodeio_id: rodeioId,
+                        modalidade_id: modalidadeId,
+                    })
+                });
+
+                setUndoAvailable(!!response?.can_undo);
+            } catch (_) {
+                setUndoAvailable(false);
+            }
+        };
+
+        const undoLast = async (btnEl) => {
+            if (!window.currentCompetitor) return;
+            const rodeioId = getVal('activeRodeio');
+            const modalidadeId = getVal('currentModalidade');
+
+            if (btnEl) btnEl.classList.add('saving');
+            try {
+                const response = await fetchJson("{{ route('admin.live_transmission.undo_last_score', [], false) }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                    body: JSON.stringify({
+                        competitor_id: window.currentCompetitor.id,
+                        rodeio_id: rodeioId,
+                        modalidade_id: modalidadeId,
+                    })
+                });
+
+                const undonePoints = parseInt(response?.undone_points);
+                const undoneAction = (response?.undone_action || '').toString();
+                const newScore = (response?.new_score !== undefined) ? parseInt(response.new_score) : null;
+
+                if (newScore !== null) {
+                    // atualiza total no modal (se estiver aberto) e no popout
+                    setHtml('modalCompetitorTotal', newScore);
+                    updatePopoutTotal(newScore);
+                    if (window.currentCompetitor) window.currentCompetitor.total = newScore;
+                }
+
+                addLog('info', `${window.currentCompetitor.name}: @lang('Desfez') ${undoneAction} (${undonePoints > 0 ? '+' : ''}${undonePoints})`);
+
+                // Recarrega lista para manter sincronizado
+                loadCompetitors();
+
+                // Atualiza visibilidade do Desfazer (pode ainda haver ações anteriores)
+                refreshUndoAvailability();
+            } catch (e) {
+                addLog('warning', `@lang('Nada para desfazer')`);
+                setUndoAvailable(false);
+            } finally {
+                if (btnEl) btnEl.classList.remove('saving');
+            }
+        };
+
+        // Handlers inside popout (pontuação inline / custom / abrir modal / undo)
+        ltPopout.addEventListener('click', function(ev){
+            const closeBtn = ev.target.closest('[data-action="lt-popout-close"]');
+            if (closeBtn) {
+                close();
+                return;
+            }
+
+            const undoBtn = ev.target.closest('[data-action="lt-popout-undo"]');
+            if (undoBtn) {
+                undoLast(undoBtn);
+                return;
+            }
+
+            const scoreBtn = ev.target.closest('.inline-score-btn');
+            if (scoreBtn) {
+                const competitorId = parseInt(scoreBtn.getAttribute('data-competitor-id'));
+                const displayName = (scoreBtn.getAttribute('data-competitor-display-name') || '').toString();
+                const total = parseInt(scoreBtn.getAttribute('data-competitor-total'));
+
+                const action = scoreBtn.getAttribute('data-action');
+                const points = parseInt(scoreBtn.getAttribute('data-pontos'));
+                const label = scoreBtn.getAttribute('data-label');
+
+                if (!competitorId || !displayName || !action || isNaN(points)) return;
+                setCurrentCompetitor(competitorId, displayName, isNaN(total) ? 0 : total);
+                addScore(action, points, label, scoreBtn);
+                return;
+            }
+
+            const customAddBtn = ev.target.closest('.inline-custom-add');
+            if (customAddBtn) {
+                const form = customAddBtn.closest('.inline-custom-form');
+                if (!form) return;
+
+                const competitorId = parseInt(form.getAttribute('data-competitor-id'));
+                const displayName = (form.getAttribute('data-competitor-display-name') || '').toString();
+                const total = parseInt(form.getAttribute('data-competitor-total'));
+
+                const ptsEl = form.querySelector('.inline-custom-points');
+                const descEl = form.querySelector('.inline-custom-desc');
+                const pts = parseInt((ptsEl?.value || '').toString());
+                const desc = (descEl?.value || '').toString().trim();
+
+                if (!competitorId || !displayName) return;
+                if (isNaN(pts) || !desc) {
+                    addLog('warning', "@lang('Preencha a pontuação e descrição')");
+                    return;
+                }
+
+                setCurrentCompetitor(competitorId, displayName, isNaN(total) ? 0 : total);
+                addScore('custom', pts, desc, customAddBtn);
+
+                if (ptsEl) ptsEl.value = '';
+                if (descEl) descEl.value = '';
+                return;
+            }
+
+            const customBtn = ev.target.closest('.inline-custom-score');
+            if (customBtn) {
+                const competitorId = parseInt(customBtn.getAttribute('data-competitor-id'));
+                const displayName = (customBtn.getAttribute('data-competitor-display-name') || '').toString();
+                const total = parseInt(customBtn.getAttribute('data-competitor-total'));
+
+                if (!competitorId || !displayName) return;
+                openScoringModal(competitorId, displayName, isNaN(total) ? 0 : total);
+                return;
+            }
+        });
+
+        // Fechar ao clicar fora (sem backdrop)
+        document.addEventListener('click', function(ev){
+            if (!ltPopout || !ltPopout.classList.contains('show')) return;
+            if (panel && panel.contains(ev.target)) return;
+            const toggle = ev.target.closest && ev.target.closest('.competitor-toggle');
+            if (toggle) return;
+            close();
+        }, true);
+
+        // Esc fecha
+        document.addEventListener('keydown', function(ev){
+            if (ev.key === 'Escape' && ltPopout && ltPopout.classList.contains('show')) {
+                close();
+            }
+        }, true);
+
+        // Reposicionar enquanto estiver aberto
+        if (!ltPopoutHandlersBound) {
+            ltPopoutHandlersBound = true;
+            window.addEventListener('scroll', positionFromAnchor, true);
+            window.addEventListener('resize', positionFromAnchor, true);
+        }
+
+        // Expose helpers
+        ltPopout._ltClose = close;
+        ltPopout._ltPositionFromAnchor = positionFromAnchor;
+        ltPopout._ltSetUndoAvailable = setUndoAvailable;
+        ltPopout._ltRefreshUndoAvailability = refreshUndoAvailability;
+
+        return ltPopout;
+    };
+
+    const openCompetitorPopout = (toggleBtn) => {
+        const pop = ensureCompetitorPopout();
+
+        const displayName = (toggleBtn.getAttribute('data-competitor-display-name') || '').toString();
+        const total = parseInt(toggleBtn.getAttribute('data-competitor-total'));
+        const competitorId = parseInt(toggleBtn.getAttribute('data-competitor-id'));
+
+        if (competitorId) {
+            setCurrentCompetitor(competitorId, displayName || 'Competidor', isNaN(total) ? 0 : total);
+        }
+
+        const titleEl = pop.querySelector('#ltPopoutTitle');
+        const subEl = pop.querySelector('#ltPopoutSub');
+        const bodyEl = pop.querySelector('#ltPopoutBody');
+
+        if (titleEl) titleEl.textContent = displayName || 'Competidor';
+        if (subEl) subEl.textContent = `Pontuação Total: ${isNaN(total) ? 0 : total}`;
+
+        const controlsId = toggleBtn.getAttribute('aria-controls');
+        const collapseEl = controlsId ? document.getElementById(controlsId) : null;
+        const tplBody = collapseEl ? collapseEl.querySelector('.accordion-body') : null;
+        if (bodyEl) bodyEl.innerHTML = tplBody ? tplBody.innerHTML : '<div class="text-muted">Sem opções de pontuação.</div>';
+
+        // Track anchor and show
+        ltPopoutAnchorBtn = toggleBtn;
+        pop.classList.add('show');
+
+        // Update aria state
+        document.querySelectorAll('.competitor-toggle[aria-expanded="true"]').forEach((b) => {
+            if (b !== toggleBtn) {
+                b.classList.add('collapsed');
+                b.setAttribute('aria-expanded', 'false');
+            }
+        });
+        toggleBtn.classList.remove('collapsed');
+        toggleBtn.setAttribute('aria-expanded', 'true');
+
+        try {
+            if (typeof pop._ltPositionFromAnchor === 'function') pop._ltPositionFromAnchor();
+        } catch (_) {}
+
+        try {
+            if (typeof pop._ltRefreshUndoAvailability === 'function') pop._ltRefreshUndoAvailability();
+        } catch (_) {}
+    };
+
+    // Delegação: submenu dos competidores
+    const competitorsRoot = el('competitorsList');
+    if (competitorsRoot) {
+        competitorsRoot.addEventListener('click', function(e) {
+            const scoreBtn = e.target.closest('.inline-score-btn');
+            if (scoreBtn) {
+                const competitorId = parseInt(scoreBtn.getAttribute('data-competitor-id'));
+                const displayName = (scoreBtn.getAttribute('data-competitor-display-name') || '').toString();
+                const total = parseInt(scoreBtn.getAttribute('data-competitor-total'));
+
+                const action = scoreBtn.getAttribute('data-action');
+                const points = parseInt(scoreBtn.getAttribute('data-pontos'));
+                const label = scoreBtn.getAttribute('data-label');
+
+                if (!competitorId || !displayName || !action || isNaN(points)) return;
+                setCurrentCompetitor(competitorId, displayName, isNaN(total) ? 0 : total);
+                addScore(action, points, label, scoreBtn);
+                return;
+            }
+
+            const customAddBtn = e.target.closest('.inline-custom-add');
+            if (customAddBtn) {
+                const form = customAddBtn.closest('.inline-custom-form');
+                if (!form) return;
+
+                const competitorId = parseInt(form.getAttribute('data-competitor-id'));
+                const displayName = (form.getAttribute('data-competitor-display-name') || '').toString();
+                const total = parseInt(form.getAttribute('data-competitor-total'));
+
+                const ptsEl = form.querySelector('.inline-custom-points');
+                const descEl = form.querySelector('.inline-custom-desc');
+                const pts = parseInt((ptsEl?.value || '').toString());
+                const desc = (descEl?.value || '').toString().trim();
+
+                if (!competitorId || !displayName) return;
+                if (isNaN(pts) || !desc) {
+                    addLog('warning', "@lang('Preencha a pontuação e descrição')");
+                    return;
+                }
+
+                setCurrentCompetitor(competitorId, displayName, isNaN(total) ? 0 : total);
+                addScore('custom', pts, desc, customAddBtn);
+
+                // Limpa campos
+                if (ptsEl) ptsEl.value = '';
+                if (descEl) descEl.value = '';
+                return;
+            }
+
+            const customBtn = e.target.closest('.inline-custom-score');
+            if (customBtn) {
+                const competitorId = parseInt(customBtn.getAttribute('data-competitor-id'));
+                const displayName = (customBtn.getAttribute('data-competitor-display-name') || '').toString();
+                const total = parseInt(customBtn.getAttribute('data-competitor-total'));
+
+                if (!competitorId || !displayName) return;
+                openScoringModal(competitorId, displayName, isNaN(total) ? 0 : total);
+                return;
+            }
+
+            // Abrir popout flutuante ao clicar no competidor (sem expandir collapse dentro da lista)
+            const toggleBtn = e.target.closest('.competitor-toggle');
+            if (toggleBtn) {
+                e.preventDefault();
+                openCompetitorPopout(toggleBtn);
+                return;
+            }
+        });
+    }
+
+    addLog('info', "@lang('Sistema de transmissão inicializado')");
+
+    // Não auto-seleciona rodeio: só carrega ao usuário selecionar.
+});
+
+</script>
+
+@endsection

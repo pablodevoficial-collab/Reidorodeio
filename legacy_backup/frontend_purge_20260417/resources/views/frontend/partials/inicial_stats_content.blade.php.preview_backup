@@ -1,0 +1,582 @@
+{{-- ═══════════════════════════════════════════════════════════════
+     ESTATÍSTICAS — PREVIEW (Em breve)
+     Mostra prévia do que o usuário poderá acessar
+     ═══════════════════════════════════════════════════════════════ --}}
+
+<style>
+/* ═══ STATS PREVIEW ═══ */
+.stats-preview {
+    padding: 1.5rem 1rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ── Hero Banner ── */
+.stats-hero {
+    position: relative;
+    text-align: center;
+    padding: 3rem 1.5rem 2.5rem;
+    border-radius: 20px;
+    background: transparent;
+    border: 1px solid rgba(34,197,94,0.18);
+    margin-bottom: 2.5rem;
+    overflow: hidden;
+}
+.stats-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: transparent;
+    pointer-events: none;
+}
+.stats-hero__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(34,197,94,0.12);
+    border: 1px solid rgba(34,197,94,0.3);
+    color: #22c55e;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 0.4rem 1.2rem;
+    border-radius: 50px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+    position: relative;
+    z-index: 1;
+}
+.stats-hero__badge-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: #22c55e;
+    animation: heroGlow 2s ease-in-out infinite;
+}
+@keyframes heroGlow { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,0.4)} 50%{opacity:0.6;box-shadow:0 0 0 6px rgba(34,197,94,0)} }
+
+.stats-hero__title {
+    font-family: 'Ethnocentric', 'Inter', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #22c55e, #06b6d4, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.8rem;
+    position: relative;
+    z-index: 1;
+}
+.stats-hero__desc {
+    color: rgba(241,245,249,0.6);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+/* ── Section Title ── */
+.stats-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.stats-section-title__icon {
+    font-size: 1.3rem;
+}
+.stats-section-title__text {
+    font-weight: 800;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #f1f5f9;
+}
+.stats-section-title__tag {
+    margin-left: auto;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: rgba(34,197,94,0.8);
+    background: rgba(34,197,94,0.1);
+    border: 1px solid rgba(34,197,94,0.2);
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+/* ── Preview Cards Grid ── */
+.stats-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+}
+
+/* ── Competitor Preview Card (blurred/locked) ── */
+.stats-pcard {
+    position: relative;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 1.5rem 1rem 1rem;
+    text-align: center;
+    overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s;
+}
+.stats-pcard:hover {
+    transform: translateY(-3px);
+    border-color: rgba(34,197,94,0.25);
+}
+.stats-pcard__glow {
+    position: absolute;
+    top: -40%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0.15;
+    pointer-events: none;
+}
+.stats-pcard__avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    margin: 0 auto 0.75rem;
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border: 2px solid rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    position: relative;
+    z-index: 1;
+    filter: blur(2px);
+    opacity: 0.5;
+}
+.stats-pcard__name {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: rgba(241,245,249,0.35);
+    margin-bottom: 0.3rem;
+    filter: blur(3px);
+}
+.stats-pcard__nivel {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    border-radius: 50px;
+    display: inline-block;
+    margin-bottom: 0.6rem;
+    filter: blur(2px);
+    opacity: 0.5;
+}
+.stats-pcard__nivel--favorito { background: rgba(251,191,36,0.12); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+.stats-pcard__nivel--elite { background: rgba(239,68,68,0.12); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+.stats-pcard__nivel--ascendente { background: rgba(148,163,184,0.12); color: #94a3b8; border: 1px solid rgba(148,163,184,0.3); }
+.stats-pcard__nivel--competidor { background: rgba(34,197,94,0.12); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+
+.stats-pcard__stats {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    filter: blur(3px);
+    opacity: 0.4;
+}
+.stats-pcard__stat {
+    font-size: 0.65rem;
+    color: rgba(241,245,249,0.5);
+    font-weight: 600;
+}
+.stats-pcard__stat strong {
+    display: block;
+    font-size: 0.85rem;
+    color: #f1f5f9;
+}
+
+/* Lock overlay */
+.stats-pcard__lock {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(6,10,20,0.55);
+    backdrop-filter: blur(1px);
+    z-index: 5;
+    opacity: 0;
+    transition: opacity 0.3s;
+    border-radius: 16px;
+}
+.stats-pcard:hover .stats-pcard__lock {
+    opacity: 1;
+}
+.stats-pcard__lock-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.4rem;
+}
+.stats-pcard__lock-text {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: rgba(241,245,249,0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+/* ── Feature Preview Blocks ── */
+.stats-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+}
+.stats-feat {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+}
+.stats-feat:hover {
+    border-color: rgba(34,197,94,0.2);
+    transform: translateY(-2px);
+}
+.stats-feat__icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    flex-shrink: 0;
+}
+.stats-feat__icon--green { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.2); }
+.stats-feat__icon--blue { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); }
+.stats-feat__icon--orange { background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.2); }
+.stats-feat__icon--gold { background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.2); }
+.stats-feat__icon--cyan { background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.2); }
+.stats-feat__icon--red { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); }
+
+.stats-feat__title {
+    font-weight: 800;
+    font-size: 0.9rem;
+    color: #f1f5f9;
+    margin-bottom: 0.4rem;
+}
+.stats-feat__desc {
+    font-size: 0.78rem;
+    color: rgba(241,245,249,0.5);
+    line-height: 1.5;
+}
+.stats-feat__preview {
+    margin-top: 1rem;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.04);
+    border-radius: 10px;
+    padding: 0.75rem;
+    filter: blur(2px);
+    opacity: 0.4;
+}
+.stats-feat__bar {
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.06);
+    margin-bottom: 0.4rem;
+    position: relative;
+    overflow: hidden;
+}
+.stats-feat__bar:last-child { margin-bottom: 0; }
+.stats-feat__bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+/* ── Bottom CTA ── */
+.stats-cta {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    background: transparent;
+    border: 1px solid rgba(34,197,94,0.12);
+    border-radius: 20px;
+}
+.stats-cta__icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+}
+.stats-cta__title {
+    font-weight: 800;
+    font-size: 1.15rem;
+    color: #f1f5f9;
+    margin-bottom: 0.5rem;
+}
+.stats-cta__desc {
+    color: rgba(241,245,249,0.5);
+    font-size: 0.85rem;
+    max-width: 500px;
+    margin: 0 auto 1.2rem;
+    line-height: 1.6;
+}
+.stats-cta__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(34,197,94,0.1);
+    border: 1px solid rgba(34,197,94,0.25);
+    color: #22c55e;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 0.6rem 1.5rem;
+    border-radius: 50px;
+    letter-spacing: 0.08em;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+    .stats-preview { padding: 1rem 0.75rem 2rem; }
+    .stats-hero { padding: 2rem 1rem; }
+    .stats-hero__title { font-size: 1.2rem; }
+    .stats-hero__desc { font-size: 0.85rem; }
+    .stats-preview-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.75rem; }
+    .stats-features { grid-template-columns: 1fr; }
+    .stats-pcard__avatar { width: 52px; height: 52px; }
+}
+
+/* ===============================
+   TEMA CLARO - LEGIBILIDADE
+   =============================== */
+body.light .stats-preview {
+    color: #0f172a;
+}
+body.light .stats-hero {
+    background: transparent;
+    border-color: rgba(234,88,12,0.24);
+}
+body.light .stats-hero::before {
+    background: transparent;
+}
+body.light .stats-hero__desc {
+    color: #334155;
+}
+body.light .stats-section-title {
+    border-bottom-color: rgba(234,88,12,0.18);
+}
+body.light .stats-section-title__text {
+    color: #0f172a;
+}
+body.light .stats-section-title__tag {
+    color: #c2410c;
+    background: rgba(249,115,22,0.14);
+    border-color: rgba(249,115,22,0.25);
+}
+body.light .stats-pcard {
+    background: transparent;
+    border-color: rgba(15,23,42,0.1);
+}
+body.light .stats-pcard:hover {
+    border-color: rgba(234,88,12,0.35);
+}
+body.light .stats-pcard__avatar {
+    background: linear-gradient(135deg, #ffedd5, #fed7aa);
+    border-color: rgba(234,88,12,0.2);
+}
+body.light .stats-pcard__name {
+    color: rgba(15,23,42,0.6);
+}
+body.light .stats-pcard__stat {
+    color: rgba(15,23,42,0.65);
+}
+body.light .stats-pcard__stat strong {
+    color: #0f172a;
+}
+body.light .stats-pcard__lock {
+    background: rgba(248,250,252,0.72);
+}
+body.light .stats-pcard__lock-text {
+    color: #0f172a;
+}
+body.light .stats-feat {
+    background: transparent;
+    border-color: rgba(15,23,42,0.1);
+}
+body.light .stats-feat:hover {
+    border-color: rgba(234,88,12,0.35);
+}
+body.light .stats-feat__title {
+    color: #0f172a;
+}
+body.light .stats-feat__desc {
+    color: #334155;
+}
+body.light .stats-feat__bar {
+    background: rgba(148,163,184,0.3);
+}
+body.light .stats-cta {
+    background: transparent;
+    border-color: rgba(234,88,12,0.25);
+}
+body.light .stats-cta__title {
+    color: #0f172a;
+}
+body.light .stats-cta__desc {
+    color: #334155;
+}
+</style>
+
+<div class="stats-preview">
+
+    {{-- ═══ HERO BANNER ═══ --}}
+    <div class="stats-hero">
+        <div class="stats-hero__badge">
+            <span class="stats-hero__badge-dot"></span>
+            Em desenvolvimento
+        </div>
+        <h1 class="stats-hero__title">ESTATÍSTICAS</h1>
+        <p class="stats-hero__desc">
+            Acompanhe o desempenho de cada competidor em tempo real.
+            Armadas, destrezas, aproveitamento, histórico por evento e muito mais — tudo na palma da sua mão.
+        </p>
+    </div>
+
+    {{-- ═══ PREVIEW: CARDS DOS COMPETIDORES ═══ --}}
+    <div class="stats-section-title">
+        <span class="stats-section-title__icon">🐎</span>
+        <span class="stats-section-title__text">Competidores</span>
+        <span class="stats-section-title__tag">Em breve</span>
+    </div>
+
+    <div class="stats-preview-grid">
+        @php
+            $previewCompetitors = [
+                ['name' => 'Competidor A', 'nivel' => 'favorito', 'emoji' => '⭐', 'color' => '#fbbf24', 'v' => 12, 'e' => 3, 'd' => 2, 'apr' => 85],
+                ['name' => 'Competidor B', 'nivel' => 'elite', 'emoji' => '❤️', 'color' => '#ef4444', 'v' => 9, 'e' => 4, 'd' => 3, 'apr' => 72],
+                ['name' => 'Competidor C', 'nivel' => 'ascendente', 'emoji' => '🏆', 'color' => '#94a3b8', 'v' => 7, 'e' => 5, 'd' => 4, 'apr' => 63],
+                ['name' => 'Competidor D', 'nivel' => 'competidor', 'emoji' => '🌱', 'color' => '#22c55e', 'v' => 5, 'e' => 3, 'd' => 6, 'apr' => 48],
+                ['name' => 'Competidor E', 'nivel' => 'favorito', 'emoji' => '⭐', 'color' => '#fbbf24', 'v' => 11, 'e' => 2, 'd' => 1, 'apr' => 89],
+                ['name' => 'Competidor F', 'nivel' => 'elite', 'emoji' => '❤️', 'color' => '#ef4444', 'v' => 8, 'e' => 6, 'd' => 3, 'apr' => 67],
+            ];
+        @endphp
+        @foreach($previewCompetitors as $pc)
+            <div class="stats-pcard">
+                <div class="stats-pcard__glow" style="background: {{ $pc['color'] }}"></div>
+                <div class="stats-pcard__avatar">{{ $pc['emoji'] }}</div>
+                <div class="stats-pcard__name">{{ $pc['name'] }}</div>
+                <span class="stats-pcard__nivel stats-pcard__nivel--{{ $pc['nivel'] }}">{{ ucfirst($pc['nivel']) }}</span>
+                <div class="stats-pcard__stats">
+                    <span class="stats-pcard__stat"><strong>{{ $pc['v'] }}</strong>V</span>
+                    <span class="stats-pcard__stat"><strong>{{ $pc['e'] }}</strong>E</span>
+                    <span class="stats-pcard__stat"><strong>{{ $pc['d'] }}</strong>D</span>
+                    <span class="stats-pcard__stat"><strong>{{ $pc['apr'] }}%</strong>Apr</span>
+                </div>
+                <div class="stats-pcard__lock">
+                    <span class="stats-pcard__lock-icon">🔒</span>
+                    <span class="stats-pcard__lock-text">Em breve</span>
+                </div>
+            </div>
+        @endforeach
+    </div>
+
+    {{-- ═══ FEATURES QUE ESTARÃO DISPONÍVEIS ═══ --}}
+    <div class="stats-section-title">
+        <span class="stats-section-title__icon">📊</span>
+        <span class="stats-section-title__text">O que você vai poder ver</span>
+        <span class="stats-section-title__tag">Prévia</span>
+    </div>
+
+    <div class="stats-features">
+        {{-- Armadas --}}
+        <div class="stats-feat">
+            <div class="stats-feat__icon stats-feat__icon--green">🎯</div>
+            <div class="stats-feat__title">Armadas & Aproveitamento</div>
+            <div class="stats-feat__desc">Veja quantas armadas cada competidor acertou, errou e seu percentual de aproveitamento geral.</div>
+            <div class="stats-feat__preview">
+                <div class="stats-feat__bar"><div class="stats-feat__bar-fill" style="width:78%; background:#22c55e;"></div></div>
+                <div class="stats-feat__bar"><div class="stats-feat__bar-fill" style="width:62%; background:#22c55e;"></div></div>
+                <div class="stats-feat__bar"><div class="stats-feat__bar-fill" style="width:45%; background:#eab308;"></div></div>
+            </div>
+        </div>
+
+        {{-- Destrezas --}}
+        <div class="stats-feat">
+            <div class="stats-feat__icon stats-feat__icon--cyan">🏇</div>
+            <div class="stats-feat__title">Destrezas Detalhadas</div>
+            <div class="stats-feat__desc">Cola, cupim, top, pescou, garupa — todas as destrezas contabilizadas individualmente.</div>
+            <div class="stats-feat__preview">
+                <div class="stats-feat__bar"><div class="stats-feat__bar-fill" style="width:85%; background:#06b6d4;"></div></div>
+                <div class="stats-feat__bar"><div class="stats-feat__bar-fill" style="width:55%; background:#06b6d4;"></div></div>
+                <div class="stats-feat__bar"><div class="stats-feat__bar-fill" style="width:30%; background:#06b6d4;"></div></div>
+            </div>
+        </div>
+
+        {{-- Pontuação --}}
+        <div class="stats-feat">
+            <div class="stats-feat__icon stats-feat__icon--orange">🔥</div>
+            <div class="stats-feat__title">Pontuação ao Vivo</div>
+            <div class="stats-feat__desc">Pontuação total, média por evento e última pontuação atualizada em tempo real durante o rodeio.</div>
+            <div class="stats-feat__preview">
+                <div class="stats-feat__bar"><div class="stats-feat__bar-fill" style="width:90%; background:#f97316;"></div></div>
+                <div class="stats-feat__bar"><div class="stats-feat__bar-fill" style="width:70%; background:#f97316;"></div></div>
+                <div class="stats-feat__bar"><div class="stats-feat__bar-fill" style="width:50%; background:#f97316;"></div></div>
+            </div>
+        </div>
+
+        {{-- Histórico --}}
+        <div class="stats-feat">
+            <div class="stats-feat__icon stats-feat__icon--blue">📋</div>
+            <div class="stats-feat__title">Histórico por Evento</div>
+            <div class="stats-feat__desc">Navegue pelo desempenho em cada rodeio, filtrando por modalidade e divisão.</div>
+            <div class="stats-feat__preview">
+                <div class="stats-feat__bar"><div class="stats-feat__bar-fill" style="width:60%; background:#3b82f6;"></div></div>
+                <div class="stats-feat__bar"><div class="stats-feat__bar-fill" style="width:82%; background:#3b82f6;"></div></div>
+                <div class="stats-feat__bar"><div class="stats-feat__bar-fill" style="width:40%; background:#3b82f6;"></div></div>
+            </div>
+        </div>
+
+        {{-- Categorias --}}
+        <div class="stats-feat">
+            <div class="stats-feat__icon stats-feat__icon--gold">⭐</div>
+            <div class="stats-feat__title">Categorias de Nível</div>
+            <div class="stats-feat__desc">Competidores classificados em Favorito, Elite, Ascendente e Competidor com base no desempenho.</div>
+            <div class="stats-feat__preview">
+                <div class="stats-feat__bar"><div class="stats-feat__bar-fill" style="width:95%; background:#fbbf24;"></div></div>
+                <div class="stats-feat__bar"><div class="stats-feat__bar-fill" style="width:75%; background:#ef4444;"></div></div>
+                <div class="stats-feat__bar"><div class="stats-feat__bar-fill" style="width:55%; background:#94a3b8;"></div></div>
+            </div>
+        </div>
+
+        {{-- Premium Stats --}}
+        <div class="stats-feat">
+            <div class="stats-feat__icon stats-feat__icon--red">👑</div>
+            <div class="stats-feat__title">Estatísticas Premium</div>
+            <div class="stats-feat__desc">Usuários premium terão acesso a dados avançados, comparativos e insights exclusivos.</div>
+            <div class="stats-feat__preview">
+                <div class="stats-feat__bar"><div class="stats-feat__bar-fill" style="width:88%; background:#ef4444;"></div></div>
+                <div class="stats-feat__bar"><div class="stats-feat__bar-fill" style="width:72%; background:#ef4444;"></div></div>
+                <div class="stats-feat__bar"><div class="stats-feat__bar-fill" style="width:58%; background:#ef4444;"></div></div>
+            </div>
+        </div>
+    </div>
+
+    {{-- ═══ CTA FINAL ═══ --}}
+    <div class="stats-cta">
+        <div class="stats-cta__icon">📊</div>
+        <h2 class="stats-cta__title">Estamos preparando tudo!</h2>
+        <p class="stats-cta__desc">
+            As estatísticas completas de todos os competidores estarão disponíveis em breve.
+            Acompanhe cada detalhe direto da arena!
+        </p>
+        <span class="stats-cta__badge">
+            🚀 Lançamento em breve
+        </span>
+    </div>
+
+</div>

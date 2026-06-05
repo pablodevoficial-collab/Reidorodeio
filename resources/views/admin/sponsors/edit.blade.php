@@ -1,0 +1,7 @@
+@extends('admin.layouts.app')
+
+@section('panel')
+    @include('admin.sponsors._form', [
+        'action' => route('admin.sponsors.update', $sponsor->id),
+    ])
+@endsection

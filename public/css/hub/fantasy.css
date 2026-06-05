@@ -1,0 +1,1141 @@
+/**
+ * ============================================
+ * FANTASY LEAGUES - HUB STYLES
+ * ============================================
+ * Extraído de inicial_fantasy_content.blade.php
+ * Refatorado em: 2026-01-24
+ */
+
+:root {
+  --league-brand: #f97316;
+  --league-dark: #1e1b26;
+  --league-accent: #e7e7e7;
+  --league-muted: #b4b4b4;
+}
+
+/* ============================================
+   CAMPO DE PESQUISA FANTASY (ESTILO X1)
+   ============================================ */
+.rr-fantasy-submenu-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 0 auto;
+  flex-wrap: nowrap;
+}
+
+.rr-fantasy-submenu-row .rr-submenu,
+.rr-fantasy-submenu-row .rr-epic-submenu {
+  flex: 0 0 auto;
+}
+
+/* Desktop: submenu centralizado com largura limitada */
+@media (min-width: 769px) {
+  .rr-fantasy-submenu-row {
+    justify-content: center;
+    position: relative;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  .rr-fantasy-submenu-row .rr-fantasy-search-wrapper--inline {
+    position: absolute;
+    left: -280px;
+  }
+
+  .rr-fantasy-submenu-row .rr-submenu,
+  .rr-fantasy-submenu-row .rr-epic-submenu {
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
+.rr-fantasy-submenu-row .rr-fantasy-search-wrapper {
+  margin: 0;
+}
+
+.rr-fantasy-search-wrapper {
+  max-width: 500px;
+}
+
+.rr-fantasy-search-wrapper--inline {
+  max-width: 260px;
+  flex: 0 0 auto;
+}
+
+.rr-fantasy-search-form {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  margin: 0 auto;
+  transition: width 0.36s cubic-bezier(0.2, 0.9, 0.2, 1), box-shadow 0.36s ease, background 0.36s ease;
+  overflow: hidden;
+}
+
+.rr-fantasy-search-form input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  padding: 0 55px 0 20px;
+  background: rgba(15, 23, 42, 0.8);
+  color: #e2e8f0;
+  font-size: 0.94rem;
+  border-radius: 24px;
+  opacity: 0;
+  transition: opacity 0.3s ease 0.1s;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(249, 115, 22, 0.3);
+}
+
+.rr-fantasy-search-form.is-open {
+  width: 100%;
+  max-width: 260px;
+  background: rgba(15, 23, 42, 0.8);
+  border-radius: 24px;
+  box-shadow: 0 4px 16px rgba(249, 115, 22, 0.2), 0 0 0 1px rgba(249, 115, 22, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.rr-fantasy-search-form.is-open input {
+  opacity: 1;
+}
+
+.rr-fantasy-search-form input::placeholder {
+  color: #94a3b8;
+}
+
+.rr-fantasy-search-form input:focus {
+  border-color: rgba(249, 115, 22, 0.5);
+}
+
+.rr-fantasy-search-icon {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.9), rgba(234, 88, 12, 0.95));
+  border-radius: 50%;
+  z-index: 2;
+  transition: all 0.3s ease;
+}
+
+.rr-fantasy-search-form.is-open .rr-fantasy-search-icon {
+  background: rgba(239, 68, 68, 0.9);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+.rr-fantasy-search-icon svg {
+  width: 20px;
+  height: 20px;
+  color: white;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.rr-fantasy-search-icon .icon-close {
+  position: absolute;
+  opacity: 0;
+  transform: rotate(-90deg);
+}
+
+.rr-fantasy-search-form.is-open .rr-fantasy-search-icon .icon-search {
+  opacity: 0;
+  transform: rotate(90deg);
+}
+
+.rr-fantasy-search-form.is-open .rr-fantasy-search-icon .icon-close {
+  opacity: 1;
+  transform: rotate(0deg);
+}
+
+.rr-fantasy-search-icon:hover {
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .rr-fantasy-submenu-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .rr-fantasy-submenu-row .rr-fantasy-search-wrapper--inline {
+    order: 2;
+  }
+
+  .rr-fantasy-submenu-row .rr-submenu {
+    order: 1;
+  }
+
+  .rr-fantasy-search-wrapper--inline {
+    width: 100%;
+    max-width: 500px;
+  }
+
+  .rr-fantasy-search-wrapper--inline .rr-fantasy-search-form {
+    margin: 0 auto;
+  }
+
+  .rr-fantasy-search-wrapper--inline .rr-fantasy-search-form.is-open {
+    width: 100%;
+  }
+
+  .rr-fantasy-search-form {
+    width: 40px;
+    height: 40px;
+  }
+  .rr-fantasy-search-icon {
+    width: 40px;
+    height: 40px;
+  }
+  .rr-fantasy-search-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* Desktop: limitar largura do submenu */
+@media (min-width: 769px) {
+  #rrFantasySubmenu {
+    max-width: 520px;
+    margin: 0 auto 1rem;
+  }
+}
+
+.bg-dark\/40 { background: rgba(15,23,42,0.4); }
+.border-warning\/25 { border-color: rgba(249,115,22,0.25) !important; }
+.rr-fake-list .list-group-item { border: 1px solid rgba(255,255,255,0.06); margin-bottom: .35rem; border-radius: 12px; }
+
+/* League Cards Grid - ESTILO X1 ÉPICO */
+.rr-leagues-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+/* ✅ Card base - igual X1 */
+.rr-league-card {
+  background: var(--league-dark);
+  border-radius: 8px;
+  overflow: visible !important; /* Permite logo sair do card */
+  box-shadow: 0 0 20px rgba(249, 115, 22, 0.25), 0 20px 45px rgba(0,0,0,0.5);
+  position: relative;
+  margin-top: 45px; /* Espaço para logo flutuante */
+  border: 2px solid rgba(249, 115, 22, 0.4);
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 380px;
+  justify-self: center;
+  isolation: auto !important; /* Remove isolamento */
+}
+
+.rr-league-card__content {
+  position: relative;
+  z-index: 1;
+  overflow: visible !important;
+}
+
+.rr-league-card__top-logo {
+  position: absolute;
+  z-index: 100;
+  pointer-events: none;
+  overflow: visible !important;
+}
+
+.rr-league-card:hover {
+  border-color: rgba(249, 115, 22, 0.7);
+  box-shadow: 0 0 30px rgba(249, 115, 22, 0.4), 0 25px 50px rgba(0,0,0,0.6);
+  transform: translateY(-3px);
+}
+
+/* ✅ LOGO FLUTUANTE NO TOPO DO CARD */
+.rr-league-card__top-logo {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  pointer-events: none;
+  overflow: visible !important;
+  padding: 20px;
+}
+
+.rr-league-card__top-logo img {
+  width: 75px;
+  height: auto;
+  animation: leagueLogoFloat 3s ease-in-out infinite;
+  filter: drop-shadow(0 4px 12px rgba(249, 115, 22, 0.4));
+  display: block !important;
+  z-index: 101;
+}
+
+@keyframes leagueLogoFloat {
+  0%, 100% {
+    transform: translateY(0);
+    filter: drop-shadow(0 4px 12px rgba(249, 115, 22, 0.4));
+  }
+  50% {
+    transform: translateY(-6px);
+    filter: drop-shadow(0 10px 25px rgba(249, 115, 22, 0.6));
+  }
+}
+
+/* ✅ Logo Premium: Glow azul */
+.rr-league-card--premium .rr-league-card__top-logo img {
+  filter: drop-shadow(0 4px 15px rgba(59, 130, 246, 0.5));
+  animation: leagueLogoPremiumFloat 3s ease-in-out infinite;
+}
+
+@keyframes leagueLogoPremiumFloat {
+  0%, 100% {
+    transform: translateY(0);
+    filter: drop-shadow(0 4px 15px rgba(59, 130, 246, 0.5)) brightness(1);
+  }
+  50% {
+    transform: translateY(-6px);
+    filter: drop-shadow(0 10px 30px rgba(59, 130, 246, 0.7)) brightness(1.15);
+  }
+}
+
+/* ✅ ESTILO PREMIUM: Borda e sombra azul */
+.rr-league-card--premium {
+  border: 2px solid rgba(37, 99, 235, 0.6);
+  box-shadow: 0 0 25px rgba(37, 99, 235, 0.4), 0 20px 45px rgba(0,0,0,0.5);
+  animation: leaguePremiumCardGlow 3s ease-in-out infinite;
+}
+
+.rr-league-card--premium:hover {
+  border-color: rgba(59, 130, 246, 0.8);
+  box-shadow: 0 0 35px rgba(59, 130, 246, 0.6), 0 25px 50px rgba(0,0,0,0.6);
+}
+
+@keyframes leaguePremiumCardGlow {
+  0%, 100% { 
+    border-color: rgba(37, 99, 235, 0.6);
+    box-shadow: 0 0 25px rgba(37, 99, 235, 0.4), 0 20px 45px rgba(0,0,0,0.5);
+  }
+  50% { 
+    border-color: rgba(59, 130, 246, 0.8);
+    box-shadow: 0 0 35px rgba(59, 130, 246, 0.6), 0 20px 45px rgba(0,0,0,0.5);
+  }
+}
+
+/* Imagem de fundo opcional */
+.rr-league-card__img {
+  height: 100px;
+  background: linear-gradient(135deg, rgba(249,115,22,0.15), rgba(15,23,42,0.9));
+  background-color: #0f172a;
+  position: relative;
+  border-radius: 6px 6px 0 0;
+  overflow: hidden;
+}
+.rr-league-card__img--has-photo {
+  background-image: linear-gradient(135deg, rgba(249,115,22,0.2), rgba(15,23,42,0.85));
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-color: #0f172a;
+}
+.rr-league-card--premium .rr-league-card__img {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(15,23,42,0.9));
+}
+.rr-league-card--premium .rr-league-card__img--has-photo {
+  background-image: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(15,23,42,0.85));
+}
+.rr-league-card__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  z-index: 1;
+  transform: translateZ(0);
+}
+.rr-league-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 20%, var(--league-dark) 100%);
+  z-index: 2;
+}
+
+.rr-league-card__content {
+  padding: 1.25rem;
+  position: relative;
+  z-index: 2;
+}
+.rr-league-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: .5rem;
+}
+.rr-league-card__title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 .1rem;
+  line-height: 1.2;
+}
+.rr-league-card__owner {
+  color: var(--league-muted);
+  font-size: .7rem;
+}
+.rr-league-card__badge {
+  background: var(--league-brand);
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: .65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+/* ✅ COROA PREMIUM ANIMADA - igual X1 */
+.rr-league-card__premium-crown {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.3), rgba(59, 130, 246, 0.2));
+  border: 1px solid rgba(59, 130, 246, 0.5);
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #60a5fa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rr-league-card__premium-crown i {
+  font-size: 1rem;
+  color: #fbbf24;
+  animation: leagueCrownBounce 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.8));
+}
+
+@keyframes leagueCrownBounce {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-3px) scale(1.1);
+  }
+}
+
+/* ✅ PRÊMIO DESTACADO - Linha exclusiva */
+.rr-league-card__prize {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 0.75rem;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.15));
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.rr-league-card__prize::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  animation: leaguePrizeShimmer 3s infinite;
+}
+
+@keyframes leaguePrizeShimmer {
+  0% { left: -100%; }
+  50%, 100% { left: 100%; }
+}
+
+.rr-league-card__prize-icon {
+  font-size: 1.25rem;
+  animation: leaguePrizeIconBounce 2s ease-in-out infinite;
+}
+
+@keyframes leaguePrizeIconBounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+.rr-league-card__prize-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #fbbf24;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rr-league-card__prize-value {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #fbbf24;
+  text-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+  letter-spacing: -0.5px;
+}
+
+/* ✅ Prêmio Premium: Azul */
+.rr-league-card--premium .rr-league-card__prize {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.2), rgba(59, 130, 246, 0.15));
+  border: 1px solid rgba(59, 130, 246, 0.5);
+}
+
+.rr-league-card--premium .rr-league-card__prize-label,
+.rr-league-card--premium .rr-league-card__prize-value {
+  color: #60a5fa;
+  text-shadow: 0 0 20px rgba(96, 165, 250, 0.5);
+}
+
+.rr-league-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+  margin-bottom: .65rem;
+}
+.rr-league-card__tag {
+  background: rgba(249,115,22,0.12);
+  border: 1px solid rgba(249,115,22,0.3);
+  padding: 3px 10px;
+  border-radius: 14px;
+  font-size: .7rem;
+  color: var(--league-accent);
+  text-transform: capitalize;
+}
+
+/* ✅ Tags premium: azuis */
+.rr-league-card--premium .rr-league-card__tag:not(.rr-league-card__tag--live):not(.rr-league-card__tag--paused):not(.rr-league-card__tag--scheduled):not(.rr-league-card__tag--ended) {
+  background: rgba(37, 99, 235, 0.15);
+  border: 1px solid rgba(37, 99, 235, 0.4);
+  color: #60a5fa;
+}
+
+.rr-league-card__tag--live {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: rgba(239, 68, 68, 0.55);
+  color: #fff;
+  font-weight: 800;
+}
+.rr-league-card__tag--live::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 999px;
+  background: #ef4444;
+  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.65);
+  animation: rrPulseLive 1.6s ease-out infinite;
+  vertical-align: middle;
+}
+@keyframes rrPulseLive {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.65); }
+  70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.rr-league-card__tag--paused {
+  background: rgba(245, 158, 11, 0.18);
+  border-color: rgba(245, 158, 11, 0.55);
+  color: #fff;
+  font-weight: 800;
+}
+
+.rr-league-card__tag--scheduled {
+  background: rgba(59, 130, 246, 0.18);
+  border-color: rgba(59, 130, 246, 0.55);
+  color: #fff;
+  font-weight: 800;
+}
+
+.rr-league-card__tag--ended {
+  background: rgba(148, 163, 184, 0.18);
+  border-color: rgba(148, 163, 184, 0.55);
+  color: #fff;
+  font-weight: 800;
+}
+.rr-league-card__stats {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: .65rem;
+  font-size: .7rem;
+  color: var(--league-muted);
+}
+.rr-league-card__stat {
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+}
+.rr-league-card__icon {
+  width: 14px;
+  height: 14px;
+  fill: var(--league-muted);
+}
+.rr-league-card__progress {
+  height: 5px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+  margin-bottom: .85rem;
+  overflow: hidden;
+}
+.rr-league-card__progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--league-brand), #fdba74);
+  border-radius: 4px;
+}
+.rr-league-card--premium .rr-league-card__progress-bar {
+  background: linear-gradient(90deg, #2563eb, #60a5fa);
+}
+
+/* ✅ BOTÃO - estilo base */
+.rr-league-card__btn {
+  width: 100%;
+  background: var(--league-brand);
+  border: none;
+  border-radius: 6px;
+  padding: .5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+  color: #fff;
+  font-size: .75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s ease;
+  box-shadow: 0 3px 10px rgba(249,115,22,0.25);
+  position: relative;
+  overflow: hidden;
+}
+.rr-league-card__btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(249,115,22,0.4);
+}
+
+/* ✅ BOTÃO PREMIUM ÉPICO - igual X1 */
+.rr-league-card--premium .rr-league-card__btn {
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%);
+  background-size: 200% 100%;
+  border: 2px solid rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 20px rgba(37, 99, 235, 0.6), 0 4px 15px rgba(0,0,0,0.3);
+  animation: leaguePremiumButtonGradient 3s ease infinite, leaguePremiumButtonGlow 2s ease-in-out infinite;
+  font-size: .8rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Efeito shimmer/brilho que passa pelo botão */
+.rr-league-card--premium .rr-league-card__btn::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -100%;
+  width: 50%;
+  height: 200%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transform: skewX(-20deg);
+  animation: leaguePremiumButtonShimmer 3s infinite;
+}
+
+@keyframes leaguePremiumButtonGradient {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes leaguePremiumButtonGlow {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.6), 0 4px 15px rgba(0,0,0,0.3);
+  }
+  50% { 
+    box-shadow: 0 0 35px rgba(59, 130, 246, 0.9), 0 8px 25px rgba(37, 99, 235, 0.5);
+  }
+}
+
+@keyframes leaguePremiumButtonShimmer {
+  0% { left: -100%; }
+  50%, 100% { left: 150%; }
+}
+
+.rr-league-card--premium .rr-league-card__btn:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 0 40px rgba(59, 130, 246, 1), 0 10px 30px rgba(37, 99, 235, 0.6);
+  border-color: rgba(192, 132, 252, 0.8);
+}
+
+@media (max-width: 576px) {
+  .rr-leagues-grid { grid-template-columns: 1fr; }
+  .rr-league-card { margin-top: 35px; }
+  .rr-league-card__top-logo img { width: 60px; }
+  .rr-league-card__content { padding: 1rem; }
+  .rr-league-card__title { font-size: .9rem; }
+}
+
+/* ✅ Timer countdown styles - Posicionado na borda inferior do card (como logo no topo) */
+.rr-league-card__timer {
+  position: absolute;
+  bottom: -15px; /* Sobreposto na borda inferior, similar à logo no topo */
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(10px);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #f97316; /* Laranja para cards normais */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 15;
+  border: 1px solid rgba(249, 115, 22, 0.6);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+}
+
+.rr-league-card__timer i {
+  font-size: 0.7rem;
+}
+
+/* Timer em cards premium - cor azul */
+.rr-league-card--premium .rr-league-card__timer {
+  color: #60a5fa;
+  border-color: rgba(59, 130, 246, 0.6);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.rr-league-card__timer.rr-timer--ended {
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.5);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.rr-timer {
+  font-weight: 700;
+  color: #fbbf24;
+  animation: timerPulse 2s ease-in-out infinite;
+}
+
+.rr-timer--ended {
+  color: #94a3b8;
+  animation: none;
+}
+
+@keyframes timerPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Submenu flutuante estilo cards sobrepostos */
+.rr-card.rr-card{ background: transparent; box-shadow: none; }
+.rr-card.rr-card .card-body{ 
+  padding: 0; 
+  overflow: visible !important; 
+  max-height: none !important; 
+}
+
+/* Garantir que não há scroll no container de fantasy */
+.rr-card[data-section="equipes"],
+.rr-card[data-section="equipes"] .card-body {
+  overflow: visible !important;
+  max-height: none !important;
+}
+
+/* Forçar hub-section a não limitar altura dos cards de fantasy */
+#hubSection:has(.rr-card[data-section="equipes"]) {
+  min-height: auto !important;
+  overflow: visible !important;
+}
+
+/* Grid de cards deve ocupar espaço natural sem scroll */
+.rr-leagues-grid {
+  overflow: visible !important;
+  max-height: none !important;
+}
+
+/* Garantir que row/col não criam scroll */
+.rr-card[data-section="equipes"] .row,
+.rr-card[data-section="equipes"] .col-12 {
+  overflow: visible !important;
+  max-height: none !important;
+}
+
+/* Ranking card (fictício) */
+.rr-fantasy-ranking-card {
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(23,20,29,0.96), rgba(15,17,24,0.96));
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 24px 55px rgba(0,0,0,0.55);
+  padding: .85rem .95rem;
+  color: #e2e8f0;
+}
+
+.rr-fantasy-ranking-card__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: .6rem;
+}
+
+.rr-fantasy-ranking-card__kicker {
+  margin: 0 0 .25rem;
+  font-size: .75rem;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: rgba(203, 213, 225, 0.85);
+  font-weight: 800;
+}
+
+.rr-fantasy-ranking-card__title {
+  margin: 0;
+  font-weight: 900;
+  font-size: 1.05rem;
+  line-height: 1.15;
+  color: #ffffff;
+}
+
+.rr-fantasy-ranking-card__prize {
+  text-align: right;
+  padding: .5rem .65rem;
+  border-radius: 12px;
+  border: 1px solid rgba(249,115,22,0.25);
+  background: rgba(249,115,22,0.10);
+  white-space: nowrap;
+}
+
+.rr-fantasy-ranking-card__prize small {
+  display: block;
+  font-size: .75rem;
+  color: rgba(203, 213, 225, 0.85);
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.rr-fantasy-ranking-card__prize strong {
+  display: block;
+  font-size: 1.15rem;
+  color: #f97316;
+  font-weight: 900;
+}
+
+.rr-fantasy-ranking-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem 1rem;
+  align-items: center;
+  font-size: .85rem;
+  color: rgba(203, 213, 225, 0.9);
+  margin-bottom: .75rem;
+}
+
+.rr-fantasy-ranking-card__meta i { color: rgba(249,115,22,0.9); margin-right: .35rem; }
+.rr-fantasy-ranking-card__updated { margin-left: auto; opacity: .85; }
+
+.rr-fantasy-ranking-card__list {
+  display: grid;
+  gap: .45rem;
+}
+
+.rr-fantasy-ranking-row {
+  display: grid;
+  grid-template-columns: 52px 1fr auto;
+  align-items: center;
+  gap: .75rem;
+  padding: .5rem .65rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+}
+
+.rr-fantasy-ranking-row__pos {
+  font-weight: 900;
+  color: rgba(249,115,22,0.95);
+}
+
+.rr-fantasy-ranking-row__name {
+  font-weight: 800;
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rr-fantasy-ranking-row__pts {
+  font-weight: 900;
+  color: #e2e8f0;
+  white-space: nowrap;
+}
+
+.rr-fantasy-ranking-row__pts small { opacity: .8; font-weight: 800; }
+
+/* Premium ranking card */
+.rr-fantasy-premium-card {
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(24, 18, 33, 0.98), rgba(15, 17, 24, 0.96));
+  border: 1px solid rgba(168, 85, 247, 0.22);
+  box-shadow: 0 24px 55px rgba(0,0,0,0.55);
+  padding: .85rem .95rem;
+  color: #e2e8f0;
+}
+
+.rr-fantasy-premium-card__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: .55rem;
+}
+
+.rr-fantasy-premium-card__kicker {
+  margin: 0 0 .25rem;
+  font-size: .75rem;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: rgba(233, 213, 255, 0.95);
+  font-weight: 900;
+}
+
+.rr-fantasy-premium-card__title {
+  margin: 0;
+  font-weight: 900;
+  font-size: 1.02rem;
+  line-height: 1.15;
+  color: #ffffff;
+}
+
+.rr-fantasy-premium-card__season {
+  display: inline-block;
+  margin-top: .25rem;
+  font-weight: 800;
+  color: rgba(203, 213, 225, 0.9);
+}
+
+.rr-fantasy-premium-card__pool {
+  text-align: right;
+  padding: .5rem .65rem;
+  border-radius: 12px;
+  border: 1px solid rgba(168, 85, 247, 0.25);
+  background: rgba(168, 85, 247, 0.10);
+  white-space: nowrap;
+}
+
+.rr-fantasy-premium-card__pool small {
+  display: block;
+  font-size: .75rem;
+  color: rgba(233, 213, 255, 0.95);
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.rr-fantasy-premium-card__pool strong {
+  display: block;
+  font-size: 1.05rem;
+  color: #a855f7;
+  font-weight: 900;
+}
+
+.rr-fantasy-premium-card__note {
+  margin: 0 0 .75rem;
+  color: rgba(203, 213, 225, 0.92);
+  font-weight: 700;
+  line-height: 1.35;
+  font-size: .85rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.rr-fantasy-premium-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: .75rem;
+}
+
+.rr-fantasy-premium-card__updated {
+  opacity: .9;
+  font-weight: 800;
+  color: rgba(233, 213, 255, 0.9);
+  font-size: .85rem;
+}
+
+.rr-fantasy-ranking-row--premium .rr-fantasy-ranking-row__pos {
+  color: rgba(168, 85, 247, 0.95);
+}
+.rr-subcard__stroke {
+  fill: #17141d;
+  stroke: #f8fafc;
+  stroke-width: 3px;
+  stroke-dasharray: 360;
+  stroke-dashoffset: 360;
+  transform: translateY(5px);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: stroke-dashoffset 0.6s ease-out;
+}
+.rr-subcard:hover .rr-subcard__stroke,
+.rr-subcard--active .rr-subcard__stroke { stroke-dashoffset: 110; }
+
+@media (max-width: 768px) {
+  .rr-fantasy-submenu {
+    flex-wrap: nowrap;
+    gap: 0;
+    justify-content: center;
+    padding: 0.3rem 0 0.5rem;
+    overflow: visible;
+  }
+  .rr-subcard {
+    margin-left: -28px !important;
+    width: 90px;
+    height: 130px;
+    padding: .5rem;
+    flex: 0 0 auto;
+    box-shadow: -0.5rem 0 1.5rem rgba(0,0,0,0.35);
+  }
+  .rr-subcard:first-child { margin-left: 0 !important; }
+  .rr-subcard__title { font-size: .7rem; margin-bottom: 0; }
+  .rr-subcard__meta { font-size: .5rem; margin-bottom: .15rem; }
+  .rr-subcard:hover ~ .rr-subcard { transform: translateX(28px); }
+  .rr-subcard--active { transform: translateY(-10px); z-index: 3; }
+  .rr-subcard--active ~ .rr-subcard { transform: translateX(28px); }
+  .rr-subcard__bar { width: 60%; height: 4px; margin-top: .2rem; }
+  .rr-subcard__circle { width: 50px; height: 50px; bottom: .6rem; }
+  .rr-subcard__count { font-size: .75rem; }
+}
+
+/* ============================================
+   ENTRY FEE BADGE
+   ============================================ */
+.rr-league-card__entry-fee {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(16, 185, 129, 0.1));
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  border-radius: 8px;
+  padding: 8px 16px;
+  margin: 10px 15px;
+}
+
+.rr-league-card__entry-fee-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.rr-league-card__entry-fee-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: #22c55e;
+  text-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+}
+
+.rr-league-card--premium .rr-league-card__entry-fee {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(59, 130, 246, 0.1));
+  border-color: rgba(139, 92, 246, 0.4);
+}
+
+.rr-league-card--premium .rr-league-card__entry-fee-value {
+  color: #8b5cf6;
+  text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+}
+
+/* ============================================
+   DEADLINE DE INSCRIÇÕES
+   ============================================ */
+.rr-league-card__deadline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(245, 158, 11, 0.1));
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 8px 15px;
+  font-size: 13px;
+  color: #fbbf24;
+  animation: deadlinePulse 2s ease-in-out infinite;
+}
+
+.rr-league-card__deadline i {
+  font-size: 14px;
+  animation: hourglassRotate 2s ease-in-out infinite;
+}
+
+.rr-league-card__deadline strong {
+  color: #fff;
+  font-weight: 700;
+}
+
+.rr-league-card__deadline--closed {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.1));
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #ef4444;
+  animation: none;
+}
+
+.rr-league-card__deadline--closed i {
+  animation: none;
+}
+
+@keyframes deadlinePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes hourglassRotate {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(180deg); }
+}
+
+/* ============================================
+   CARD FECHADO (INSCRIÇÕES ENCERRADAS)
+   ============================================ */
+.rr-league-card--closed {
+  opacity: 0.7;
+  filter: grayscale(30%);
+}
+
+.rr-league-card--closed:hover {
+  transform: none;
+  box-shadow: 0 0 20px rgba(249, 115, 22, 0.15), 0 20px 45px rgba(0,0,0,0.5);
+}
+
+.rr-league-card__btn--disabled {
+  background: linear-gradient(135deg, #4b5563, #374151) !important;
+  color: #9ca3af !important;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
+
+.rr-league-card__btn--disabled:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* ===========================================
+   FINALIZED LEAGUE CARD
+============================================ */
+.rr-league-card--finalized {
+  opacity: 0.92;
+  border: 1px solid rgba(212, 160, 23, 0.35);
+}

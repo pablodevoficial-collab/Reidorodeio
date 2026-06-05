@@ -1,0 +1,133 @@
+/* Button styling bundle */
+.btn-primary-animated {
+    border: none;
+    padding: 18px 40px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #ffffff;
+    text-decoration: none;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.btn-primary-animated::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s;
+}
+
+.btn-primary-animated:hover::before {
+    left: 100%;
+}
+
+.btn-primary-animated:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(255, 107, 53, 0.4);
+}
+
+.btn-primary-animated:active,
+.btn-cta:active {
+    box-shadow: none !important;
+    transform: translateY(0);
+}
+
+.btn-cta {
+    background: #ffffff;
+    color: var(--primary-color);
+    padding: 20px 50px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+
+.btn-cta:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    color: var(--primary-color);
+}
+
+.btn-primary-animated,
+.btn-cta {
+    box-shadow: none !important;
+}
+
+.btn-primary-animated:focus,
+.btn-primary-animated:active,
+.btn-primary-animated:focus:active,
+.btn-cta:focus,
+.btn-cta:active,
+.btn-cta:focus:active {
+    box-shadow: none !important;
+    outline: none !important;
+    transform: translateY(0) scale(1) !important;
+}
+
+/* Theme toggle floating button */
+.theme-toggle-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    transition: all 0.3s ease;
+}
+
+.theme-toggle-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.theme-toggle-btn:active {
+    transform: scale(0.95);
+}
+
+.theme-toggle-btn i {
+    font-size: 1.5rem;
+    color: #fff;
+    position: absolute;
+    transition: all 0.3s ease;
+}
+
+.theme-icon-light {
+    opacity: 0;
+    transform: rotate(-180deg) scale(0);
+}
+
+.theme-icon-dark {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+}
+
+body.light .theme-icon-light {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+}
+
+body.light .theme-icon-dark {
+    opacity: 0;
+    transform: rotate(180deg) scale(0);
+}
+
+body.light .theme-toggle-btn {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}

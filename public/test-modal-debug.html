@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Modal Debug</title>
+    <style>
+        body { padding: 20px; font-family: Arial; }
+        .btn { padding: 10px 20px; background: #f97316; color: white; border: none; cursor: pointer; }
+        #log { margin-top: 20px; padding: 10px; background: #f0f0f0; white-space: pre-wrap; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <h1>Test Modal Click</h1>
+    <button class="btn verTodasBtn" 
+            data-id="1" 
+            data-premium="1"
+            data-foto="https://via.placeholder.com/100"
+            data-nome="Teste Competidor"
+            data-pontos="100"
+            data-count-boa="10"
+            data-count-negativas-total="5">
+        Ver Mais
+    </button>
+    
+    <div id="log"></div>
+
+    <script>
+        const log = document.getElementById('log');
+        function addLog(msg) {
+            log.textContent += msg + '\n';
+            console.log(msg);
+        }
+
+        addLog('Página carregada');
+        addLog('Procurando botões com classe .verTodasBtn...');
+        
+        const buttons = document.querySelectorAll('.verTodasBtn');
+        addLog('Encontrados ' + buttons.length + ' botões');
+
+        buttons.forEach((btn, index) => {
+            addLog('Adicionando listener ao botão ' + index);
+            btn.addEventListener('click', e => {
+                addLog('Botão clicado!');
+                addLog('Dataset: ' + JSON.stringify(btn.dataset));
+            });
+        });
+
+        addLog('Listeners adicionados. Clique no botão acima.');
+    </script>
+</body>
+</html>

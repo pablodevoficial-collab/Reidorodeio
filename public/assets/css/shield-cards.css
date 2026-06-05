@@ -1,0 +1,367 @@
+/* SHIELD COMPETITOR CARDS - Estilo Escudo 3D para Fantasy Rodeio */
+
+/* Grid de Cards */
+.rr-cards-list {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 1.5rem !important;
+  justify-items: center;
+}
+
+.rr-card-item {
+  width: 100%;
+  max-width: 200px;
+}
+
+/* Shield Card Container */
+.shield-card {
+  position: relative;
+  width: 100%;
+  padding-top: 120%; /* Aspect ratio para escudo */
+  perspective: 1000px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.shield-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Fundo do Escudo com Clip Path */
+.shield-card__bg {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  height: 100%;
+  clip-path: polygon(
+    50% 0%,
+    100% 15%,
+    100% 70%,
+    80% 85%,
+    50% 100%,
+    20% 85%,
+    0% 70%,
+    0% 15%
+  );
+  transition: all 0.3s ease;
+}
+
+/* Cores por Nível */
+.rr-card-item[data-nivel="favorito"] .shield-card__bg {
+  background: linear-gradient(135deg, 
+    #ffd700 0%, 
+    #ffed4e 20%, 
+    #ffd700 40%,
+    #b8860b 100%
+  );
+  box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.rr-card-item[data-nivel="elite"] .shield-card__bg {
+  background: linear-gradient(135deg, 
+    #f97316 0%, 
+    #fb923c 20%, 
+    #f97316 40%,
+    #c2410c 100%
+  );
+  box-shadow: 0 10px 30px rgba(249, 115, 22, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.rr-card-item[data-nivel="legado"] .shield-card__bg {
+  background: linear-gradient(135deg, 
+    #e8e8e8 0%, 
+    #ffffff 20%, 
+    #c0c0c0 40%,
+    #808080 100%
+  );
+  box-shadow: 0 10px 30px rgba(192, 192, 192, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.rr-card-item[data-nivel="presilha"] .shield-card__bg {
+  background: linear-gradient(135deg, 
+    #228b22 0%, 
+    #32cd32 20%, 
+    #228b22 40%,
+    #006400 100%
+  );
+  box-shadow: 0 10px 30px rgba(34, 139, 34, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.rr-card-item[data-nivel="desconhecido"] .shield-card__bg {
+  background: linear-gradient(135deg, 
+    #f97316 0%, 
+    #fb923c 20%, 
+    #f97316 40%,
+    #c2410c 100%
+  );
+  box-shadow: 0 10px 30px rgba(249, 115, 22, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Hover Effects */
+.shield-card:hover .shield-card__bg {
+  filter: brightness(1.15) saturate(1.1);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3),
+              inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* Borda do Escudo */
+.shield-card__border {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  height: 100%;
+  clip-path: polygon(
+    50% 0%,
+    100% 15%,
+    100% 70%,
+    80% 85%,
+    50% 100%,
+    20% 85%,
+    0% 70%,
+    0% 15%
+  );
+  border: 3px solid rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.shield-card__border::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  clip-path: polygon(
+    50% 0%,
+    100% 15%,
+    100% 70%,
+    80% 85%,
+    50% 100%,
+    20% 85%,
+    0% 70%,
+    0% 15%
+  );
+}
+
+/* Conteúdo do Card */
+.shield-card__content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1rem 1rem;
+  z-index: 2;
+}
+
+/* Badge/Emoji no topo */
+.shield-card__badge {
+  position: absolute;
+  top: 8%;
+  font-size: 1.8rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* Foto do Competidor */
+.shield-card__photo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4),
+              inset 0 1px 2px rgba(0, 0, 0, 0.2);
+  margin-bottom: 0.8rem;
+  background: #fff;
+  position: relative;
+  z-index: 3;
+}
+
+.shield-card__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+/* Nome do Competidor */
+.shield-card__name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6),
+               0 0 10px rgba(0, 0, 0, 0.3);
+  margin: 0 0 0.8rem 0;
+  line-height: 1.2;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  max-width: 85%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Botão Ver Mais */
+.shield-card__btn {
+  background: rgba(0, 0, 0, 0.7);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  color: #fff;
+  padding: 0.4rem 1.2rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(5px);
+  position: absolute;
+  bottom: 12%;
+}
+
+.shield-card__btn:hover {
+  background: rgba(255, 255, 255, 0.95);
+  color: #000;
+  border-color: rgba(255, 255, 255, 0.9);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Efeito 3D no hover */
+.shield-card:hover .shield-card__bg {
+  transform: translateZ(10px);
+}
+
+/* Responsivo */
+@media (max-width: 575.98px) {
+  .rr-cards-list {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.8rem !important;
+    padding: 1rem 0 !important;
+  }
+  
+  .rr-card-item {
+    max-width: 100%;
+  }
+  
+  .shield-card__badge {
+    font-size: 1.2rem;
+    top: 6%;
+  }
+  
+  .shield-card__photo {
+    width: 50px;
+    height: 50px;
+    border-width: 2px;
+    margin-bottom: 0.4rem;
+  }
+  
+  .shield-card__name {
+    font-size: 0.6rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .shield-card__btn {
+    font-size: 0.55rem;
+    padding: 0.3rem 0.8rem;
+    bottom: 10%;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+  .rr-cards-list {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 1rem !important;
+  }
+  
+  .shield-card__photo {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .shield-card__name {
+    font-size: 0.75rem;
+  }
+  
+  .shield-card__btn {
+    font-size: 0.65rem;
+    padding: 0.35rem 1rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .rr-cards-list {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 1.2rem !important;
+  }
+  
+  .shield-card__photo {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .shield-card__name {
+    font-size: 0.85rem;
+  }
+}
+
+@media (min-width: 992px) {
+  .rr-cards-list {
+    grid-template-columns: repeat(5, 1fr) !important;
+    gap: 1.5rem !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .rr-cards-list {
+    grid-template-columns: repeat(6, 1fr) !important;
+    gap: 1.8rem !important;
+  }
+}
+
+/* Efeito de brilho metálico */
+.shield-card__bg::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transform: skewX(-20deg);
+  animation: shine 3s infinite;
+}
+
+@keyframes shine {
+  0% { left: -50%; }
+  20% { left: 150%; }
+  100% { left: 150%; }
+}
