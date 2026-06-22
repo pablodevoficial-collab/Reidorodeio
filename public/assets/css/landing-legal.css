@@ -1,0 +1,412 @@
+/* Unified Legal/Landing Pages CSS */
+
+/* Fonts */
+@font-face {
+    font-family: 'Ethnocentric';
+    src: url('/assets/fonts/ethnocentric.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Page Setup */
+.legal-page-wrapper,
+.about-page-wrapper {
+    min-height: 100vh;
+    background-color: #020617;
+    color: #fff;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+    position: relative;
+    overflow-x: hidden;
+    font-family: 'Inter', sans-serif;
+    
+    /* Default Theme Variables (Orange/Amber) */
+    --theme-primary: #fbbf24;
+    --theme-secondary: #d97706;
+    --theme-text-highlight: #fbbf24;
+}
+
+/* Blue Theme Override */
+.theme-blue {
+    --theme-primary: #3b82f6;
+    --theme-secondary: #1d4ed8;
+    --theme-text-highlight: #3b82f6;
+}
+
+.legal-background,
+.about-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 50% 0%, #1e293b 0%, #020617 70%);
+    z-index: 0;
+    pointer-events: none;
+}
+
+.legal-container,
+.about-container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+.legal-container {
+    max-width: 900px;
+}
+
+/* Hide Navbar specifically for these pages */
+.rr-navbar {
+    display: none !important;
+}
+
+/* Hero */
+.legal-hero,
+.about-hero {
+    text-align: center;
+    margin-bottom: 5rem;
+    animation: fadeInDown 1s ease-out;
+}
+
+.brand-title {
+    font-family: 'Ethnocentric', sans-serif;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    margin-bottom: 1rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.2;
+}
+
+.brand-title .highlight {
+    color: var(--theme-text-highlight);
+    background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.brand-tagline {
+    font-size: clamp(1rem, 3vw, 1.25rem);
+    color: #94a3b8;
+    font-weight: 300;
+    letter-spacing: 1px;
+    margin: 0 auto;
+    max-width: 600px;
+}
+
+.last-updated {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.hero-divider {
+    width: 100px;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, var(--theme-primary), transparent);
+    margin: 2rem auto 0;
+}
+
+/* Mission (Sobre Nós) */
+.mission-section {
+    max-width: 800px;
+    margin: 0 auto 5rem;
+    text-align: center;
+    animation: fadeInUp 1s ease-out 0.3s backwards;
+}
+
+.mission-text h2 {
+    font-size: 2rem;
+    color: #f8fafc;
+    margin-bottom: 1.5rem;
+}
+
+.mission-text p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #cbd5e1;
+    margin-bottom: 1.5rem;
+}
+
+.mission-text strong {
+    color: var(--theme-primary);
+}
+
+/* Features Grid (Sobre Nós) */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 5rem;
+}
+
+.feature-card {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    backdrop-filter: blur(10px);
+    animation: fadeInUp 0.8s ease-out backwards;
+}
+
+.feature-card:nth-child(1) { animation-delay: 0.5s; }
+.feature-card:nth-child(2) { animation-delay: 0.7s; }
+.feature-card:nth-child(3) { animation-delay: 0.9s; }
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+    border-color: rgba(251, 191, 36, 0.3);
+}
+
+.card-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at top right, rgba(251, 191, 36, 0.1), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.feature-card:hover .card-glow {
+    opacity: 1;
+}
+
+.card-content {
+    position: relative;
+    z-index: 2;
+}
+
+.icon-wrapper {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+}
+
+.feature-card h3 {
+    font-size: 1.5rem;
+    color: #fff;
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.feature-card p {
+    color: #94a3b8;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.feature-list li {
+    color: #cbd5e1;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Trust Section (Sobre Nós) */
+.trust-section {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 600px;
+    margin: 0 auto 4rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.trust-badge {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(16, 185, 129, 0.1);
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.trust-icon {
+    font-size: 1.5rem;
+    color: #10b981;
+}
+
+.trust-info h4 {
+    color: #10b981;
+    font-size: 0.9rem;
+    margin: 0;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.trust-info p {
+    color: #fff;
+    font-size: 0.8rem;
+    margin: 0;
+}
+
+.trust-desc {
+    color: #64748b;
+    font-size: 0.9rem;
+    max-width: 400px;
+}
+
+/* Legal Content (Termos/Privacidade) */
+.legal-content {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 3rem;
+    backdrop-filter: blur(10px);
+    margin-bottom: 4rem;
+    animation: fadeInUp 1s ease-out 0.3s backwards;
+}
+
+.legal-section {
+    margin-bottom: 2.5rem;
+}
+
+.legal-section:last-child {
+    margin-bottom: 0;
+}
+
+.legal-section h2 {
+    color: var(--theme-text-highlight);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    border-left: 4px solid var(--theme-secondary);
+    padding-left: 1rem;
+}
+
+.legal-section p {
+    color: #cbd5e1;
+    line-height: 1.8;
+    font-size: 1.05rem;
+    margin-bottom: 1rem;
+}
+
+.legal-list {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+}
+
+.legal-list li {
+    color: #cbd5e1;
+    margin-bottom: 0.75rem;
+    padding-left: 1.5rem;
+    position: relative;
+    line-height: 1.6;
+}
+
+.legal-list li::before {
+    content: "•";
+    color: var(--theme-text-highlight);
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
+/* Legal Landing Page CTA Section */
+.legal-landing-cta {
+    text-align: center;
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    background: none !important;
+    padding: 0 !important;
+    margin-top: 2rem;
+}
+
+.legal-landing-cta::before,
+.legal-landing-cta::after {
+    display: none !important;
+    content: none !important;
+    background: none !important;
+}
+
+
+.mega-button {
+    display: inline-flex !important;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    background: linear-gradient(135deg, var(--theme-primary) 0%, var(--theme-secondary) 100%) !important;
+    padding: 1.25rem 3rem;
+    border-radius: 50px;
+    text-decoration: none !important;
+    color: #020617 !important;
+    font-weight: 800;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
+    box-shadow: 0 10px 20px -5px rgba(217, 119, 6, 0.5);
+    border: 2px solid rgba(255,255,255,0.1);
+    white-space: nowrap;
+}
+
+.theme-blue .mega-button {
+    color: #fff !important;
+    box-shadow: 0 10px 20px -5px rgba(29, 78, 216, 0.5);
+}
+
+.mega-button:hover {
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 0 20px 30px -10px rgba(217, 119, 6, 0.8);
+    filter: brightness(1.1);
+}
+
+.theme-blue .mega-button:hover {
+    box-shadow: 0 20px 30px -10px rgba(29, 78, 216, 0.8);
+}
+
+.mega-button:active {
+    transform: scale(0.98);
+}
+
+/* Animations */
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .legal-content { padding: 1.5rem; }
+    .brand-title { font-size: 1.75rem; }
+    .feature-card { padding: 1.5rem; }
+    .mega-button { 
+        width: 100%; 
+        justify-content: center;
+        padding: 1rem 1.5rem;
+        font-size: 0.95rem;
+    }
+}

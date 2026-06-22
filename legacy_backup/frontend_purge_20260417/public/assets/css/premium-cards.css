@@ -1,0 +1,742 @@
+/* PREMIUM COMPETITOR CARDS - Alto Nível com Efeitos 3D Interativos */
+
+:root {
+  --card-hover-scale: 1;
+  --card-rotate-x: 0deg;
+  --card-rotate-y: 0deg;
+  --card-shine-opacity: 0;
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+}
+
+/* Grid de Cards */
+.rr-cards-list {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)) !important;
+  gap: 1.2rem !important;
+  padding: 0 !important;
+  padding-top: 3.5rem !important; /* Espaço para fotos sobrepostas */
+  justify-items: center;
+  overflow: visible !important; /* Permite fotos ultrapassarem */
+  position: relative;
+  z-index: 0; /* Z-index mais baixo que as fotos */
+}
+
+.rr-card-item {
+  width: 100%;
+  max-width: 130px;
+  overflow: visible !important; /* Permite fotos ultrapassarem */
+  position: relative; /* Cria contexto de empilhamento */
+  z-index: 1; /* Z-index baixo */
+}
+
+/* Premium Card Container */
+.premium-card {
+  position: relative;
+  width: 100%;
+  min-height: 180px;
+  height: auto;
+  border-radius: 16px;
+  cursor: pointer !important; /* FORÇADO: Cursor pointer */
+  /* TODAS ANIMAÇÕES REMOVIDAS */
+  transform: none;
+  transition: all 0.3s ease;
+  /* Borda neon padrão */
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 0 10px rgba(255, 255, 255, 0.2),
+    0 8px 25px rgba(0, 0, 0, 0.5);
+  overflow: hidden !important;
+  isolation: auto;
+  pointer-events: auto !important; /* FORÇADO: Recebe cliques */
+  z-index: 1 !important; /* FORÇADO: Acima do fundo */
+}
+
+.premium-card:hover {
+  /* TODAS ANIMAÇÕES REMOVIDAS */
+}
+
+/* Tornar card clicável no mobile */
+@media (max-width: 767.98px) {
+  .premium-card {
+    cursor: pointer;
+  }
+  
+  .premium-card .premium-card__btn {
+    pointer-events: none;
+  }
+}
+
+/* Canvas para Partículas/Efeitos */
+.premium-card__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Borda Animada - DESABILITADA */
+.premium-card__border {
+  display: none; /* Borda animada completamente removida */
+}
+
+.premium-card:hover .premium-card__border {
+  display: none;
+}
+
+@keyframes borderRotate {
+  /* Animação desabilitada */
+}
+
+/* Animações de Neon Pulse */
+@keyframes neonPulse {
+  0%, 100% { 
+    box-shadow: 
+      0 0 10px var(--neon-color, rgba(255, 255, 255, 0.3)),
+      0 0 20px var(--neon-color, rgba(255, 255, 255, 0.2)),
+      0 8px 25px rgba(0, 0, 0, 0.5);
+  }
+  50% { 
+    box-shadow: 
+      0 0 20px var(--neon-color, rgba(255, 255, 255, 0.5)),
+      0 0 30px var(--neon-color, rgba(255, 255, 255, 0.3)),
+      0 8px 25px rgba(0, 0, 0, 0.5);
+  }
+}
+
+@keyframes neonPulseHover {
+  0%, 100% { 
+    box-shadow: 
+      0 0 20px var(--neon-color, rgba(255, 255, 255, 0.5)),
+      0 0 40px var(--neon-color, rgba(255, 255, 255, 0.4)),
+      0 0 60px var(--neon-color, rgba(255, 255, 255, 0.2)),
+      0 12px 35px rgba(0, 0, 0, 0.6);
+  }
+  50% { 
+    box-shadow: 
+      0 0 30px var(--neon-color, rgba(255, 255, 255, 0.7)),
+      0 0 50px var(--neon-color, rgba(255, 255, 255, 0.5)),
+      0 0 80px var(--neon-color, rgba(255, 255, 255, 0.3)),
+      0 12px 35px rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* Bordas Neon por Nível */
+.rr-card-item[data-nivel="favorito"] .premium-card {
+  --neon-color: rgba(255, 215, 0, 0.8);
+  --nivel-color: #ffd700;
+  border-color: rgba(255, 215, 0, 0.6);
+}
+
+.rr-card-item[data-nivel="favorito"] .premium-card:hover {
+  border-color: rgba(255, 215, 0, 0.9);
+  box-shadow: 
+    0 0 20px rgba(255, 215, 0, 0.6),
+    0 0 40px rgba(255, 215, 0, 0.4),
+    0 0 60px rgba(255, 215, 0, 0.3),
+    0 12px 35px rgba(0, 0, 0, 0.6);
+}
+
+.rr-card-item[data-nivel="elite"] .premium-card {
+  --neon-color: rgba(249, 115, 22, 0.85);
+  --nivel-color: #f97316;
+  border-color: rgba(249, 115, 22, 0.6);
+}
+
+.rr-card-item[data-nivel="elite"] .premium-card:hover {
+  border-color: rgba(249, 115, 22, 0.9);
+  box-shadow: 
+    0 0 20px rgba(249, 115, 22, 0.6),
+    0 0 40px rgba(249, 115, 22, 0.4),
+    0 0 60px rgba(249, 115, 22, 0.3),
+    0 12px 35px rgba(0, 0, 0, 0.6);
+}
+
+.rr-card-item[data-nivel="legado"] .premium-card {
+  --neon-color: rgba(192, 192, 192, 0.8);
+  --nivel-color: #c0c0c0;
+  border-color: rgba(192, 192, 192, 0.6);
+}
+
+.rr-card-item[data-nivel="legado"] .premium-card:hover {
+  border-color: rgba(192, 192, 192, 0.9);
+  box-shadow: 
+    0 0 20px rgba(192, 192, 192, 0.6),
+    0 0 40px rgba(192, 192, 192, 0.4),
+    0 0 60px rgba(192, 192, 192, 0.3),
+    0 12px 35px rgba(0, 0, 0, 0.6);
+}
+
+/* Nível: Ascendente (prata) */
+.rr-card-item[data-nivel="ascendente"] .premium-card {
+  --neon-color: rgba(192, 192, 192, 0.8);
+  --nivel-color: #c0c0c0;
+  border-color: rgba(192, 192, 192, 0.6);
+}
+
+.rr-card-item[data-nivel="ascendente"] .premium-card:hover {
+  border-color: rgba(192, 192, 192, 0.9);
+  box-shadow: 
+    0 0 20px rgba(192, 192, 192, 0.6),
+    0 0 40px rgba(192, 192, 192, 0.4),
+    0 0 60px rgba(192, 192, 192, 0.3),
+    0 12px 35px rgba(0, 0, 0, 0.6);
+}
+
+.rr-card-item[data-nivel="presilha"] .premium-card {
+  --neon-color: rgba(50, 205, 50, 0.8);
+  --nivel-color: #32cd32;
+  border-color: rgba(50, 205, 50, 0.6);
+}
+
+/* Nível: Competidor (verde) - COM HOVER */
+.rr-card-item[data-nivel="competidor"] .premium-card {
+  --neon-color: rgba(34, 197, 94, 0.8);
+  --nivel-color: #22c55e;
+  border-color: rgba(34, 197, 94, 0.6);
+}
+
+.rr-card-item[data-nivel="competidor"] .premium-card:hover {
+  border-color: rgba(34, 197, 94, 0.9);
+  box-shadow: 
+    0 0 20px rgba(34, 197, 94, 0.6),
+    0 0 40px rgba(34, 197, 94, 0.4),
+    0 0 60px rgba(34, 197, 94, 0.3),
+    0 12px 35px rgba(0, 0, 0, 0.6);
+}
+
+.rr-card-item[data-nivel="presilha"] .premium-card:hover {
+  border-color: rgba(50, 205, 50, 0.9);
+  box-shadow: 
+    0 0 20px rgba(50, 205, 50, 0.6),
+    0 0 40px rgba(50, 205, 50, 0.4),
+    0 0 60px rgba(50, 205, 50, 0.3),
+    0 12px 35px rgba(0, 0, 0, 0.6);
+}
+
+/* Brilho Holográfico - DESABILITADO */
+.premium-card__shine {
+  display: none; /* Brilho holográfico removido */
+}
+
+.premium-card:hover .premium-card__shine {
+  display: none;
+}
+
+/* Conteúdo do Card com Gradiente por Nível */
+.premium-card__content {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
+  padding: 3.4rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* CENTRALIZADO: Conteúdo verticalmente centrado */
+  overflow: hidden !important; /* FORÇADO: Evita conteúdo vazar */
+  z-index: 2; /* Z-index baixo, menor que a foto */
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Overlay de cor por nível */
+.premium-card__content::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.15;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.premium-card__content::before {
+  display: none; /* Overlay de mouse removido */
+}
+
+.premium-card:hover .premium-card__content::before {
+  display: none;
+}
+
+/* Cores por Nível - Overlay */
+.rr-card-item[data-nivel="favorito"] .premium-card__content::before {
+  background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), 
+    #ffd700 0%, transparent 70%);
+}
+
+.rr-card-item[data-nivel="elite"] .premium-card__content::before {
+  background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), 
+    #f97316 0%, transparent 70%);
+}
+
+.rr-card-item[data-nivel="legado"] .premium-card__content::before {
+  background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), 
+    #c0c0c0 0%, transparent 70%);
+}
+
+.rr-card-item[data-nivel="ascendente"] .premium-card__content::before {
+  background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), 
+    #c0c0c0 0%, transparent 70%);
+}
+
+.rr-card-item[data-nivel="presilha"] .premium-card__content::before {
+  background: radial-gradient(circle at var(--mouse-x) var(--mouse-y), 
+    #32cd32 0%, transparent 70%);
+}
+
+/* Badge de Nível */
+.premium-card__level {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 4;
+  display: none; /* Removido conforme solicitado */
+}
+
+.rr-card-item[data-nivel="favorito"] .premium-card__level {
+  color: #ffd700;
+  border-color: rgba(255, 215, 0, 0.3);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.rr-card-item[data-nivel="elite"] .premium-card__level {
+  color: #f97316;
+  border-color: rgba(249, 115, 22, 0.3);
+  box-shadow: 0 0 10px rgba(249, 115, 22, 0.3);
+}
+
+.rr-card-item[data-nivel="legado"] .premium-card__level {
+  color: #e8e8e8;
+  border-color: rgba(192, 192, 192, 0.3);
+  box-shadow: 0 0 10px rgba(192, 192, 192, 0.3);
+}
+
+.rr-card-item[data-nivel="ascendente"] .premium-card__level {
+  color: #e8e8e8;
+  border-color: rgba(192, 192, 192, 0.3);
+  box-shadow: 0 0 10px rgba(192, 192, 192, 0.3);
+}
+
+.rr-card-item[data-nivel="presilha"] .premium-card__level {
+  color: #32cd32;
+  border-color: rgba(50, 205, 50, 0.3);
+  box-shadow: 0 0 10px rgba(50, 205, 50, 0.3);
+}
+
+/* Foto Wrapper - SEM ANEL ANIMADO */
+.premium-card__photo-wrapper {
+  position: absolute !important;
+  top: -55px !important; /* FORÇADO: Mais para cima */
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  margin: 0 !important;
+  z-index: 99999 !important; /* Z-index MUITO alto para sobrepor tudo */
+  pointer-events: none !important;
+}
+
+.premium-card__photo-wrapper::before {
+  display: none; /* Anel animado removido */
+}
+
+.premium-card:hover .premium-card__photo-wrapper::before {
+  display: none;
+}
+
+@keyframes photoRing {
+  /* Animação desabilitada */
+}
+
+/* Cores do anel por nível - TODAS DESABILITADAS */
+.rr-card-item[data-nivel="favorito"] .premium-card__photo-wrapper::before,
+.rr-card-item[data-nivel="elite"] .premium-card__photo-wrapper::before,
+.rr-card-item[data-nivel="legado"] .premium-card__photo-wrapper::before,
+.rr-card-item[data-nivel="ascendente"] .premium-card__photo-wrapper::before,
+.rr-card-item[data-nivel="presilha"] .premium-card__photo-wrapper::before {
+  display: none;
+}
+
+/* Foto do Competidor - SEM ANIMAÇÕES */
+.premium-card__photo {
+  width: 100px !important;
+  height: 100px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  border: 3px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 
+    0 0 0 2px rgba(0, 0, 0, 0.3),
+    0 8px 24px rgba(0, 0, 0, 0.6) !important;
+  background: transparent !important;
+  position: relative !important;
+  z-index: 100000 !important; /* Acima de TUDO */
+}
+
+.premium-card:hover .premium-card__photo {
+  /* SEM ANIMAÇÕES */
+}
+
+.premium-card__photo img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center top !important;
+  position: relative !important;
+  z-index: 100001 !important; /* IMG acima da div da foto */
+  display: block !important;
+  background: transparent !important;
+}
+
+/* Nome do Competidor */
+.premium-card__name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-align: center;
+  margin: 0.8rem 0 0.5rem 0;
+  line-height: 1.3;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  z-index: 2;
+}
+
+/* Estatísticas Rápidas */
+.premium-card__stats {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+  z-index: 2;
+}
+
+.premium-card__stat {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+}
+
+.premium-card__stat strong {
+  color: #fff;
+  font-weight: 700;
+}
+
+/* Botão Ver Mais - SEM ANIMAÇÕES */
+.premium-card__btn {
+  width: calc(100% - 2rem);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  /* SEM ANIMAÇÕES */
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+  z-index: 2;
+  margin-top: auto;
+}
+
+.premium-card__btn::before {
+  display: none; /* Efeito de brilho removido */
+}
+
+.premium-card__btn:hover::before {
+  display: none;
+}
+
+.premium-card__btn:hover {
+  /* SEM ANIMAÇÕES */
+}
+
+/* Cores do botão por nível */
+.rr-card-item[data-nivel="favorito"] .premium-card__btn:hover {
+  border-color: rgba(255, 215, 0, 0.5);
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
+}
+
+.rr-card-item[data-nivel="elite"] .premium-card__btn:hover {
+  border-color: rgba(249, 115, 22, 0.5);
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.3);
+}
+
+.rr-card-item[data-nivel="legado"] .premium-card__btn:hover {
+  border-color: rgba(192, 192, 192, 0.5);
+  box-shadow: 0 6px 20px rgba(192, 192, 192, 0.3);
+}
+
+.rr-card-item[data-nivel="ascendente"] .premium-card__btn:hover {
+  border-color: rgba(192, 192, 192, 0.5);
+  box-shadow: 0 6px 20px rgba(192, 192, 192, 0.3);
+}
+
+.rr-card-item[data-nivel="presilha"] .premium-card__btn:hover {
+  border-color: rgba(50, 205, 50, 0.5);
+  box-shadow: 0 6px 20px rgba(50, 205, 50, 0.3);
+}
+
+/* Responsivo */
+@media (max-width: 767.98px) {
+  .rr-cards-list {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 1rem !important;
+    padding: 2.5rem 0.8rem 1rem !important; /* Espaço extra no topo para fotos */
+  }
+  
+  .rr-card-item {
+    max-width: 100%;
+    min-width: 0;
+    overflow: visible;
+  }
+  
+  .premium-card {
+    aspect-ratio: 1.1; /* Mais baixo e largo */
+    min-height: 140px;
+    overflow: visible; /* Permite foto ultrapassar */
+  }
+  
+  .premium-card__content {
+    padding: 3.5rem 0.5rem 0.6rem !important; /* FORÇADO: Mais espaço no topo */
+    gap: 0.25rem;
+    overflow: visible !important;
+    min-height: 160px !important;
+  }
+  
+  .premium-card__photo-wrapper {
+    position: absolute !important;
+    top: -50px !important; /* FORÇADO: Foto bem acima */
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    margin: 0 !important;
+    z-index: 99999 !important; /* Z-index MUITO alto para sobrepor tudo */
+    pointer-events: none !important; /* Permite clique através da foto */
+  }
+  
+  .premium-card__photo {
+    width: 55px !important;
+    height: 55px !important;
+    border-width: 0 !important;
+    position: relative !important;
+    background: transparent !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important; /* Sombra para destacar */
+    border-radius: 50% !important;
+    z-index: 100000 !important; /* Acima de TUDO */
+  }
+  
+  .premium-card__photo img {
+    border-radius: 50% !important;
+    z-index: 100001 !important; /* IMG acima de tudo */
+    position: relative !important;
+    object-fit: cover !important; /* Garante que a foto não deforme */
+    object-position: center top !important; /* Prioriza o topo da foto */
+  }
+  
+  .premium-card__name {
+    font-size: 0.75rem;
+    margin: 0.3rem 0 0.25rem 0;
+    -webkit-line-clamp: 2;
+    line-height: 1.1;
+    min-height: 1.65rem;
+  }
+  
+  /* Botão como texto simples no mobile */
+  .premium-card__btn {
+    width: auto;
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 0.25rem 0.5rem;
+    font-size: 0.62rem;
+    font-weight: 600;
+    text-transform: lowercase;
+    letter-spacing: 0;
+    box-shadow: none;
+    margin-top: 0.3rem;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    backdrop-filter: none;
+    border-radius: 4px;
+  }
+  
+  .premium-card__btn::before {
+    display: none;
+  }
+  
+  .premium-card__btn:hover {
+    background: none;
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: none;
+    box-shadow: none;
+    color: rgba(255, 255, 255, 1);
+  }
+  
+  /* Cor do link por nível */
+  .rr-card-item[data-nivel="favorito"] .premium-card__btn {
+    color: rgba(255, 215, 0, 0.8);
+    border-color: rgba(255, 215, 0, 0.2);
+  }
+  
+  .rr-card-item[data-nivel="favorito"] .premium-card__btn:hover {
+    color: rgba(255, 215, 0, 1);
+    border-color: rgba(255, 215, 0, 0.4);
+  }
+  
+  .rr-card-item[data-nivel="elite"] .premium-card__btn {
+    color: rgba(249, 115, 22, 0.85);
+    border-color: rgba(249, 115, 22, 0.25);
+  }
+  
+  .rr-card-item[data-nivel="elite"] .premium-card__btn:hover {
+    color: rgba(249, 115, 22, 1);
+    border-color: rgba(249, 115, 22, 0.45);
+  }
+  
+.rr-card-item[data-nivel="legado"] .premium-card__btn {
+    color: rgba(192, 192, 192, 0.8);
+    border-color: rgba(192, 192, 192, 0.2);
+}
+
+.rr-card-item[data-nivel="ascendente"] .premium-card__btn {
+    color: rgba(192, 192, 192, 0.8);
+    border-color: rgba(192, 192, 192, 0.2);
+}
+
+.rr-card-item[data-nivel="legado"] .premium-card__btn:hover {
+    color: rgba(192, 192, 192, 1);
+    border-color: rgba(192, 192, 192, 0.4);
+}
+
+.rr-card-item[data-nivel="ascendente"] .premium-card__btn:hover {
+    color: rgba(192, 192, 192, 1);
+    border-color: rgba(192, 192, 192, 0.4);
+}
+
+.rr-card-item[data-nivel="presilha"] .premium-card__btn {
+    color: rgba(50, 205, 50, 0.8);
+    border-color: rgba(50, 205, 50, 0.2);
+}
+  
+.rr-card-item[data-nivel="presilha"] .premium-card__btn:hover {
+    color: rgba(50, 205, 50, 1);
+    border-color: rgba(50, 205, 50, 0.4);
+}
+
+.rr-card-item[data-nivel="competidor"] .premium-card__btn {
+    color: rgba(34, 197, 94, 0.85);
+    border-color: rgba(34, 197, 94, 0.2);
+}
+
+.rr-card-item[data-nivel="competidor"] .premium-card__btn:hover {
+    color: rgba(34, 197, 94, 1);
+    border-color: rgba(34, 197, 94, 0.4);
+}
+}
+
+/* Mobile extra pequeno */
+@media (max-width: 380px) {
+  .rr-cards-list {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.8rem !important;
+  }
+  
+  .premium-card {
+    min-height: 130px;
+  }
+  
+  .premium-card__content {
+    padding: 2.6rem 0.4rem 0.4rem;
+    gap: 0.15rem;
+  }
+  
+  .premium-card__photo-wrapper {
+    top: -30px; /* Ajustado para mobile menor */
+    z-index: 9999 !important; /* Garante sobreposição */
+  }
+  
+  .premium-card__photo {
+    width: 65px;
+    height: 65px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35); /* Destaque visual */
+    z-index: 10000 !important; /* Acima de tudo */
+  }
+  
+  .premium-card__photo img {
+    z-index: 10001 !important; /* IMG no topo */
+  }
+  
+  .premium-card__name {
+    font-size: 0.68rem;
+    min-height: 1.5rem;
+    line-height: 1.1;
+    margin: 0 0 0.15rem 0;
+  }
+  
+  .premium-card__btn {
+    font-size: 0.58rem;
+    padding: 0.2rem 0.4rem;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+  .rr-cards-list {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 1.2rem !important;
+  }
+  
+  .premium-card__photo {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .rr-cards-list {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 1.5rem !important;
+  }
+  
+  .premium-card__photo {
+    width: 90px;
+    height: 90px;
+  }
+}
+
+@media (min-width: 992px) {
+  .rr-cards-list {
+    grid-template-columns: repeat(10, 1fr) !important;
+  }
+}
+
+@media (min-width: 1400px) {
+  .rr-cards-list {
+    grid-template-columns: repeat(10, 1fr) !important;
+  }
+}

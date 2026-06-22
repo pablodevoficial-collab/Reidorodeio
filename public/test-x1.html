@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test X1 Select</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        select { padding: 10px; margin: 10px 0; width: 300px; display: block; }
+        .debug { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Test X1 - Rodeio → Modalidades</h1>
+    
+    <div class="debug" id="log">
+        <strong>Console:</strong><br>
+        Aguardando seleção...
+    </div>
+
+    <select id="x1RodeioSelect">
+        <option value="">Selecione o rodeio</option>
+        <option value="1">Vacaria</option>
+        <option value="2">Duelo dos recordes</option>
+    </select>
+
+    <select id="x1ModalidadeSelect" disabled>
+        <option value="">Selecione o rodeio primeiro</option>
+    </select>
+
+    <script>
+        const log = document.getElementById('log');
+        const rodeioSelect = document.getElementById('x1RodeioSelect');
+        const modalidadeSelect = document.getElementById('x1ModalidadeSelect');
+
+        function addLog(msg) {
+            log.innerHTML += '<br>' + msg;
+            console.log(msg);
+        }
+
+        async function loadModalidadesByRodeio(rodeioId) {
+            addLog(`🔄 Carregando modalidades para rodeio ${rodeioId}...`);
+            
+            if (!modalidadeSelect) {
+                addLog('❌ modalidadeSelect não encontrado!');
+                return;
+            }
+            
+            modalidadeSelect.disabled = true;
+            modalidadeSelect.innerHTML = '<option value="">Carregando...</option>';
+            
+            try {
+                const url = `/api/realtime/rodeios/${encodeURIComponent(rodeioId)}/modalidades`;
+                addLog(`📡 Fazendo fetch em: ${url}`);
+                
+                const res = await fetch(url);
+                const json = await res.json();
+                
+                addLog(`✅ Resposta recebida: ${json.data.length} modalidades`);
+                
+                let list = json?.data || [];
+                const rodeioNum = parseInt(rodeioId || '0', 10);
+                
+                if (rodeioNum > 0) {
+                    list = list.filter(m => parseInt(m.rodeio_id || '0', 10) === rodeioNum);
+                }
+                
+                modalidadeSelect.innerHTML = '<option value="">Selecione a modalidade</option>';
+                
+                if (!list.length) {
+                    addLog('⚠️ Nenhuma modalidade disponível');
+                    const opt = document.createElement('option');
+                    opt.value = '';
+                    opt.textContent = 'Nenhuma modalidade disponível';
+                    modalidadeSelect.appendChild(opt);
+                    modalidadeSelect.disabled = true;
+                    return;
+                }
+                
+                modalidadeSelect.disabled = false;
+                list.forEach(m => {
+                    const opt = document.createElement('option');
+                    opt.value = m.id;
+                    opt.textContent = m.nome || `Modalidade #${m.id}`;
+                    modalidadeSelect.appendChild(opt);
+                    addLog(`  ➕ Adicionada: ${m.nome}`);
+                });
+                
+                addLog(`✅ Select habilitado com ${list.length} modalidades`);
+            } catch (e) {
+                addLog(`❌ Erro: ${e.message}`);
+                modalidadeSelect.innerHTML = '<option value="">Erro ao carregar</option>';
+                modalidadeSelect.disabled = true;
+            }
+        }
+
+        async function handleRodeioChange() {
+            const rodeioId = rodeioSelect.value;
+            addLog(`🎯 Rodeio selecionado: ${rodeioId || '(vazio)'}`);
+            
+            if (!rodeioId) {
+                modalidadeSelect.innerHTML = '<option value="">Selecione o rodeio primeiro</option>';
+                modalidadeSelect.disabled = true;
+                return;
+            }
+            
+            await loadModalidadesByRodeio(rodeioId);
+        }
+
+        rodeioSelect.addEventListener('change', handleRodeioChange);
+        addLog('✅ Event listener registrado');
+    </script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+/* =================================================================
+   FANTASY LEAGUES - SEARCH BAR (MESMO ESTILO DA ABA STATS)
+   ================================================================= */
+
+.rr-fantasy-submenu-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: nowrap;
+  padding: 0 1rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Desktop: submenu centralizado e lupa à esquerda */
+@media (min-width: 769px) {
+  .rr-fantasy-submenu-row {
+    justify-content: center;
+    position: relative;
+    max-width: 520px;
+    margin: 0 auto 1.5rem;
+  }
+
+  .rr-fantasy-submenu-row .rr-fantasy-search-wrapper--inline {
+    position: absolute;
+    left: -280px;
+  }
+
+  .rr-fantasy-submenu-row .rr-epic-submenu {
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
+.rr-fantasy-search-wrapper {
+  margin: 0;
+  max-width: 500px;
+}
+
+.rr-fantasy-search-wrapper--inline {
+  max-width: 220px;
+  flex: 0 0 auto;
+}
+
+.rr-fantasy-search-form {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  margin: 0 auto;
+  transition: width 0.36s cubic-bezier(0.2, 0.9, 0.2, 1), box-shadow 0.36s ease, background 0.36s ease;
+  overflow: hidden;
+}
+
+.rr-fantasy-search-form.is-open {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+}
+
+.rr-fantasy-search-form input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0 56px 0 20px;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  color: #fff;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.rr-fantasy-search-form.is-open input {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.rr-fantasy-search-wrapper--inline .rr-fantasy-search-form {
+  margin: 0;
+}
+
+.rr-fantasy-search-wrapper--inline .rr-fantasy-search-form.is-open {
+  width: 220px;
+}
+
+.rr-fantasy-search-form input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.rr-fantasy-search-icon {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  background: linear-gradient(135deg, #f97316, #fb923c);
+  border: none;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.rr-fantasy-search-form.is-open .rr-fantasy-search-icon {
+  background: rgba(249, 115, 22, 0.2);
+  border-radius: 50%;
+}
+
+.rr-fantasy-search-icon svg {
+  width: 20px;
+  height: 20px;
+  color: white;
+  position: absolute;
+  transition: all 0.3s ease;
+}
+
+.rr-fantasy-search-icon .icon-search {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+
+.rr-fantasy-search-icon .icon-close {
+  opacity: 0;
+  transform: scale(0) rotate(180deg);
+}
+
+.rr-fantasy-search-form.is-open .rr-fantasy-search-icon .icon-search {
+  opacity: 0;
+  transform: scale(0) rotate(-180deg);
+}
+
+.rr-fantasy-search-form.is-open .rr-fantasy-search-icon .icon-close {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+
+.rr-fantasy-search-icon:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #fb923c, #f97316);
+}
+
+/* Mobile: Submenu primeiro, busca depois (centralizada) */
+@media (max-width: 768px) {
+  .rr-fantasy-submenu-row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .rr-fantasy-submenu-row .rr-fantasy-search-wrapper--inline {
+    order: 2;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .rr-fantasy-submenu-row .rr-epic-submenu {
+    order: 1;
+    width: 100%;
+  }
+  
+  .rr-fantasy-search-form {
+    width: 48px !important;
+    height: 48px !important;
+    margin: 0 auto;
+  }
+  
+  .rr-fantasy-search-icon {
+    width: 48px !important;
+    height: 48px !important;
+  }
+  
+  .rr-fantasy-search-icon svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+  
+  .rr-fantasy-search-wrapper--inline .rr-fantasy-search-form.is-open {
+    width: 100% !important;
+    max-width: 320px !important;
+    margin: 0 auto;
+  }
+}
+
+/* ========================================
+   PREMIUM: Blue accents for fantasy
+======================================== */
+body.is-premium .rr-fantasy-search-icon {
+  background: linear-gradient(135deg, #3b82f6, #60a5fa);
+}
+
+body.is-premium .rr-fantasy-search-form.is-open .rr-fantasy-search-icon {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+body.is-premium .rr-fantasy-search-icon:hover {
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+}

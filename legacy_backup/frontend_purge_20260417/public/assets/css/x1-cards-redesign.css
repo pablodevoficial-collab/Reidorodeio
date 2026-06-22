@@ -1,0 +1,898 @@
+/* 
+ * ========================================
+ * 🎮 X1 CARDS - CYBERPUNK/GAMING REDESIGN
+ * ========================================
+ * Tema: Neon, Glassmorphism, Futurista
+ */
+
+:root {
+  --neon-orange: #ff6b35;
+  --neon-blue: #00d9ff;
+  --neon-purple: #b829ff;
+  --neon-pink: #ff2a6d;
+  --glass-bg: rgba(15, 23, 42, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+/* ================================================
+   CARD BASE - GLASSMORPHISM
+   ================================================ */
+.rr-x1-room-card {
+  background: linear-gradient(135deg, 
+    rgba(15, 23, 42, 0.95) 0%, 
+    rgba(30, 41, 59, 0.9) 100%
+  );
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 16px;
+  overflow: visible;
+  position: relative;
+  margin-top: 50px;
+  border: 1px solid rgba(255, 107, 53, 0.3);
+  box-shadow: 
+    0 0 40px rgba(255, 107, 53, 0.2),
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rr-x1-room-card::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 16px;
+  padding: 2px;
+  background: linear-gradient(45deg, 
+    transparent,
+    rgba(255, 107, 53, 0.4),
+    transparent,
+    rgba(0, 217, 255, 0.4)
+  );
+  background-size: 300% 300%;
+  animation: borderFlow 6s ease infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.rr-x1-room-card:hover::before {
+  opacity: 1;
+}
+
+@keyframes borderFlow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.rr-x1-room-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: rgba(255, 107, 53, 0.6);
+  box-shadow: 
+    0 0 60px rgba(255, 107, 53, 0.4),
+    0 20px 60px rgba(0, 0, 0, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* ================================================
+   PREMIUM VARIANT - CYAN/BLUE NEON
+   ================================================ */
+.rr-x1-room-card--premium {
+  border-color: rgba(0, 217, 255, 0.4);
+  box-shadow: 
+    0 0 40px rgba(0, 217, 255, 0.3),
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(0, 217, 255, 0.1);
+}
+
+.rr-x1-room-card--premium::before {
+  background: linear-gradient(45deg, 
+    transparent,
+    rgba(0, 217, 255, 0.5),
+    transparent,
+    rgba(184, 41, 255, 0.4)
+  );
+}
+
+.rr-x1-room-card--premium:hover {
+  border-color: rgba(0, 217, 255, 0.7);
+  box-shadow: 
+    0 0 60px rgba(0, 217, 255, 0.5),
+    0 20px 60px rgba(0, 0, 0, 0.8),
+    inset 0 1px 0 rgba(0, 217, 255, 0.2);
+}
+
+/* ================================================
+   LOGO HOLOGRÁFICO FLUTUANTE
+   ================================================ */
+.rr-x1-room-card__logo {
+  position: absolute;
+  top: -45px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.rr-x1-room-card__logo img {
+  width: 85px;
+  height: auto;
+  animation: hologramFloat 4s ease-in-out infinite;
+  filter: 
+    drop-shadow(0 0 20px rgba(255, 107, 53, 0.8))
+    drop-shadow(0 4px 12px rgba(255, 107, 53, 0.6));
+}
+
+@keyframes hologramFloat {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    filter: 
+      drop-shadow(0 0 20px rgba(255, 107, 53, 0.8))
+      drop-shadow(0 4px 12px rgba(255, 107, 53, 0.6))
+      brightness(1);
+  }
+  25% {
+    transform: translateY(-8px) scale(1.05) rotate(-3deg);
+    filter: 
+      drop-shadow(0 0 30px rgba(255, 107, 53, 1))
+      drop-shadow(0 8px 20px rgba(255, 107, 53, 0.8))
+      brightness(1.2);
+  }
+  50% {
+    transform: translateY(-4px) scale(1.03);
+    filter: 
+      drop-shadow(0 0 25px rgba(255, 107, 53, 0.9))
+      drop-shadow(0 6px 16px rgba(255, 107, 53, 0.7))
+      brightness(1.1);
+  }
+  75% {
+    transform: translateY(-8px) scale(1.05) rotate(3deg);
+    filter: 
+      drop-shadow(0 0 30px rgba(255, 107, 53, 1))
+      drop-shadow(0 8px 20px rgba(255, 107, 53, 0.8))
+      brightness(1.2);
+  }
+}
+
+/* Logo Premium: Cyan hologram */
+.rr-x1-room-card--premium .rr-x1-room-card__logo img {
+  filter: 
+    drop-shadow(0 0 20px rgba(0, 217, 255, 0.9))
+    drop-shadow(0 4px 12px rgba(0, 217, 255, 0.6));
+  animation: hologramFloatPremium 4s ease-in-out infinite;
+}
+
+@keyframes hologramFloatPremium {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    filter: 
+      drop-shadow(0 0 20px rgba(0, 217, 255, 0.9))
+      drop-shadow(0 4px 12px rgba(0, 217, 255, 0.6))
+      brightness(1);
+  }
+  25% {
+    transform: translateY(-8px) scale(1.05) rotate(-3deg);
+    filter: 
+      drop-shadow(0 0 35px rgba(0, 217, 255, 1))
+      drop-shadow(0 8px 20px rgba(0, 217, 255, 0.8))
+      brightness(1.3);
+  }
+  50% {
+    transform: translateY(-4px) scale(1.03);
+    filter: 
+      drop-shadow(0 0 28px rgba(0, 217, 255, 0.95))
+      drop-shadow(0 6px 16px rgba(0, 217, 255, 0.7))
+      brightness(1.15);
+  }
+  75% {
+    transform: translateY(-8px) scale(1.05) rotate(3deg);
+    filter: 
+      drop-shadow(0 0 35px rgba(0, 217, 255, 1))
+      drop-shadow(0 8px 20px rgba(0, 217, 255, 0.8))
+      brightness(1.3);
+  }
+}
+
+/* ================================================
+   CONTENT AREA
+   ================================================ */
+.rr-x1-room-card__content {
+  padding: 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+/* ================================================
+   HEADER COM SCANLINES EFFECT
+   ================================================ */
+.rr-x1-room-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.rr-x1-room-card__header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 107, 53, 0.03) 2px,
+    rgba(255, 107, 53, 0.03) 4px
+  );
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.rr-x1-room-card__mode {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+}
+
+.rr-x1-room-card__id {
+  color: var(--neon-orange);
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(255, 107, 53, 0.8);
+}
+
+/* ================================================
+   COROA PREMIUM HOLOGRÁFICA
+   ================================================ */
+.rr-x1-room-card__premium-crown {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, 
+    rgba(0, 217, 255, 0.2) 0%, 
+    rgba(184, 41, 255, 0.2) 100%
+  );
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 217, 255, 0.5);
+  border-radius: 24px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #00d9ff;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  box-shadow: 
+    0 0 20px rgba(0, 217, 255, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  animation: premiumBadgeGlow 3s ease-in-out infinite;
+}
+
+@keyframes premiumBadgeGlow {
+  0%, 100% {
+    box-shadow: 
+      0 0 20px rgba(0, 217, 255, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border-color: rgba(0, 217, 255, 0.5);
+  }
+  50% {
+    box-shadow: 
+      0 0 30px rgba(0, 217, 255, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border-color: rgba(0, 217, 255, 0.8);
+  }
+}
+
+.rr-x1-room-card__premium-crown i {
+  font-size: 1.1rem;
+  color: #ffd700;
+  animation: crownHologram 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.9));
+}
+
+@keyframes crownHologram {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+    filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.9));
+  }
+  25% {
+    transform: translateY(-5px) rotate(-15deg) scale(1.15);
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 1));
+  }
+  50% {
+    transform: translateY(0) rotate(0deg) scale(1.1);
+    filter: drop-shadow(0 0 16px rgba(255, 215, 0, 0.95));
+  }
+  75% {
+    transform: translateY(-5px) rotate(15deg) scale(1.15);
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 1));
+  }
+}
+
+/* ================================================
+   TAGS NEON
+   ================================================ */
+.rr-x1-room-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+
+.rr-x1-room-card__tag {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: rgba(255, 107, 53, 0.15);
+  border: 1px solid rgba(255, 107, 53, 0.4);
+  color: var(--neon-orange);
+  box-shadow: 
+    0 0 15px rgba(255, 107, 53, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* 🔥 PRÊMIO DESTACADO (versão equilibrada - dentro do card) 🔥 */
+.rr-x1-room-card__tag:first-child {
+  padding: 8px 16px !important;
+  font-size: 0.85rem !important;
+  font-weight: 800 !important;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b) !important;
+  border: 2px solid #fbbf24 !important;
+  color: #000000 !important;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 
+    0 0 20px rgba(251, 191, 36, 0.6),
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+  animation: prizeGlowPulse 2.5s ease-in-out infinite !important;
+  letter-spacing: 0.5px !important;
+}
+
+.rr-x1-room-card__tag:first-child::before {
+  content: '💰';
+  margin-right: 6px;
+  font-size: 0.9rem;
+}
+
+@keyframes prizeGlowPulse {
+  0%, 100% {
+    box-shadow: 
+      0 0 20px rgba(251, 191, 36, 0.6),
+      0 4px 12px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  50% {
+    box-shadow: 
+      0 0 30px rgba(251, 191, 36, 0.8),
+      0 6px 16px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  }
+}
+
+.rr-x1-room-card__tag:first-child:hover {
+  transform: translateY(-3px) scale(1.05) !important;
+  box-shadow: 
+    0 0 35px rgba(251, 191, 36, 0.9),
+    0 8px 20px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+}
+
+@keyframes prizeGlowPulse {
+  0%, 100% {
+    box-shadow: 
+      0 0 40px rgba(251, 191, 36, 0.9),
+      0 0 60px rgba(251, 191, 36, 0.6),
+      0 8px 32px rgba(0, 0, 0, 0.4),
+      inset 0 2px 0 rgba(255, 255, 255, 0.4),
+      inset 0 -2px 8px rgba(0, 0, 0, 0.3);
+  }
+  50% {
+    box-shadow: 
+      0 0 60px rgba(251, 191, 36, 1),
+      0 0 100px rgba(251, 191, 36, 0.8),
+      0 0 140px rgba(251, 191, 36, 0.4),
+      0 12px 40px rgba(0, 0, 0, 0.5),
+      inset 0 2px 0 rgba(255, 255, 255, 0.6),
+      inset 0 -2px 8px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.rr-x1-room-card__tag:hover {
+  background: rgba(255, 107, 53, 0.25);
+  border-color: rgba(255, 107, 53, 0.6);
+  box-shadow: 
+    0 0 25px rgba(255, 107, 53, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.rr-x1-room-card__tag:first-child:hover {
+  transform: scale(1.25) translateY(-8px) !important;
+  box-shadow: 
+    0 0 80px rgba(251, 191, 36, 1),
+    0 0 120px rgba(251, 191, 36, 0.8),
+    0 0 160px rgba(251, 191, 36, 0.6),
+    0 16px 48px rgba(0, 0, 0, 0.6),
+    inset 0 2px 0 rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Premium tags: Cyan */
+.rr-x1-room-card--premium .rr-x1-room-card__tag:not([class*="tag--"]) {
+  background: rgba(0, 217, 255, 0.15);
+  border-color: rgba(0, 217, 255, 0.4);
+  color: var(--neon-blue);
+  box-shadow: 
+    0 0 15px rgba(0, 217, 255, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.rr-x1-room-card--premium .rr-x1-room-card__tag:not([class*="tag--"]):hover {
+  background: rgba(0, 217, 255, 0.25);
+  border-color: rgba(0, 217, 255, 0.6);
+  box-shadow: 
+    0 0 25px rgba(0, 217, 255, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Status tags com cores específicas */
+.rr-x1-room-card__tag--open {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.5);
+  color: #10b981;
+  box-shadow: 
+    0 0 15px rgba(16, 185, 129, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+.rr-x1-room-card__tag--in_progress {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #ef4444;
+  box-shadow: 
+    0 0 15px rgba(239, 68, 68, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 
+      0 0 15px rgba(16, 185, 129, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  50% {
+    opacity: 0.7;
+    box-shadow: 
+      0 0 25px rgba(16, 185, 129, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+}
+
+/* ================================================
+   VS DISPLAY - CYBERPUNK STYLE COM AVATARES
+   ================================================ */
+.rr-x1-room-card__vs-display {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 107, 53, 0.2);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.rr-x1-room-card__player-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.rr-x1-room-card__username {
+  display: none; /* Hidden - será exibido na nova seção abaixo */
+}
+
+/* === AVATARES CIRCULARES === */
+.rr-x1-room-card__avatars {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 50px;
+}
+
+/* === USERNAME VS USERNAME === */
+.rr-x1-room-card__battle-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 0;
+  margin-bottom: 8px;
+  font-family: 'Courier New', monospace;
+}
+
+.rr-x1-room-card__battle-username {
+  font-size: 0.95rem;
+  color: #ffffff;
+  font-weight: 600;
+  text-shadow: 0 0 10px rgba(255, 107, 53, 0.4);
+  letter-spacing: 0.5px;
+}
+
+.rr-x1-room-card__battle-vs {
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: var(--neon-orange);
+  text-shadow: 
+    0 0 20px rgba(255, 107, 53, 0.8),
+    0 0 40px rgba(255, 107, 53, 0.4);
+  animation: vsTextPulse 2s ease-in-out infinite;
+  letter-spacing: 2px;
+}
+
+@keyframes vsTextPulse {
+  0%, 100% {
+    transform: scale(1);
+    text-shadow: 
+      0 0 20px rgba(255, 107, 53, 0.8),
+      0 0 40px rgba(255, 107, 53, 0.4);
+  }
+  50% {
+    transform: scale(1.15);
+    text-shadow: 
+      0 0 30px rgba(255, 107, 53, 1),
+      0 0 60px rgba(255, 107, 53, 0.6);
+  }
+}
+
+/* === BATTLE TEXT (Tá valendo!) === */
+.rr-x1-room-card__battle-text {
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fbbf24;
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+  padding: 6px 12px;
+  margin: -4px 0 8px 0;
+  background: linear-gradient(90deg, transparent, rgba(251, 191, 36, 0.1), transparent);
+  border-top: 1px solid rgba(251, 191, 36, 0.2);
+  border-bottom: 1px solid rgba(251, 191, 36, 0.2);
+  animation: battleTextGlow 2s ease-in-out infinite;
+  letter-spacing: 0.5px;
+}
+
+/* Premium: azul */
+.rr-x1-room-card--premium .rr-x1-room-card__battle-text {
+  color: #60a5fa;
+  text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+  background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.1), transparent);
+  border-top: 1px solid rgba(96, 165, 250, 0.2);
+  border-bottom: 1px solid rgba(96, 165, 250, 0.2);
+  animation: battleTextGlowPremium 2s ease-in-out infinite;
+}
+
+@keyframes battleTextGlow {
+  0%, 100% {
+    text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(251, 191, 36, 0.8);
+  }
+}
+
+@keyframes battleTextGlowPremium {
+  0%, 100% {
+    text-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(96, 165, 250, 0.8);
+  }
+}
+
+.rr-x1-room-card__avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.2), rgba(249, 115, 22, 0.3));
+  border: 2px solid rgba(255, 107, 53, 0.6);
+  box-shadow: 
+    0 0 20px rgba(255, 107, 53, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.rr-x1-room-card__avatar:hover {
+  transform: scale(1.15) translateY(-4px);
+  border-color: rgba(255, 107, 53, 0.9);
+  box-shadow: 
+    0 0 30px rgba(255, 107, 53, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  z-index: 100 !important;
+}
+
+.rr-x1-room-card__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rr-x1-room-card__avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1e293b, #334155);
+  color: rgba(255, 107, 53, 0.7);
+  font-size: 1.2rem;
+}
+
+/* Avatares empilhados (quando há mais de 2 competidores) */
+.rr-x1-room-card__avatar--stacked {
+  width: 45px;
+  height: 45px;
+  border-width: 2px;
+  opacity: 0.85;
+}
+
+.rr-x1-room-card__avatar--stacked:hover {
+  opacity: 1;
+  width: 50px;
+  height: 50px;
+}
+
+/* Premium avatars: Cyan border */
+.rr-x1-room-card--premium .rr-x1-room-card__avatar {
+  background: linear-gradient(135deg, rgba(0, 217, 255, 0.2), rgba(59, 130, 246, 0.3));
+  border-color: rgba(0, 217, 255, 0.6);
+  box-shadow: 
+    0 0 20px rgba(0, 217, 255, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.rr-x1-room-card--premium .rr-x1-room-card__avatar:hover {
+  border-color: rgba(0, 217, 255, 0.9);
+  box-shadow: 
+    0 0 30px rgba(0, 217, 255, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.rr-x1-room-card--premium .rr-x1-room-card__avatar-placeholder {
+  color: rgba(0, 217, 255, 0.7);
+}
+
+/* === X VERMELHO PARA PERDEDORES (SALAS FINALIZADAS) === */
+.rr-x1-room-card__avatar--loser {
+  opacity: 0.5;
+  filter: grayscale(60%) brightness(0.7);
+}
+
+.rr-x1-room-card__avatar-x {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #ef4444;
+  text-shadow: 
+    0 0 10px rgba(239, 68, 68, 0.8),
+    2px 2px 4px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+  z-index: 10;
+  animation: xPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes xPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+/* Status tag finalizada */
+.rr-x1-room-card__tag--finished {
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+}
+
+.rr-x1-vs-icon {
+  color: #fbbf24;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  animation: vsIconGlow 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 15px rgba(251, 191, 36, 0.8));
+}
+
+@keyframes vsIconGlow {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+    filter: drop-shadow(0 0 15px rgba(251, 191, 36, 0.8));
+  }
+  50% {
+    transform: scale(1.2) rotate(180deg);
+    filter: drop-shadow(0 0 25px rgba(251, 191, 36, 1));
+  }
+}
+
+/* ================================================
+   STATS ROW - REMOVIDO (Timer removido)
+   ================================================ */
+.rr-x1-room-card__stats {
+  display: none;
+}
+
+.rr-x1-room-card__stat {
+  display: none;
+}
+
+.rr-x1-room-card__icon {
+  display: none;
+}
+
+/* ================================================
+   BOTÕES CYBERPUNK
+   ================================================ */
+.rr-x1-room-card__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 1rem;
+}
+
+.rr-x1-room-card__btn {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.rr-x1-room-card__btn--main {
+  background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 107, 53, 0.5);
+  box-shadow: 
+    0 0 20px rgba(255, 107, 53, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.rr-x1-room-card__btn--main::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.rr-x1-room-card__btn--main:hover::before {
+  transform: translateX(100%);
+}
+
+.rr-x1-room-card__btn--main:hover {
+  transform: translateY(-3px);
+  box-shadow: 
+    0 0 30px rgba(255, 107, 53, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.rr-x1-room-card__btn--main:active {
+  transform: translateY(-1px);
+}
+
+/* ================================================
+   RESPONSIVE
+   ================================================ */
+@media (max-width: 768px) {
+  .rr-x1-room-card__vs-display {
+    /* Mantém lado a lado no mobile */
+    flex-direction: row !important;
+    gap: 8px;
+    padding: 16px 12px;
+  }
+
+  .rr-x1-room-card__player-side {
+    width: auto;
+    flex: 1;
+    flex-direction: column !important;
+    flex-shrink: 0;
+  }
+
+  .rr-x1-room-card__avatars {
+    flex-direction: row !important; /* Força horizontal */
+    justify-content: center;
+    flex-shrink: 0; /* Impede compressão */
+  }
+
+  .rr-x1-vs-icon {
+    font-size: 1.1rem;
+    transform: none; /* Mantém vertical */
+    flex-shrink: 0;
+  }
+
+  .rr-x1-room-card__avatar {
+    width: 70px !important; /* Força 70px no mobile */
+    height: 70px !important;
+    min-width: 70px !important;
+    min-height: 70px !important;
+  }
+  
+  .rr-x1-room-card__avatar--stacked {
+    width: 60px !important; /* Empilhados um pouco menores */
+    height: 60px !important;
+    min-width: 60px !important;
+    min-height: 60px !important;
+    margin-left: -16px !important;
+  }
+
+  .rr-x1-room-card__logo img {
+    width: 70px;
+  }
+
+  .rr-x1-room-card {
+    margin-top: 40px;
+  }
+  
+  .rr-x1-room-card__battle-username {
+    font-size: 0.85rem;
+  }
+
+  .rr-x1-room-card__battle-vs {
+    font-size: 1rem;
+  }
+  
+  /* Prêmio ajustado no mobile */
+  .rr-x1-room-card__tag:first-child {
+    font-size: 0.8rem !important;
+    padding: 7px 14px !important;
+  }
+  
+  /* Remove hover do prêmio no mobile */
+  .rr-x1-room-card__tag:first-child:hover {
+    transform: none !important;
+    box-shadow: 
+      0 0 20px rgba(251, 191, 36, 0.6),
+      0 4px 12px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+  }
+}

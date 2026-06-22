@@ -1,0 +1,258 @@
+{
+  "rodeios": {
+    "title": "Rodeios",
+    "icon": "las la-calendar",
+    "route_name": "admin.rodeios.index",
+    "menu_active": "admin.rodeios*",
+    "keyword": [
+      "rodeio",
+      "eventos"
+    ]
+  },
+  "sponsors": {
+    "title": "Patrocinadores",
+    "icon": "las la-handshake",
+    "route_name": "admin.sponsors.index",
+    "menu_active": "admin.sponsors*",
+    "keyword": [
+      "patrocinadores",
+      "sponsors",
+      "marcas",
+      "logos"
+    ]
+  },
+  "modalidades": {
+    "title": "Modalidades",
+    "icon": "las la-list",
+    "route_name": "admin.modalidades.index",
+    "menu_active": "admin.modalidades*",
+    "keyword": [
+      "modalidades",
+      "categorias"
+    ]
+  },
+  "pontuacao_rodeio": {
+    "title": "Pontuação de Rodeio",
+    "icon": "las la-broadcast-tower",
+    "route_name": "admin.live_transmission.index",
+    "menu_active": "admin.live_transmission.*",
+    "keyword": [
+      "pontuacao",
+      "rodeio",
+      "placar",
+      "transmissao"
+    ]
+  },
+  "competidores": {
+    "title": "Competidores",
+    "icon": "las la-user",
+    "menu_active": [
+      "admin.competitors.index",
+      "admin.competitors.create",
+      "admin.competitors.edit",
+      "admin.competitors.show",
+      "admin.competitors.requests.*"
+    ],
+    "keyword": [
+      "competidores",
+      "atletas"
+    ],
+    "submenu": [
+      {
+        "title": "Todos",
+        "route_name": "admin.competitors.index",
+        "menu_active": "admin.competitors.index",
+        "keyword": [
+          "competidores",
+          "lista"
+        ]
+      },
+      {
+        "title": "Solicitações",
+        "route_name": "admin.competitors.requests.index",
+        "menu_active": "admin.competitors.requests.*",
+        "counter": "competitorRegistrationRequestsCount",
+        "keyword": [
+          "solicitacoes",
+          "cadastro",
+          "competidor"
+        ]
+      }
+    ]
+  },
+  "ligas": {
+    "title": "Bolão",
+    "icon": "las la-trophy",
+    "menu_active": [
+      "admin.fantasy_leagues*",
+      "admin.fantasy_prizes*"
+    ],
+    "keyword": [
+      "bolao",
+      "temporada",
+      "ligas"
+    ],
+    "submenu": [
+      {
+        "title": "Ligas",
+        "route_name": "admin.fantasy_leagues.index",
+        "menu_active": "admin.fantasy_leagues*",
+        "keyword": [
+          "bolao",
+          "ligas"
+        ]
+      },
+      {
+        "title": "Pagar bolão",
+        "route_name": "admin.fantasy_prizes.index",
+        "menu_active": "admin.fantasy_prizes*",
+        "keyword": [
+          "pagar",
+          "premios",
+          "pix"
+        ]
+      }
+    ]
+  },
+  "usuarios": {
+    "title": "Usuários",
+    "icon": "las la-users",
+    "menu_active": [
+      "admin.users*"
+    ],
+    "submenu": [
+      {
+        "title": "Todos",
+        "route_name": "admin.users.all",
+        "menu_active": "admin.users.all",
+        "keyword": [
+          "usuarios",
+          "lista"
+        ]
+      },
+      {
+        "title": "📥 Exportar Leads",
+        "route_name": "admin.users.export",
+        "menu_active": "admin.users.export",
+        "keyword": [
+          "exportar",
+          "leads",
+          "csv"
+        ]
+      },
+      {
+        "title": "E-mail não verificado",
+        "route_name": "admin.users.email.unverified",
+        "menu_active": "admin.users.email.unverified",
+        "keyword": [
+          "email",
+          "nao verificado"
+        ]
+      },
+      {
+        "title": "🤖 Bots",
+        "route_name": "admin.users.bots.index",
+        "menu_active": "admin.users.bots*",
+        "keyword": [
+          "bots",
+          "automaticos",
+          "fake"
+        ]
+      },
+      {
+        "title": "Aprovar fotos",
+        "route_name": "admin.users.profile_photos.index",
+        "menu_active": "admin.users.profile_photos.*",
+        "counter": "profilePhotoApprovalPendingCount",
+        "keyword": [
+          "fotos",
+          "aprovar",
+          "perfil",
+          "moderar"
+        ]
+      }
+    ]
+  },
+  "notificacoes": {
+    "title": "Notificações",
+    "icon": "las la-bell",
+    "menu_active": [
+      "admin.setting.notification*",
+      "admin.ads*"
+    ],
+    "submenu": [
+      {
+        "title": "Config. Email",
+        "route_name": "admin.setting.notification.email",
+        "menu_active": "admin.setting.notification.email",
+        "keyword": [
+          "email",
+          "config"
+        ]
+      },
+      {
+        "title": "Config. SMS",
+        "route_name": "admin.setting.notification.sms",
+        "menu_active": "admin.setting.notification.sms",
+        "keyword": [
+          "sms",
+          "config"
+        ]
+      },
+      {
+        "title": "Config. Push",
+        "route_name": "admin.setting.notification.push",
+        "menu_active": "admin.setting.notification.push",
+        "keyword": [
+          "push",
+          "vapid",
+          "config"
+        ]
+      },
+      {
+        "title": "Modelos de Notificação",
+        "route_name": "admin.setting.notification.templates",
+        "menu_active": "admin.setting.notification.templates",
+        "keyword": [
+          "modelos",
+          "templates",
+          "padroes"
+        ]
+      },
+      {
+        "title": "Alertas de Rodeio",
+        "route_name": "admin.setting.notification.rodeio.reminders.index",
+        "menu_active": [
+          "admin.setting.notification.rodeio.reminders.index",
+          "admin.setting.notification.rodeio.reminders.show"
+        ],
+        "keyword": [
+          "rodeio",
+          "alertas",
+          "inicio",
+          "emails"
+        ]
+      },
+      {
+        "title": "Enviar Notificação",
+        "route_name": "admin.setting.notification.notify",
+        "menu_active": "admin.setting.notification.notify",
+        "keyword": [
+          "enviar",
+          "mass",
+          "broadcast"
+        ]
+      },
+      {
+        "title": "Banners",
+        "route_name": "admin.ads.banners",
+        "menu_active": "admin.ads.banners",
+        "keyword": [
+          "banner",
+          "ads",
+          "anuncio"
+        ]
+      }
+    ]
+  }
+}

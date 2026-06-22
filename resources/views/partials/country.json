@@ -1,0 +1,42 @@
+{
+    "BR": {
+        "country": "Brazil",
+        "dial_code": "55"
+    },
+    "US": {
+        "country": "United States",
+        "dial_code": "1"
+    },
+    "PT": {
+        "country": "Portugal",
+        "dial_code": "351"
+    },
+    "GB": {
+        "country": "United Kingdom",
+        "dial_code": "44"
+    },
+    "ES": {
+        "country": "Spain",
+        "dial_code": "34"
+    },
+    "FR": {
+        "country": "France",
+        "dial_code": "33"
+    },
+    "DE": {
+        "country": "Germany",
+        "dial_code": "49"
+    },
+    "IT": {
+        "country": "Italy",
+        "dial_code": "39"
+    },
+    "AR": {
+        "country": "Argentina",
+        "dial_code": "54"
+    },
+    "UY": {
+        "country": "Uruguay",
+        "dial_code": "598"
+    }
+}

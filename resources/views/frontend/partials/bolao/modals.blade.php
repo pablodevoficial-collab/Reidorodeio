@@ -1,0 +1,6 @@
+﻿@include('frontend.partials.bolao.modals.team')
+@include('frontend.partials.bolao.modals.rules')
+@include('frontend.partials.bolao.modals.pix')
+@include('frontend.partials.bolao.modals.ranking')
+@include('frontend.partials.bolao.modals.profile')
+@include('frontend.partials.bolao.modals.coming-soon')

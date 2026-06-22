@@ -1,0 +1,12 @@
+﻿@push('style')
+<style>
+    @include('frontend.partials.bolao.styles.base')
+    @include('frontend.partials.bolao.styles.ranking')
+    @include('frontend.partials.bolao.styles.arena')
+    @include('frontend.partials.bolao.styles.loader-mobile')
+    @include('frontend.partials.bolao.styles.premium-arena')
+    @include('frontend.partials.bolao.styles.frontend-refresh')
+    @include('frontend.partials.bolao.styles.sportsbook-remix')
+    @include('frontend.partials.bolao.styles.statistics-stage')
+</style>
+@endpush

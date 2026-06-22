@@ -1,0 +1,353 @@
+/**
+ * 🎯 RR-SUBMENU - Unified Submenu Component
+ * Rei do Rodeio - Overlapping cards style
+ */
+
+/* ========================================
+   BASE CONTAINER
+======================================== */
+.rr-submenu {
+    display: flex;
+    justify-content: center;
+    padding: 0.5rem 0;
+    overflow: visible;
+    position: relative;
+}
+
+/* ========================================
+   CARD BASE
+======================================== */
+.rr-submenu__card {
+    position: relative;
+    width: 72px;
+    height: 100px;
+    background: linear-gradient(180deg, #17141d, #0f1118);
+    border-radius: 10px;
+    box-shadow: -0.4rem 0 1.2rem rgba(0,0,0,0.4);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 0.4rem;
+    color: #e2e8f0;
+    border: 1px solid rgba(255,255,255,0.08);
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: -20px;
+}
+
+.rr-submenu__card:first-child {
+    margin-left: 0;
+}
+
+/* Z-index stacking */
+.rr-submenu__card:nth-child(1) { z-index: 10; }
+.rr-submenu__card:nth-child(2) { z-index: 9; }
+.rr-submenu__card:nth-child(3) { z-index: 8; }
+.rr-submenu__card:nth-child(4) { z-index: 7; }
+.rr-submenu__card:nth-child(5) { z-index: 6; }
+.rr-submenu__card:nth-child(6) { z-index: 5; }
+.rr-submenu__card:nth-child(7) { z-index: 4; }
+.rr-submenu__card:nth-child(8) { z-index: 3; }
+
+/* Hover & Active lift */
+.rr-submenu__card:hover,
+.rr-submenu__card--active {
+    transform: translateY(-8px);
+    z-index: 20 !important;
+    border-color: rgba(59, 130, 246, 0.4);
+    box-shadow: 
+        -0.4rem 0 1.2rem rgba(0,0,0,0.5),
+        0 8px 25px rgba(59, 130, 246, 0.2);
+}
+
+/* Sibling shift on hover/active */
+.rr-submenu__card:hover ~ .rr-submenu__card,
+.rr-submenu__card--active ~ .rr-submenu__card {
+    transform: translateX(20px);
+}
+
+/* ========================================
+   CARD CONTENT
+======================================== */
+.rr-submenu__title {
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.6rem;
+    margin: 0;
+    text-align: center;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.rr-submenu__meta {
+    display: block;
+    font-size: 0.45rem;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 0.1rem;
+    text-align: center;
+}
+
+/* Progress bar */
+.rr-submenu__bar {
+    position: relative;
+    height: 3px;
+    width: 50%;
+    margin: 0.15rem auto;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.rr-submenu__bar-bg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: #2a2d35;
+    border-radius: 2px;
+}
+
+.rr-submenu__bar-fill {
+    position: absolute;
+    inset: 0;
+    width: 20%;
+    background: linear-gradient(90deg, #3b82f6, #60a5fa);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+}
+
+.rr-submenu__card:hover .rr-submenu__bar-fill,
+.rr-submenu__card--active .rr-submenu__bar-fill {
+    width: 80%;
+}
+
+/* Circle counter */
+.rr-submenu__circle {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 38px;
+    height: 38px;
+}
+
+.rr-submenu__count,
+.rr-submenu__icon {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #f8fafc;
+    z-index: 2;
+}
+
+.rr-submenu__icon i {
+    font-size: 0.85rem;
+}
+
+.rr-submenu__stroke {
+    fill: rgba(23, 20, 29, 0.8);
+    stroke: rgba(248, 250, 252, 0.3);
+    stroke-width: 6;
+    stroke-dasharray: 314;
+    stroke-dashoffset: 200;
+    transition: stroke-dashoffset 0.5s ease;
+}
+
+.rr-submenu__card:hover .rr-submenu__stroke,
+.rr-submenu__card--active .rr-submenu__stroke {
+    stroke: #3b82f6;
+    stroke-dashoffset: 100;
+}
+
+/* Pulse animation for action cards */
+.rr-submenu__stroke--pulse {
+    animation: strokePulse 2s ease-in-out infinite;
+}
+
+@keyframes strokePulse {
+    0%, 100% { stroke-opacity: 0.4; }
+    50% { stroke-opacity: 1; }
+}
+
+/* ========================================
+   VARIANT: PREMIUM (Gold theme)
+======================================== */
+.rr-submenu__card--premium {
+    background: linear-gradient(135deg, #1a1510 0%, #2d2318 50%, #1a1510 100%);
+    border-color: rgba(255, 215, 0, 0.25);
+    box-shadow: 
+        -0.4rem 0 1.2rem rgba(0,0,0,0.5),
+        0 4px 15px rgba(255, 215, 0, 0.1);
+}
+
+.rr-submenu__card--premium:hover,
+.rr-submenu__card--premium.rr-submenu__card--active {
+    border-color: rgba(255, 215, 0, 0.5);
+    box-shadow: 
+        -0.4rem 0 1.2rem rgba(0,0,0,0.5),
+        0 8px 30px rgba(255, 215, 0, 0.25),
+        0 0 15px rgba(255, 215, 0, 0.15);
+}
+
+.rr-submenu__card--premium .rr-submenu__bar-fill {
+    background: linear-gradient(90deg, #ffd700, #ffec8b);
+}
+
+.rr-submenu__card--premium:hover .rr-submenu__stroke,
+.rr-submenu__card--premium.rr-submenu__card--active .rr-submenu__stroke {
+    stroke: #ffd700;
+}
+
+/* Crown badge */
+.rr-submenu__crown {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 26px;
+    height: 26px;
+    background: linear-gradient(135deg, #ffd700, #ffb800);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 10px rgba(255, 215, 0, 0.5);
+    z-index: 25;
+    animation: crownBob 2s ease-in-out infinite;
+}
+
+.rr-submenu__crown i {
+    color: #1a1510;
+    font-size: 11px;
+}
+
+@keyframes crownBob {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-3px); }
+}
+
+/* ========================================
+   VARIANT: CREATE (Action button)
+======================================== */
+.rr-submenu__card--create {
+    background: linear-gradient(135deg, #0f2744 0%, #1a3a5c 50%, #0f2744 100%);
+    border-color: rgba(59, 130, 246, 0.3);
+    box-shadow: 
+        -0.4rem 0 1.2rem rgba(0,0,0,0.5),
+        0 4px 15px rgba(59, 130, 246, 0.15);
+}
+
+.rr-submenu__card--create:hover,
+.rr-submenu__card--create.rr-submenu__card--active {
+    border-color: rgba(59, 130, 246, 0.6);
+    box-shadow: 
+        -0.4rem 0 1.2rem rgba(0,0,0,0.5),
+        0 8px 30px rgba(59, 130, 246, 0.3),
+        0 0 15px rgba(59, 130, 246, 0.2);
+}
+
+.rr-submenu__card--create .rr-submenu__icon i {
+    color: #60a5fa;
+}
+
+.rr-submenu__card--create .rr-submenu__bar-fill {
+    background: linear-gradient(90deg, #2563eb, #3b82f6);
+}
+
+/* ========================================
+   DESKTOP (larger cards)
+======================================== */
+@media (min-width: 769px) {
+    .rr-submenu__card {
+        width: 85px;
+        height: 115px;
+        padding: 0.5rem;
+        margin-left: -22px;
+        border-radius: 12px;
+    }
+    
+    .rr-submenu__card:hover ~ .rr-submenu__card,
+    .rr-submenu__card--active ~ .rr-submenu__card {
+        transform: translateX(22px);
+    }
+    
+    .rr-submenu__title {
+        font-size: 0.68rem;
+    }
+    
+    .rr-submenu__meta {
+        font-size: 0.5rem;
+    }
+    
+    .rr-submenu__circle {
+        width: 44px;
+        height: 44px;
+    }
+    
+    .rr-submenu__count {
+        font-size: 0.75rem;
+    }
+    
+    .rr-submenu__bar {
+        height: 3px;
+        width: 55%;
+    }
+    
+    .rr-submenu__crown {
+        width: 30px;
+        height: 30px;
+        top: -14px;
+    }
+    
+    .rr-submenu__crown i {
+        font-size: 13px;
+    }
+}
+
+/* ========================================
+   MOBILE (compact)
+======================================== */
+@media (max-width: 480px) {
+    .rr-submenu__card {
+        width: 60px;
+        height: 85px;
+        margin-left: -16px;
+        padding: 0.3rem;
+    }
+    
+    .rr-submenu__card:hover ~ .rr-submenu__card,
+    .rr-submenu__card--active ~ .rr-submenu__card {
+        transform: translateX(16px);
+    }
+    
+    .rr-submenu__title {
+        font-size: 0.52rem;
+    }
+    
+    .rr-submenu__meta {
+        font-size: 0.4rem;
+    }
+    
+    .rr-submenu__circle {
+        width: 32px;
+        height: 32px;
+        bottom: 5px;
+    }
+    
+    .rr-submenu__count {
+        font-size: 0.6rem;
+    }
+    
+    .rr-submenu__crown {
+        width: 22px;
+        height: 22px;
+        top: -10px;
+    }
+    
+    .rr-submenu__crown i {
+        font-size: 9px;
+    }
+}

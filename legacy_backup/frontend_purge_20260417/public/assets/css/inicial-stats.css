@@ -1,0 +1,496 @@
+/* =================================================================
+   INICIAL STATS - CSS PARA PÁGINA DE ESTATÍSTICAS
+   ================================================================= */
+
+/* AJUSTES ESPECÍFICOS DA PÁGINA DE STATS */
+#competitorModal.rr-stats-epic-modal {
+  z-index: 2147483647 !important;
+  isolation: isolate;
+}
+
+#competitorModal.rr-stats-epic-modal .x1-arena-modal__wrapper {
+  position: relative;
+  z-index: 2147483647 !important;
+}
+.rr-cards-list {
+  margin-top: 1rem !important; /* Reduzido: Mais próximo da lupa */
+  gap: 80px 1.5rem !important; /* Mais espaço vertical entre linhas */
+}
+
+.rr-card-item {
+  margin-bottom: 40px !important;
+}
+
+/* SOBREPOSIÇÃO DE FOTOS - OVERRIDE DO PREMIUM-CARDS.CSS */
+.premium-card__photo-wrapper {
+  top: -45px !important; /* Desktop */
+  z-index: 99999 !important;
+}
+
+.premium-card__photo {
+  z-index: 100000 !important;
+}
+
+.premium-card__photo img {
+  z-index: 100001 !important;
+}
+
+.premium-card__content {
+  padding-top: 3rem !important;
+  min-height: 140px !important;
+}
+
+/* TABLET */
+@media (max-width: 767.98px) {
+  .rr-cards-list {
+    gap: 90px 1rem !important;
+  }
+  
+  .rr-card-item {
+    margin-bottom: 45px !important;
+  }
+  
+  .premium-card__photo-wrapper {
+    top: -60px !important;
+  }
+  
+  .premium-card__content {
+    padding-top: 65px !important;
+    min-height: 180px !important;
+  }
+}
+
+/* MOBILE - 3 COLUNAS FIXAS */
+@media (max-width: 639.98px) {
+  .rr-cards-list {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 70px 0.5rem !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+  
+  .rr-card-item {
+    margin-bottom: 30px !important;
+    max-width: 100% !important;
+  }
+  
+  .premium-card__photo-wrapper {
+    top: -50px !important;
+    z-index: 99999 !important;
+  }
+  
+  .premium-card__photo {
+    width: 55px !important;
+    height: 55px !important;
+    z-index: 100000 !important;
+  }
+  
+  .premium-card__photo img {
+    z-index: 100001 !important;
+  }
+  
+  .premium-card__content {
+    padding-top: 55px !important;
+    min-height: 160px !important;
+  }
+  
+  .premium-card__name {
+    font-size: 0.75rem !important;
+  }
+}
+
+/* Main Tabs */
+.rr-stats-main-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 0 1rem;
+  border-bottom: 2px solid rgba(148, 163, 184, 0.2);
+}
+
+.rr-stats-main-tab {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.75rem 1.5rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: -2px;
+}
+
+.rr-stats-main-tab:hover {
+  color: rgba(249, 115, 22, 0.8);
+}
+
+.rr-stats-main-tab--active {
+  color: #f97316;
+  border-bottom-color: #f97316;
+}
+
+.rr-stats-tab-content {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* =================================================================
+   BUSCA - MESMO PADRÃO DA ABA X1
+   ================================================================= */
+
+.rr-stats-submenu-row {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 1.25rem;
+}
+
+.rr-stats-search-wrapper {
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.rr-stats-search-wrapper--inline {
+  max-width: 560px;
+  width: 100%;
+  flex: 1 1 auto;
+}
+
+.rr-stats-search-form {
+  position: relative;
+  width: 100%;
+  height: 48px;
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 24px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 26px rgba(2, 6, 23, 0.35);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.rr-stats-search-form:focus-within {
+  border-color: rgba(249, 115, 22, 0.55);
+  box-shadow: 0 12px 28px rgba(249, 115, 22, 0.15);
+  background: rgba(15, 23, 42, 0.85);
+}
+
+.rr-stats-search-form input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0 48px 0 16px;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  color: #f8fafc;
+}
+
+.rr-stats-search-form input::placeholder {
+  color: rgba(203, 213, 225, 0.65);
+}
+
+/* Remove ícone nativo de limpar do input search (evita X duplicado) */
+.rr-stats-search-form input[type="search"]::-webkit-search-cancel-button,
+.rr-stats-search-form input[type="search"]::-webkit-search-decoration,
+.rr-stats-search-form input[type="search"]::-webkit-search-results-button,
+.rr-stats-search-form input[type="search"]::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+}
+
+.rr-stats-search-form input[type="search"] {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.rr-stats-search-icon {
+  position: absolute;
+  right: 6px;
+  top: 0;
+  width: 36px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  color: rgba(148, 163, 184, 0.9);
+  transition: color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  outline: none;
+}
+
+.rr-stats-search-icon:focus,
+.rr-stats-search-icon:focus-visible,
+.rr-stats-search-icon:active {
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.rr-stats-search-icon svg {
+  width: 18px;
+  height: 18px;
+  position: absolute;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.rr-stats-search-icon .icon-search {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+
+.rr-stats-search-icon .icon-close {
+  opacity: 0;
+  transform: scale(0) rotate(180deg);
+}
+
+.rr-stats-search-form.has-value .rr-stats-search-icon .icon-search {
+  opacity: 0;
+  transform: scale(0) rotate(-180deg);
+}
+
+.rr-stats-search-form.has-value .rr-stats-search-icon .icon-close {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+
+.rr-stats-search-icon:hover {
+  color: #f97316;
+}
+
+/* FILTROS - Componente x-rr-submenu já tem CSS próprio */
+/* Não precisa de override, o componente é self-contained */
+
+/* PAGINAÇÃO */
+.rr-stats-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2rem 1rem;
+  margin-top: 2rem;
+}
+
+.rr-stats-pagination button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rr-stats-pagination button:hover:not(:disabled) {
+  background: rgba(249, 115, 22, 0.1);
+  border-color: rgba(249, 115, 22, 0.3);
+  color: #f97316;
+}
+
+.rr-stats-pagination button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.rr-stats-pagination span {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.875rem;
+  padding: 0 0.5rem;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .rr-stats-submenu-row {
+    margin-bottom: 2rem;
+  }
+  
+  .rr-stats-submenu-row .rr-stats-search-wrapper--inline {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .rr-stats-search-form {
+    height: 44px;
+  }
+
+  .rr-stats-search-form input {
+    font-size: 14px;
+    padding: 0 44px 0 14px;
+  }
+  
+  .rr-cards-list {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
+    gap: 1.5rem !important;
+  }
+}
+
+@media (max-width: 639.98px) {
+  .rr-cards-list {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 70px 0.5rem !important;
+  }
+  
+  .rr-card-item {
+    max-width: 100%;
+  }
+}
+
+/* =================================================================
+   FORÇA OVERFLOW VISIBLE E PADRÃO UNIFORME - MÁXIMA PRIORIDADE
+   ================================================================= */
+
+/* FORÇAR OVERFLOW VISIBLE EM TODOS OS NÍVEIS */
+.rr-cards-list,
+.rr-card-item {
+  overflow: visible !important;
+}
+
+/* PADRÃO UNIFORME DESKTOP E MOBILE */
+.premium-card {
+  min-height: 160px !important;
+  height: auto !important;
+  overflow: hidden !important; /* Background não vaza */
+}
+
+.premium-card__content {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+.premium-card__photo-wrapper {
+  position: absolute !important;
+  top: -45px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 99999 !important;
+  pointer-events: none !important;
+}
+
+.premium-card__photo {
+  width: 90px !important;
+  height: 90px !important;
+  position: relative !important;
+  z-index: 100000 !important;
+}
+
+.premium-card__photo img {
+  width: 100% !important;
+  height: 100% !important;
+  position: relative !important;
+  z-index: 100001 !important;
+}
+
+.premium-card__name {
+  font-size: 0.85rem !important;
+  margin-bottom: 0.4rem !important;
+}
+
+.premium-card__btn {
+  font-size: 0.75rem !important;
+  padding: 0.4rem 0.8rem !important;
+  margin-top: 0.2rem !important;
+}
+
+/* FORÇAR 3 COLUNAS NO MOBILE */
+@media (max-width: 639.98px) {
+  .rr-cards-list {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 70px 0.5rem !important;
+    overflow: visible !important;
+    /* iOS Safari fix */
+    padding-bottom: 120px !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  .rr-card-item {
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+  
+  .premium-card {
+    overflow: visible !important;
+  }
+  
+  .premium-card__content {
+    overflow: visible !important;
+  }
+  
+  /* Fotos menores no mobile */
+  .premium-card__photo {
+    width: 55px !important;
+    height: 55px !important;
+  }
+}
+
+/* =================================================================
+   FIX iOS SAFARI - CARDS CORTADOS
+   ================================================================= */
+
+/* iOS Safe Area - evita corte pelos elementos do sistema */
+@supports (-webkit-touch-callout: none) {
+  /* iOS only */
+  .rr-cards-list {
+    padding-bottom: calc(120px + env(safe-area-inset-bottom)) !important;
+  }
+  
+  .rr-stats-pagination {
+    padding-bottom: calc(2rem + env(safe-area-inset-bottom)) !important;
+    margin-bottom: env(safe-area-inset-bottom) !important;
+  }
+  
+  /* Garante que o último row de cards não seja cortado */
+  .rr-card-item:nth-last-child(-n+3) {
+    margin-bottom: 60px !important;
+  }
+}
+
+/* Fix para viewport do iOS */
+@media screen and (max-width: 767px) {
+  /* Container principal precisa de espaço extra no final */
+  /* Última linha de cards - margem extra */
+  .rr-card-item {
+    margin-bottom: 50px !important;
+  }
+}
+
+/* ========================================
+   PREMIUM: Blue accents for stats
+======================================== */
+body.is-premium .rr-stats-main-tab:hover {
+  color: rgba(59, 130, 246, 0.8);
+}
+
+body.is-premium .rr-stats-main-tab--active {
+  color: #3b82f6;
+  border-bottom-color: #3b82f6;
+}
+
+body.is-premium .rr-stats-search-icon {
+  background: linear-gradient(135deg, #3b82f6, #60a5fa);
+}
+
+body.is-premium .rr-stats-search-form.is-open .rr-stats-search-icon {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+body.is-premium .rr-stats-pagination button:hover:not(:disabled) {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #3b82f6;
+}
