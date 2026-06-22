@@ -159,6 +159,10 @@ img { display: block; max-width: 100%; }
     margin-top: 26px;
 }
 
+.arena-hero--empty {
+    max-width: 560px;
+}
+
 @keyframes arena-progress {
     from { width: 0; }
     to { width: 100%; }
