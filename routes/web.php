@@ -5,15 +5,17 @@ use App\Http\Controllers\FacebookDataDeletionController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'frontend.home', [
-    'pageTitle' => 'Bolao Rei do Rodeio',
+    'pageTitle' => 'Rei do Rodeio',
 ])->name('home');
 
-Route::view('/bolao', 'frontend.home', [
-    'pageTitle' => 'Bolao Rei do Rodeio',
-])->name('bolao');
+Route::view('/arena', 'frontend.arena', [
+    'pageTitle' => 'Arena Rei do Rodeio',
+])->name('arena');
 
-Route::redirect('/x1', '/')->name('x1');
-Route::redirect('/estatisticas', '/#ranking')->name('stats');
+Route::redirect('/bolao', '/arena')->name('bolao');
+
+Route::redirect('/x1', '/arena')->name('x1');
+Route::redirect('/estatisticas', '/arena')->name('stats');
 Route::redirect('/inicio', '/');
 
 Route::get('/favicon.ico', function () {
@@ -46,18 +48,18 @@ Route::get('/session-heartbeat', function () {
     return response()->json(['status' => 'valid']);
 })->name('session.heartbeat');
 
-Route::redirect('/contact', '/#duvidas');
-Route::post('/contact', fn () => redirect('/#duvidas'));
-Route::redirect('/news', '/#eventos');
-Route::redirect('/cookie-policy', '/#duvidas');
+Route::redirect('/contact', '/arena');
+Route::post('/contact', fn () => redirect('/arena'));
+Route::redirect('/news', '/arena');
+Route::redirect('/cookie-policy', '/arena');
 Route::redirect('/cookie/accept', '/');
-Route::redirect('/sobrenos', '/#experiencia')->name('about');
-Route::redirect('/termos', '/#duvidas')->name('terms');
-Route::redirect('/termos-uso', '/#duvidas')->name('terms.usage');
-Route::redirect('/privacidade', '/#duvidas')->name('privacy');
-Route::redirect('/regras-fantasy', '/#como-funciona')->name('rules.fantasy');
-Route::get('/news/{slug}', fn () => redirect('/#eventos'))->name('blog.details');
-Route::get('/policy/{slug}', fn () => redirect('/#duvidas'))->name('policy.pages');
+Route::redirect('/sobrenos', '/arena')->name('about');
+Route::redirect('/termos', '/arena')->name('terms');
+Route::redirect('/termos-uso', '/arena')->name('terms.usage');
+Route::redirect('/privacidade', '/arena')->name('privacy');
+Route::redirect('/regras-fantasy', '/arena')->name('rules.fantasy');
+Route::get('/news/{slug}', fn () => redirect('/arena'))->name('blog.details');
+Route::get('/policy/{slug}', fn () => redirect('/arena'))->name('policy.pages');
 
 Route::prefix('facebook')->name('facebook.data_deletion.')->controller(FacebookDataDeletionController::class)->group(function () {
     Route::get('data-deletion', 'instructions')->name('instructions');

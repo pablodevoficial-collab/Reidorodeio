@@ -1,30 +1,25 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const links = document.querySelectorAll('[data-scroll-target]');
+    const arenaEntry = document.querySelector('[data-arena-entry]');
+    const loaderStatus = document.querySelector('[data-loader-status]');
 
-    links.forEach((link) => {
-        link.addEventListener('click', (event) => {
-            const targetId = link.getAttribute('data-scroll-target');
-            const target = targetId ? document.getElementById(targetId) : null;
-
-            if (!target) {
-                return;
-            }
-
-            event.preventDefault();
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
-    });
-
-    const header = document.querySelector('.topbar');
-
-    if (!header) {
+    if (!arenaEntry || !loaderStatus) {
         return;
     }
 
-    const syncScrolledState = () => {
-        header.classList.toggle('topbar--scrolled', window.scrollY > 14);
-    };
+    const statusMessages = [
+        'Preparando a arena do bolao...',
+        'Ajustando luz, clima e entrada...',
+        'Tudo pronto. Pode entrar.'
+    ];
 
-    syncScrolledState();
-    window.addEventListener('scroll', syncScrolledState, { passive: true });
+    window.setTimeout(() => {
+        loaderStatus.textContent = statusMessages[1];
+    }, 1100);
+
+    window.setTimeout(() => {
+        loaderStatus.textContent = statusMessages[2];
+        arenaEntry.classList.remove('is-locked');
+        arenaEntry.classList.add('is-ready');
+        arenaEntry.removeAttribute('aria-disabled');
+    }, 3000);
 });
