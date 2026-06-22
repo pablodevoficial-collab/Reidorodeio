@@ -5,13 +5,13 @@ namespace App\Http\Controllers\User\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\UserLogin;
+use App\Services\ReferralAttributionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
-use App\Services\ReferralAttributionService;
 
 class RegisterController extends Controller
 {
@@ -20,70 +20,71 @@ class RegisterController extends Controller
     ) {
     }
 
-    /**
-     * Show the registration form (fallback page)
-     */
     public function showRegistrationForm()
     {
         $pageTitle = 'Cadastro';
         return view('frontend.auth.register', compact('pageTitle'));
     }
 
-    /**
-     * Handle registration via AJAX
-     */
     public function register(Request $request)
     {
         $payload = $request->all();
+        $payload['mobile'] = $this->normalizeMobile($payload['mobile'] ?? $payload['whatsapp'] ?? null);
         $payload['cpf'] = $this->normalizeCpf($payload['cpf'] ?? null);
 
         $validator = Validator::make($payload, [
             'password' => ['required', 'confirmed', Password::min(6)],
-            'cpf' => 'required|string|size:11|unique:users,cpf',
+            'mobile' => 'required|string|min:10|max:15|unique:users,mobile',
+            'cpf' => 'nullable|string|size:11|unique:users,cpf',
             'birthdate' => 'nullable|date|before_or_equal:' . now()->subYears(18)->format('Y-m-d'),
         ], [
             'password.required' => 'Crie uma senha',
-            'password.confirmed' => 'As senhas não conferem',
-            'password.min' => 'A senha deve ter no mínimo 6 caracteres',
-            'cpf.required' => 'Informe seu CPF',
-            'cpf.size' => 'CPF deve ter 11 dígitos',
-            'cpf.unique' => 'Este CPF já está cadastrado',
-            'birthdate.date' => 'Data de nascimento inválida',
-            'birthdate.before_or_equal' => 'É necessário ter 18 anos ou mais para se cadastrar',
+            'password.confirmed' => 'As senhas nao conferem',
+            'password.min' => 'A senha deve ter no minimo 6 caracteres',
+            'mobile.required' => 'Informe seu WhatsApp',
+            'mobile.unique' => 'Este WhatsApp ja esta cadastrado',
+            'cpf.size' => 'CPF deve ter 11 digitos',
+            'cpf.unique' => 'Este CPF ja esta cadastrado',
+            'birthdate.date' => 'Data de nascimento invalida',
+            'birthdate.before_or_equal' => 'E necessario ter 18 anos ou mais para se cadastrar',
         ]);
 
         $validator->after(function ($validator) use ($payload) {
-            if (!$this->isValidCpf($payload['cpf'] ?? '')) {
-                $validator->errors()->add('cpf', 'Informe um CPF válido');
+            if (!preg_match('/^\d{10,15}$/', (string) ($payload['mobile'] ?? ''))) {
+                $validator->errors()->add('mobile', 'Informe um WhatsApp valido');
+            }
+
+            if (($payload['cpf'] ?? '') !== '' && !$this->isValidCpf($payload['cpf'])) {
+                $validator->errors()->add('cpf', 'Informe um CPF valido');
             }
         });
 
         if ($validator->fails()) {
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'errors' => $validator->errors()->all()
-                ], 422);
-            }
-            return back()->withErrors($validator)->withInput();
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()->all(),
+            ], 422);
         }
 
-        // Create user
-        $cpf = (string) $payload['cpf'];
+        $mobile = (string) $payload['mobile'];
+        $cpf = (string) ($payload['cpf'] ?? '');
+
         $user = new User();
-        $user->username = $this->generateUsernameFromCpf($cpf);
-        $user->email = $this->generateInternalEmail($cpf);
-        $user->password = Hash::make($request->password);
-        $user->cpf = $cpf;
-        $user->birthdate = $request->filled('birthdate') ? $request->birthdate : null;
+        $user->username = $this->generateUsernameFromSeed($mobile !== '' ? $mobile : $cpf);
+        $user->email = $this->generateInternalEmail($mobile !== '' ? $mobile : $cpf);
+        $user->password = Hash::make((string) $request->input('password'));
+        $user->mobile = $mobile;
+        $user->cpf = $cpf !== '' ? $cpf : null;
+        $user->firstname = $request->input('firstname');
+        $user->lastname = $request->input('lastname');
+        $user->birthdate = $request->filled('birthdate') ? $request->input('birthdate') : null;
         $user->status = 1;
-        $user->ev = 1; // Cadastro sem email real
-        $user->sv = 1; // SMS verified (disabled by default)
-        $user->ts = 0; // Two-factor disabled
-        $user->tv = 1; // Two-factor verified
-        
-        // Handle OLD referral system (ref_by)
-        $ref = $request->ref ?? session('reference');
+        $user->ev = 1;
+        $user->sv = 1;
+        $user->ts = 0;
+        $user->tv = 1;
+
+        $ref = $request->input('ref') ?? session('reference');
         if ($ref) {
             $refUser = User::where('username', $ref)->first();
             if ($refUser) {
@@ -91,28 +92,9 @@ class RegisterController extends Controller
             }
         }
 
-        // Handle NEW AFFILIATE referral system (referred_by_id)
-        // Tentar pegar código de várias fontes
-        $referralCode = $request->session()->get('referral_code') 
-            ?? $request->cookie('referral_code')
-            ?? null;
-            
-        $affiliateId = $request->session()->get('referral_affiliate_id')
-            ?? $request->cookie('referral_affiliate_id')
-            ?? null;
-        $referralToken = $request->session()->get('referral_token')
-            ?? $request->cookie('referral_token')
-            ?? null;
-        
-        \Log::info('🔍 RegisterController: Verificando código de referral', [
-            'referral_code' => $referralCode,
-            'affiliate_id_cookie' => $affiliateId,
-            'session_code' => $request->session()->get('referral_code'),
-            'cookie_code' => $request->cookie('referral_code'),
-            'session_affiliate' => $request->session()->get('referral_affiliate_id'),
-            'cookie_affiliate' => $request->cookie('referral_affiliate_id'),
-            'has_referral_token' => !empty($referralToken),
-        ]);
+        $referralCode = $request->session()->get('referral_code') ?? $request->cookie('referral_code');
+        $affiliateId = $request->session()->get('referral_affiliate_id') ?? $request->cookie('referral_affiliate_id');
+        $referralToken = $request->session()->get('referral_token') ?? $request->cookie('referral_token');
 
         $affiliate = $this->referralAttributionService->resolveAffiliate(
             $referralToken,
@@ -121,117 +103,74 @@ class RegisterController extends Controller
         );
 
         if ($affiliate) {
-            $affiliateId = $affiliate->id;
-            \Log::info('✅ Afiliado resolvido no cadastro web', [
-                'affiliate_id' => $affiliateId,
-                'code' => $affiliate->referral_code,
-                'via_token' => !empty($referralToken),
-            ]);
-        } else {
-            \Log::info('❌ Nenhum afiliado válido resolvido no cadastro web');
-        }
-        
-        // Se encontrou afiliado, vincular usuário
-        if ($affiliate) {
             $user->referred_by_id = $affiliate->user_id;
         }
-        
+
         $user->save();
 
-        // Criar registro na tabela referral_users
         if ($affiliate && $affiliateId) {
             \App\Models\ReferralUser::create([
                 'affiliate_id' => $affiliateId,
                 'referred_user_id' => $user->id,
                 'status' => 'active',
             ]);
-            
-            // Incrementar contador de referrals do afiliado
+
             $affiliate->increment('total_referrals');
             $affiliate->increment('active_referrals');
-            
-            \Log::info('🎯 Novo usuário vinculado a afiliado', [
-                'user_id' => $user->id,
-                'username' => $user->username,
-                'affiliate_id' => $affiliateId,
-                'affiliate_user_id' => $affiliate->user_id,
-            ]);
-        } else {
-            \Log::info('ℹ️ Usuário registrado sem afiliado', [
-                'user_id' => $user->id,
-                'username' => $user->username,
-            ]);
         }
 
-        // Log the user in
         Auth::login($user);
-
-        // Log the login
         $this->logUserLogin($user, $request);
 
-        if ($user->hasRealEmail()) {
-            notify($user, 'WELCOME', [
-                'fullname' => $user->username,
-                'url' => route('home'),
-            ], ['email']);
-        }
-
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Conta criada com sucesso! Bem-vindo ao Rei do Rodeio!',
-                'redirect_url' => route('home'),
-                'user' => [
-                    'id' => $user->id,
-                    'username' => $user->username,
-                    'avatar' => null,
-                    'has_real_email' => method_exists($user, 'hasRealEmail') ? $user->hasRealEmail() : false,
-                ],
-                'profile_incomplete' => false
-            ]);
-        }
-
-        return redirect()->route('home');
+        return response()->json([
+            'success' => true,
+            'message' => 'Conta criada com sucesso!',
+            'redirect_url' => route('arena'),
+            'profile_incomplete' => !$user->isProfileComplete(),
+            'user' => [
+                'id' => $user->id,
+                'username' => $user->username,
+                'mobile' => $user->mobile,
+            ],
+        ]);
     }
 
-    /**
-     * Check if username/email is available (AJAX)
-     */
     public function checkUser(Request $request)
     {
         $field = $request->input('field', 'cpf');
-        $value = $request->input('value');
+        $value = (string) $request->input('value', '');
 
-        if (!$value) {
-            return response()->json(['available' => false, 'message' => 'Valor não informado']);
+        if (!in_array($field, ['username', 'email', 'cpf', 'mobile'], true) || $value === '') {
+            return response()->json(['available' => false, 'message' => 'Campo invalido']);
         }
 
-        if (!in_array($field, ['username', 'email', 'cpf'], true)) {
-            return response()->json(['available' => false, 'message' => 'Campo inválido']);
-        }
-
-        // Sanitize CPF: remove formatting
         if ($field === 'cpf') {
-            $value = preg_replace('/\D/', '', $value);
-            if (strlen($value) !== 11) {
-                return response()->json(['available' => false, 'message' => 'CPF inválido']);
+            $value = $this->normalizeCpf($value);
+            if (strlen($value) !== 11 || !$this->isValidCpf($value)) {
+                return response()->json(['available' => false, 'message' => 'CPF invalido']);
+            }
+        }
+
+        if ($field === 'mobile') {
+            $value = $this->normalizeMobile($value);
+            if (!preg_match('/^\d{10,15}$/', $value)) {
+                return response()->json(['available' => false, 'message' => 'WhatsApp invalido']);
             }
         }
 
         $exists = User::where($field, $value)->exists();
-
-        $labels = ['username' => 'Nome de usuário', 'email' => 'Email', 'cpf' => 'CPF'];
+        $labels = ['username' => 'Nome de usuario', 'email' => 'Email', 'cpf' => 'CPF', 'mobile' => 'WhatsApp'];
         $label = $labels[$field] ?? ucfirst($field);
 
         return response()->json([
             'available' => !$exists,
-            'message' => $exists ? $label . ' já está em uso' : $label . ' disponível'
+            'message' => $exists ? $label . ' ja esta em uso' : $label . ' disponivel',
         ]);
     }
 
-    private function generateUsernameFromCpf(string $cpf): string
+    private function generateUsernameFromSeed(string $seed): string
     {
-        $suffix = substr($cpf, -6);
+        $suffix = substr($seed, -6);
         $base = 'rr_' . $suffix;
         $candidate = $base;
 
@@ -242,13 +181,13 @@ class RegisterController extends Controller
         return $candidate;
     }
 
-    private function generateInternalEmail(string $cpf): string
+    private function generateInternalEmail(string $seed): string
     {
-        $base = 'cpf' . $cpf . '@cadastro.local';
+        $base = 'cad' . $seed . '@cadastro.local';
         $candidate = $base;
 
         while (User::where('email', $candidate)->exists()) {
-            $candidate = 'cpf' . $cpf . '+' . random_int(1000, 9999) . '@cadastro.local';
+            $candidate = 'cad' . $seed . '+' . random_int(1000, 9999) . '@cadastro.local';
         }
 
         return strtolower($candidate);
@@ -259,25 +198,23 @@ class RegisterController extends Controller
         return preg_replace('/\D+/', '', (string) $cpf);
     }
 
+    private function normalizeMobile(mixed $mobile): string
+    {
+        return preg_replace('/\D+/', '', (string) $mobile);
+    }
+
     private function isValidCpf(?string $cpf): bool
     {
         $cpf = $this->normalizeCpf($cpf);
-
-        if (strlen($cpf) !== 11) {
-            return false;
-        }
-
-        if (preg_match('/^(\d)\1{10}$/', $cpf)) {
+        if (strlen($cpf) !== 11 || preg_match('/^(\d)\1{10}$/', $cpf)) {
             return false;
         }
 
         for ($t = 9; $t < 11; $t++) {
             $sum = 0;
-
             for ($i = 0; $i < $t; $i++) {
                 $sum += (int) $cpf[$i] * (($t + 1) - $i);
             }
-
             $digit = ((10 * $sum) % 11) % 10;
             if ((int) $cpf[$t] !== $digit) {
                 return false;
@@ -287,10 +224,7 @@ class RegisterController extends Controller
         return true;
     }
 
-    /**
-     * Log user login
-     */
-    protected function logUserLogin(User $user, Request $request)
+    protected function logUserLogin(User $user, Request $request): void
     {
         $ip = $request->ip();
         $exist = UserLogin::where('user_ip', $ip)->first();
@@ -314,8 +248,8 @@ class RegisterController extends Controller
         $osBrowser = osBrowser();
         $userLogin->user_id = $user->id;
         $userLogin->user_ip = $ip;
-        $userLogin->browser = @$osBrowser['browser'] ?? null;
-        $userLogin->os = @$osBrowser['os_platform'] ?? null;
+        $userLogin->browser = $osBrowser['browser'] ?? null;
+        $userLogin->os = $osBrowser['os_platform'] ?? null;
         $userLogin->save();
     }
 }

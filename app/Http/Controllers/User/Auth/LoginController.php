@@ -13,18 +13,12 @@ use Illuminate\Support\Facades\Validator;
 
 class LoginController extends Controller
 {
-    /**
-     * Show the login form (fallback page)
-     */
     public function showLoginForm()
     {
         $pageTitle = 'Login';
         return view('frontend.auth.login', compact('pageTitle'));
     }
 
-    /**
-     * Handle login via AJAX
-     */
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -32,114 +26,87 @@ class LoginController extends Controller
             'username' => 'nullable|string',
             'password' => 'required|string|min:6',
         ], [
-            'cpf.required' => 'Informe seu CPF',
             'password.required' => 'Informe sua senha',
-            'password.min' => 'A senha deve ter no mínimo 6 caracteres',
+            'password.min' => 'A senha deve ter no minimo 6 caracteres',
         ]);
 
         $validator->after(function ($validator) use ($request) {
-            $rawCpf = $request->input('cpf', $request->input('username', ''));
-            $cpf = preg_replace('/\D+/', '', (string) $rawCpf);
+            $raw = $request->input('cpf', $request->input('username', ''));
+            $identifier = preg_replace('/\D+/', '', (string) $raw);
 
-            if ($cpf === '') {
-                $validator->errors()->add('cpf', 'Informe seu CPF');
+            if ($identifier === '') {
+                $validator->errors()->add('cpf', 'Informe seu CPF ou WhatsApp');
                 return;
             }
 
-            if (strlen($cpf) !== 11) {
-                $validator->errors()->add('cpf', 'Informe um CPF válido com 11 dígitos');
+            if (!in_array(strlen($identifier), [11, 10, 12, 13, 14, 15], true)) {
+                $validator->errors()->add('cpf', 'Informe um CPF ou WhatsApp valido');
             }
         });
 
         if ($validator->fails()) {
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'errors' => $validator->errors()->all()
-                ], 422);
-            }
-            return back()->withErrors($validator)->withInput();
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()->all(),
+            ], 422);
         }
 
-        $cpf = preg_replace('/\D+/', '', (string) $request->input('cpf', $request->input('username', '')));
-        $password = $request->input('password');
+        $identifier = preg_replace('/\D+/', '', (string) $request->input('cpf', $request->input('username', '')));
+        $password = (string) $request->input('password');
 
-        $user = User::where('cpf', $cpf)->first();
+        $user = User::where('cpf', $identifier)
+            ->orWhere('mobile', $identifier)
+            ->first();
 
         if (!$user || !Hash::check($password, $user->password)) {
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'errors' => ['CPF ou senha incorretos']
-                ], 401);
-            }
-            return back()->withErrors(['cpf' => 'CPF ou senha incorretos'])->withInput();
+            return response()->json([
+                'success' => false,
+                'errors' => ['CPF, WhatsApp ou senha incorretos'],
+            ], 401);
         }
 
-        // Check if user is banned
-        if ($user->status == 0) {
-            if ($request->ajax() || $request->wantsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'errors' => ['Sua conta foi suspensa. Entre em contato com o suporte.']
-                ], 403);
-            }
-            return back()->withErrors(['cpf' => 'Sua conta foi suspensa.'])->withInput();
+        if ((int) $user->status === 0) {
+            return response()->json([
+                'success' => false,
+                'errors' => ['Sua conta foi suspensa. Entre em contato com o suporte.'],
+            ], 403);
         }
 
         Auth::login($user, $request->filled('remember'));
 
         if (Schema::hasColumn($user->getTable(), 'current_session_id')) {
-            $user->forceFill([
-                'current_session_id' => session()->getId(),
-            ])->save();
+            $user->forceFill(['current_session_id' => session()->getId()])->save();
         }
 
         $this->logUserLogin($user, $request);
 
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Login realizado com sucesso!',
-                'redirect_url' => route('home'),
-                'user' => [
-                    'id' => $user->id,
-                    'username' => $user->username,
-                    'avatar' => $user->image ? asset('assets/images/user/profile/' . $user->image) : null,
-                    'has_real_email' => method_exists($user, 'hasRealEmail') ? $user->hasRealEmail() : false,
-                ]
-            ]);
-        }
-
-        return redirect()->intended($request->input('redirect') ?: route('home'));
+        return response()->json([
+            'success' => true,
+            'message' => 'Login realizado com sucesso!',
+            'redirect_url' => route('arena'),
+            'user' => [
+                'id' => $user->id,
+                'username' => $user->username,
+                'avatar' => $user->image ? asset('assets/images/user/profile/' . $user->image) : null,
+            ],
+        ]);
     }
 
-    /**
-     * Logout user
-     */
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Logout realizado com sucesso!'
-            ]);
-        }
-
-        return redirect()->route('home');
+        return response()->json([
+            'success' => true,
+            'message' => 'Logout realizado com sucesso!',
+        ]);
     }
 
-    /**
-     * Log user login
-     */
-    protected function logUserLogin(User $user, Request $request)
+    protected function logUserLogin(User $user, Request $request): void
     {
         $userLogin = new UserLogin();
-
         if (!Schema::hasTable($userLogin->getTable())) {
             return;
         }
@@ -165,8 +132,8 @@ class LoginController extends Controller
         $osBrowser = osBrowser();
         $userLogin->user_id = $user->id;
         $userLogin->user_ip = $ip;
-        $userLogin->browser = @$osBrowser['browser'] ?? null;
-        $userLogin->os = @$osBrowser['os_platform'] ?? null;
+        $userLogin->browser = $osBrowser['browser'] ?? null;
+        $userLogin->os = $osBrowser['os_platform'] ?? null;
         $userLogin->save();
     }
 }
