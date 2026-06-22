@@ -43,6 +43,11 @@
     gap: 12px;
 }
 
+.rr-step-panel {
+    display: grid;
+    gap: 12px;
+}
+
 .rr-form-step h2 {
     margin: 0;
     font-family: 'Teko', sans-serif;
@@ -78,6 +83,35 @@
 
 .rr-form-step__feedback.is-success {
     color: #ffc96c;
+}
+
+.rr-step-button {
+    position: relative;
+    overflow: hidden;
+}
+
+.rr-step-button.is-loading {
+    pointer-events: none;
+    opacity: .88;
+}
+
+.rr-step-button.is-loading span {
+    opacity: 0;
+}
+
+.rr-step-button.is-loading::after {
+    content: '';
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 3px solid rgba(40, 20, 2, 0.22);
+    border-top-color: #281402;
+    animation: rr-spin .8s linear infinite;
+}
+
+@keyframes rr-spin {
+    to { transform: rotate(360deg); }
 }
 
 @media (max-width: 480px) {

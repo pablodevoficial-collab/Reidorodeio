@@ -9,6 +9,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const profileForm = document.querySelector('[data-profile-form]');
     const registerFeedback = document.querySelector('[data-register-feedback]');
     const profileFeedback = document.querySelector('[data-profile-feedback]');
+    const registerMobilePanel = document.querySelector('[data-step-panel="mobile"]');
+    const registerPasswordPanel = document.querySelector('[data-step-panel="password"]');
+    const profileCpfPanel = document.querySelector('[data-profile-panel="cpf"]');
+    const profileNamePanel = document.querySelector('[data-profile-panel="name"]');
+    const profileBirthdatePanel = document.querySelector('[data-profile-panel="birthdate"]');
+    const checkMobileButton = document.querySelector('[data-check-mobile]');
+    const checkCpfButton = document.querySelector('[data-check-cpf]');
+    const nextProfileButton = document.querySelector('[data-next-profile]');
 
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
 
@@ -25,6 +33,10 @@ document.addEventListener('DOMContentLoaded', () => {
             firstname: parts[0] || '',
             lastname: parts.slice(1).join(' ') || '',
         };
+    };
+    const toggleLoading = (button, loading) => {
+        if (!button) return;
+        button.classList.toggle('is-loading', loading);
     };
 
     const openModal = () => {
@@ -47,13 +59,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    registerForm?.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        showFeedback(registerFeedback, 'Verificando dados...', 'success');
-
+    checkMobileButton?.addEventListener('click', async () => {
         const mobile = digits(registerForm.mobile.value);
-        const password = registerForm.password.value;
-        const passwordConfirmation = registerForm.password_confirmation.value;
+        showFeedback(registerFeedback, 'Verificando WhatsApp...', 'success');
+        toggleLoading(checkMobileButton, true);
 
         const checkResponse = await fetch(arenaHero.dataset.checkUserUrl, {
             method: 'POST',
@@ -61,11 +70,25 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify({ field: 'mobile', value: mobile }),
         });
         const checkData = await checkResponse.json();
+        toggleLoading(checkMobileButton, false);
 
         if (!checkData.available) {
             showFeedback(registerFeedback, checkData.message, 'error');
             return;
         }
+
+        showFeedback(registerFeedback, 'WhatsApp liberado. Agora crie sua senha.', 'success');
+        registerMobilePanel.hidden = true;
+        registerPasswordPanel.hidden = false;
+    });
+
+    registerForm?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        showFeedback(registerFeedback, 'Criando conta...', 'success');
+
+        const mobile = digits(registerForm.mobile.value);
+        const password = registerForm.password.value;
+        const passwordConfirmation = registerForm.password_confirmation.value;
 
         const registerResponse = await fetch(arenaHero.dataset.registerUrl, {
             method: 'POST',
@@ -84,22 +107,44 @@ document.addEventListener('DOMContentLoaded', () => {
         profileForm.hidden = false;
     });
 
-    profileForm?.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        showFeedback(profileFeedback, 'Validando perfil...', 'success');
-
+    checkCpfButton?.addEventListener('click', async () => {
         const cpf = digits(profileForm.cpf.value);
+        showFeedback(profileFeedback, 'Verificando CPF...', 'success');
+        toggleLoading(checkCpfButton, true);
+
         const cpfCheckResponse = await fetch(arenaHero.dataset.checkUserUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
             body: JSON.stringify({ field: 'cpf', value: cpf }),
         });
         const cpfCheckData = await cpfCheckResponse.json();
+        toggleLoading(checkCpfButton, false);
 
         if (!cpfCheckData.available) {
             showFeedback(profileFeedback, cpfCheckData.message, 'error');
             return;
         }
+
+        showFeedback(profileFeedback, 'CPF liberado. Agora informe seu nome.', 'success');
+        profileCpfPanel.hidden = true;
+        profileNamePanel.hidden = false;
+    });
+
+    nextProfileButton?.addEventListener('click', () => {
+        const fullName = profileForm.fullname.value.trim();
+        if (!fullName || fullName.split(/\s+/).length < 2) {
+            showFeedback(profileFeedback, 'Informe nome e sobrenome para continuar.', 'error');
+            return;
+        }
+
+        showFeedback(profileFeedback, 'Perfeito. Falta a data de nascimento.', 'success');
+        profileNamePanel.hidden = true;
+        profileBirthdatePanel.hidden = false;
+    });
+
+    profileForm?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        showFeedback(profileFeedback, 'Finalizando perfil...', 'success');
 
         const names = splitName(profileForm.fullname.value);
         const profileResponse = await fetch(arenaHero.dataset.profileUrl, {
