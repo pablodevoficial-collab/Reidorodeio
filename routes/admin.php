@@ -4,10 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\CompetitorRegistrationRequestController as AdminCompetitorRegistrationRequestController;
 use App\Http\Controllers\Admin\ProfilePhotoApprovalController;
 
-Route::any('{any?}', function () {
-    return redirect()->route('home');
-})->where('any', '.*');
-
 // Rotas de autenticaÃ§Ã£o (admin)
 Route::namespace('Auth')->group(function () {
     Route::middleware('admin.guest')->group(function () {
@@ -519,4 +515,8 @@ Route::middleware(['admin', 'admin.permissions'])->group(function () {
         });
     });
 
+});
+
+Route::fallback(function () {
+    return redirect()->route('admin.login');
 });
