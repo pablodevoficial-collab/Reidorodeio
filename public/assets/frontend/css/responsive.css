@@ -2,12 +2,30 @@
     body {
         background:
             linear-gradient(180deg, rgba(3, 5, 8, 0.25), rgba(3, 5, 8, 0.92)),
-            url('/assets/images/backgrounds/mobilebg.png') center top / cover no-repeat fixed,
+            url('/assets/images/backgrounds/mobilebg.png') center top / cover no-repeat,
             #050608;
+    }
+
+    .loader-card,
+    .arena-hero {
+        backdrop-filter: none;
+        box-shadow: 0 14px 34px rgba(0, 0, 0, 0.34);
+    }
+
+    .arena-button.is-ready,
+    .arena-button--solid {
+        animation: none;
+        box-shadow: 0 12px 28px rgba(255, 106, 0, 0.22);
     }
 }
 
 @media (max-width: 720px) {
+    html,
+    body {
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
     .loader-card,
     .arena-hero {
         padding: 24px 18px;
@@ -34,11 +52,11 @@
     .loader-screen,
     .arena-page {
         width: min(100% - 16px, 1180px);
+        min-height: 100svh;
     }
 
     .loader-card__status,
     .arena-hero p {
         font-size: .94rem;
     }
-
 }
