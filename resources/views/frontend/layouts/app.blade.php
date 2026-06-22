@@ -10,12 +10,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Teko:wght@500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ versionedAsset('assets/frontend/css/app.css') }}">
-    <link rel="stylesheet" href="{{ versionedAsset('assets/frontend/css/arena.css') }}">
-    <link rel="stylesheet" href="{{ versionedAsset('assets/frontend/css/responsive.css') }}">
+    <link rel="stylesheet" href="{{ versionedAsset('assets/frontend/css/app.css', (string) @filemtime(public_path('assets/frontend/css/app.css'))) }}">
+    <link rel="stylesheet" href="{{ versionedAsset('assets/frontend/css/arena.css', (string) @filemtime(public_path('assets/frontend/css/arena.css'))) }}">
+    <link rel="stylesheet" href="{{ versionedAsset('assets/frontend/css/responsive.css', (string) @filemtime(public_path('assets/frontend/css/responsive.css'))) }}">
 </head>
 <body class="@yield('body-class', 'front-shell')">
     @yield('content')
-    <script src="{{ versionedAsset('assets/frontend/js/app.js') }}"></script>
+    <script src="{{ versionedAsset('assets/frontend/js/app.js', (string) @filemtime(public_path('assets/frontend/js/app.js'))) }}"></script>
 </body>
 </html>

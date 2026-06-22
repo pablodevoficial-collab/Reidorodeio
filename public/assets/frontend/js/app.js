@@ -27,11 +27,25 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     };
 
-    const openModal = () => authModal?.removeAttribute('hidden');
-    const closeModal = () => authModal?.setAttribute('hidden', 'hidden');
+    const openModal = () => {
+        if (!authModal) return;
+        authModal.removeAttribute('hidden');
+        document.body.style.overflow = 'hidden';
+    };
+
+    const closeModal = () => {
+        if (!authModal) return;
+        authModal.setAttribute('hidden', 'hidden');
+        document.body.style.overflow = '';
+    };
 
     openRegister?.addEventListener('click', openModal);
     closeModalButtons.forEach((button) => button.addEventListener('click', closeModal));
+    authModal?.addEventListener('click', (event) => {
+        if (event.target === authModal) {
+            closeModal();
+        }
+    });
 
     registerForm?.addEventListener('submit', async (event) => {
         event.preventDefault();
