@@ -2,20 +2,14 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\FacebookDataDeletionController;
-use App\Http\Controllers\FantasyLeagueOpeningReminderController;
-use App\Http\Controllers\ReferralController;
-use App\Http\Controllers\RodeioEmailReminderController;
-use App\Http\Controllers\SiteController;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'frontend.frontend', [
-    'pageTitle' => 'Bolão Rei do Rodeio',
-])->name('home');
+Route::redirect('/', '/admin')->name('home');
 
-Route::redirect('/bolao', '/?arena=bolao')->name('bolao');
-Route::redirect('/x1', '/')->name('x1');
-Route::redirect('/estatisticas', '/')->name('stats');
-Route::redirect('/inicio', '/');
+Route::redirect('/bolao', '/admin')->name('bolao');
+Route::redirect('/x1', '/admin')->name('x1');
+Route::redirect('/estatisticas', '/admin')->name('stats');
+Route::redirect('/inicio', '/admin');
 
 Route::get('/favicon.ico', function () {
     $path = public_path('assets/images/logo_icon/favicon.png');
@@ -25,11 +19,6 @@ Route::get('/favicon.ico', function () {
 
     return response('', 204);
 });
-
-Route::get('/rodeios/{rodeio}/logo', [SiteController::class, 'rodeioLogo'])->name('rodeios.logo');
-Route::get('/arena-estatisticas/data', [SiteController::class, 'arenaStatisticsData'])->name('arena.stats.data');
-Route::post('/rodeios/{rodeio}/email-reminder', [RodeioEmailReminderController::class, 'store'])->name('rodeios.email-reminder');
-Route::post('/fantasy/leagues/slots/{slot}/email-reminder', [FantasyLeagueOpeningReminderController::class, 'store'])->name('fantasy.leagues.slots.email-reminder');
 
 Route::get('/csrf-refresh', function () {
     return response()->json(['token' => csrf_token()]);
@@ -52,37 +41,25 @@ Route::get('/session-heartbeat', function () {
     return response()->json(['status' => 'valid']);
 })->name('session.heartbeat');
 
-Route::controller(SiteController::class)->group(function () {
-    Route::get('/change/{lang?}', 'changeLanguage')->name('lang');
-    Route::get('placeholder-image/{size}', 'placeholderImage')->withoutMiddleware('maintenance')->name('placeholder.image');
-    Route::get('maintenance-mode', 'maintenance')->withoutMiddleware('maintenance')->name('maintenance');
-});
-
-Route::get('/r/{code}', [ReferralController::class, 'handleReferral'])->name('referral.link');
-
-Route::redirect('/contact', '/');
+Route::redirect('/contact', '/admin');
 Route::post('/contact', function () {
-    return redirect()->route('home');
+    return redirect('/admin');
 });
-Route::redirect('/news', '/');
-Route::redirect('/cookie-policy', '/');
-Route::redirect('/cookie/accept', '/');
-Route::redirect('/sobrenos', '/')->name('about');
-Route::redirect('/termos', '/')->name('terms');
-Route::redirect('/termos-uso', '/')->name('terms.usage');
-Route::redirect('/privacidade', '/')->name('privacy');
-Route::redirect('/regras-fantasy', '/')->name('rules.fantasy');
-Route::get('/news/{slug}', fn () => redirect()->route('home'))->name('blog.details');
-Route::get('/policy/{slug}', fn () => redirect()->route('home'))->name('policy.pages');
+Route::redirect('/news', '/admin');
+Route::redirect('/cookie-policy', '/admin');
+Route::redirect('/cookie/accept', '/admin');
+Route::redirect('/sobrenos', '/admin')->name('about');
+Route::redirect('/termos', '/admin')->name('terms');
+Route::redirect('/termos-uso', '/admin')->name('terms.usage');
+Route::redirect('/privacidade', '/admin')->name('privacy');
+Route::redirect('/regras-fantasy', '/admin')->name('rules.fantasy');
+Route::get('/news/{slug}', fn () => redirect('/admin'))->name('blog.details');
+Route::get('/policy/{slug}', fn () => redirect('/admin'))->name('policy.pages');
 
 Route::prefix('facebook')->name('facebook.data_deletion.')->controller(FacebookDataDeletionController::class)->group(function () {
     Route::get('data-deletion', 'instructions')->name('instructions');
     Route::post('data-deletion', 'callback')->name('callback');
     Route::get('data-deletion/status/{code}', 'status')->name('status');
-});
-
-Route::middleware(['auth'])->prefix('web/fantasy')->name('web.fantasy.')->group(function () {
-    Route::get('/my-teams', [\App\Http\Controllers\Api\FantasyLeagueApiController::class, 'myTeams'])->name('my-teams');
 });
 
 Route::middleware(['admin'])->prefix('admin')->name('admin.')->group(function () {

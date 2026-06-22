@@ -52,3 +52,4 @@ reset_*.php
 finalize_*.php
 *.log
 PROMPT_CHATGPT*.md
+.codex-remote-attachments/
