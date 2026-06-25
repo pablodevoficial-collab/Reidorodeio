@@ -25,6 +25,16 @@ class FantasyLeagueApiController extends Controller
         return Schema::hasTable('sponsors') && Schema::hasColumn('fantasy_leagues', 'organizer_sponsor_id');
     }
 
+    private function fantasyLeagueStatusSupported(): bool
+    {
+        return Schema::hasColumn('fantasy_leagues', 'status');
+    }
+
+    private function fantasyLeagueFinalizedAtSupported(): bool
+    {
+        return Schema::hasColumn('fantasy_leagues', 'finalized_at');
+    }
+
     private function modalidadeIsFinalizada(int $modalidadeId): bool
     {
         if ($modalidadeId <= 0) {
@@ -181,50 +191,71 @@ class FantasyLeagueApiController extends Controller
 
     private function countEligibleCompetitorsForLeague(FantasyLeague $league, bool $onlyAvailable = true): int
     {
-        if (!$league->modalidade_id || !Schema::hasTable('competitor_modalidade')) {
+        if (
+            !$league->modalidade_id ||
+            !Schema::hasTable('competitor_modalidade') ||
+            !Schema::hasTable('competitors')
+        ) {
             return 0;
         }
 
-        $query = DB::table('competitor_modalidade as cm')
-            ->join('competitors as c', 'c.id', '=', 'cm.competitor_id')
-            ->where('cm.modalidade_id', (int) $league->modalidade_id)
-            ->where('c.status', 'ativo')
-            ->when($onlyAvailable, fn ($q) => $q->where('cm.disponivel_participacao', 1));
+        try {
+            $query = DB::table('competitor_modalidade as cm')
+                ->join('competitors as c', 'c.id', '=', 'cm.competitor_id')
+                ->where('cm.modalidade_id', (int) $league->modalidade_id)
+                ->where('c.status', 'ativo');
 
-        $canJoinStats = Schema::hasTable('competitor_stats') && $league->rodeio_id;
-        if ($canJoinStats) {
-            $query->leftJoin('competitor_stats as cs', function ($join) use ($league) {
-                $join->on('cs.competitor_id', '=', 'c.id')
-                    ->where('cs.rodeio_id', '=', (int) $league->rodeio_id)
-                    ->where('cs.modalidade_id', '=', (int) $league->modalidade_id);
-            });
+            if ($onlyAvailable && Schema::hasColumn('competitor_modalidade', 'disponivel_participacao')) {
+                $query->where('cm.disponivel_participacao', 1);
+            }
 
-            $query->where(function ($q) {
-                $q->whereNull('cs.id')
-                    ->orWhere('cs.is_finalized', false)
-                    ->orWhere('cs.tipo_fase', 'classificatoria');
-            });
+            $canJoinStats = Schema::hasTable('competitor_stats') && $league->rodeio_id;
+            $hasStatsFinalized = Schema::hasColumn('competitor_stats', 'is_finalized');
+            $hasStatsPhase = Schema::hasColumn('competitor_stats', 'tipo_fase');
+            if ($canJoinStats) {
+                $query->leftJoin('competitor_stats as cs', function ($join) use ($league) {
+                    $join->on('cs.competitor_id', '=', 'c.id')
+                        ->where('cs.rodeio_id', '=', (int) $league->rodeio_id)
+                        ->where('cs.modalidade_id', '=', (int) $league->modalidade_id);
+                });
+
+                if ($hasStatsFinalized || $hasStatsPhase) {
+                    $query->where(function ($q) use ($hasStatsFinalized, $hasStatsPhase) {
+                        $q->whereNull('cs.id');
+
+                        if ($hasStatsFinalized) {
+                            $q->orWhere('cs.is_finalized', false);
+                        }
+
+                        if ($hasStatsPhase) {
+                            $q->orWhere('cs.tipo_fase', 'classificatoria');
+                        }
+                    });
+                }
+            }
+
+            $hasPivotDivisao = Schema::hasColumn('competitor_modalidade', 'divisao');
+            $leagueDivisao = trim((string) ($league->divisao ?? ''));
+            $modalidade = $league->modalidade;
+            $isClassificatoria = $modalidade && in_array($modalidade->status, ['classificatoria', 'programado']);
+            $hasAssignedDivisions = false;
+
+            if ($hasPivotDivisao && !$isClassificatoria) {
+                $hasAssignedDivisions = DB::table('competitor_modalidade')
+                    ->where('modalidade_id', (int) $league->modalidade_id)
+                    ->whereNotNull('divisao')
+                    ->where('divisao', '!=', '')
+                    ->exists();
+            }
+
+            if ($leagueDivisao !== '' && $hasPivotDivisao && !$isClassificatoria && $hasAssignedDivisions) {
+                $query->where('cm.divisao', $leagueDivisao);
+            }
+
+            return (int) $query->distinct('c.id')->count('c.id');
+        } catch (\Throwable $e) {
+            return 0;
         }
-
-        $hasPivotDivisao = Schema::hasColumn('competitor_modalidade', 'divisao');
-        $leagueDivisao = trim((string) ($league->divisao ?? ''));
-        $modalidade = $league->modalidade;
-        $isClassificatoria = $modalidade && in_array($modalidade->status, ['classificatoria', 'programado']);
-        $hasAssignedDivisions = false;
-
-        if ($hasPivotDivisao && !$isClassificatoria) {
-            $hasAssignedDivisions = DB::table('competitor_modalidade')
-                ->where('modalidade_id', (int) $league->modalidade_id)
-                ->whereNotNull('divisao')
-                ->where('divisao', '!=', '')
-                ->exists();
-        }
-
-        if ($leagueDivisao !== '' && $hasPivotDivisao && !$isClassificatoria && $hasAssignedDivisions) {
-            $query->where('cm.divisao', $leagueDivisao);
-        }
-
-        return (int) $query->distinct('c.id')->count('c.id');
     }
 
     private function leagueHasMinimumCompetitors(FantasyLeague $league): bool
@@ -271,11 +302,16 @@ class FantasyLeagueApiController extends Controller
     private function fetchLeagues(array $validated, bool $onlyActive, bool $onlyLive): array
     {
         $supportsOrganizerSponsor = $this->organizerSponsorSupported();
+        $supportsLeagueStatus = $this->fantasyLeagueStatusSupported();
+        $supportsFinalizedAt = $this->fantasyLeagueFinalizedAtSupported();
         $query = FantasyLeague::query()
             ->when($onlyActive, fn ($q) => $q->where(function ($q2) {
                 // Include active leagues AND recently finalized ones
-                $q2->where('is_active', true)
-                    ->orWhere('status', 'finalized');
+                $q2->where('is_active', true);
+
+                if ($this->fantasyLeagueStatusSupported()) {
+                    $q2->orWhere('status', 'finalized');
+                }
             }))
             ->when(isset($validated['rodeio_id']), fn ($q) => $q->where('rodeio_id', (int) $validated['rodeio_id']))
             ->when(isset($validated['modalidade_id']), fn ($q) => $q->where('modalidade_id', (int) $validated['modalidade_id']))
@@ -306,7 +342,7 @@ class FantasyLeagueApiController extends Controller
             ->withCount('teams')
             ->orderByDesc('id');
 
-        return $query->get()->map(function (FantasyLeague $league) {
+        return $query->get()->map(function (FantasyLeague $league) use ($supportsOrganizerSponsor, $supportsLeagueStatus, $supportsFinalizedAt) {
             $teams = (int) ($league->teams_count ?? 0);
             $price = (float) ($league->price ?? 0);
             $availableCompetitorsCount = $this->countEligibleCompetitorsForLeague($league);
@@ -399,9 +435,9 @@ class FantasyLeagueApiController extends Controller
                 'total_prize' => $league->total_prize !== null ? number_format((float) $league->total_prize, 2, '.', '') : null,
                 'is_premium' => (bool) $league->is_premium,
                 'is_active' => (bool) $league->is_active,
-                'status' => $league->status ?? 'active',
-                'event_finalized' => $league->status === 'finalized',
-                'finalized_at' => $league->finalized_at?->toIso8601String(),
+                'status' => $supportsLeagueStatus ? ($league->status ?? 'active') : 'active',
+                'event_finalized' => $supportsLeagueStatus ? ($league->status === 'finalized') : false,
+                'finalized_at' => $supportsFinalizedAt ? $league->finalized_at?->toIso8601String() : null,
                 'max_users' => $league->max_users,
                 'teams_count' => (int) ($league->teams_count ?? 0),
                 'available_competitors_count' => $availableCompetitorsCount,
