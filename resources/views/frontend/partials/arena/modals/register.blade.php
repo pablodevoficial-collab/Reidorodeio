@@ -5,13 +5,13 @@
         <form class="rr-form-step" data-register-form>
             <div class="rr-step-panel" data-step-panel="mobile">
                 <h2>Receba avisos da arena</h2>
-                <p>Digite seu WhatsApp para verificar se ele ja esta disponivel.</p>
+                <p>Digite seu WhatsApp para verificar se ele já está disponível.</p>
                 <input type="text" name="mobile" placeholder="WhatsApp" inputmode="numeric" required>
                 <button class="arena-button arena-button--solid rr-step-button" type="button" data-check-mobile><span>Verificar</span></button>
             </div>
             <div class="rr-step-panel" style="display:none" data-step-panel="password">
                 <h2>Crie sua senha</h2>
-                <p>Agora escolha a senha que sera usada no acesso a arena.</p>
+                <p>Agora escolha a senha que será usada no acesso à arena.</p>
                 <input type="password" name="password" placeholder="Senha" required>
                 <input type="password" name="password_confirmation" placeholder="Confirme a senha" required>
                 <button class="arena-button arena-button--solid rr-step-button" type="submit"><span>Continuar</span></button>
@@ -20,14 +20,14 @@
         </form>
         <form class="rr-form-step" style="display:none" data-profile-form>
             <div class="rr-step-panel" data-profile-panel="cpf">
-                <h2>Complete o perfil para receber premios</h2>
+                <h2>Complete o perfil para receber prêmios</h2>
                 <p>Vamos validar seu CPF antes de seguir.</p>
                 <input type="text" name="cpf" placeholder="CPF" inputmode="numeric" required>
                 <button class="arena-button arena-button--solid rr-step-button" type="button" data-check-cpf><span>Verificar CPF</span></button>
             </div>
             <div class="rr-step-panel" style="display:none" data-profile-panel="name">
-                <h2>Qual e o seu nome?</h2>
-                <p>Informe o nome completo do perfil que vai receber premios.</p>
+                <h2>Qual é o seu nome?</h2>
+                <p>Informe o nome completo do perfil que vai receber prêmios.</p>
                 <input type="text" name="fullname" placeholder="Nome completo" required>
                 <button class="arena-button arena-button--solid rr-step-button" type="button" data-next-profile><span>Continuar</span></button>
             </div>

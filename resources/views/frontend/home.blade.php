@@ -10,7 +10,7 @@
         <div class="loader-card__progress" aria-hidden="true">
             <span class="loader-card__bar"></span>
         </div>
-        <p class="loader-card__status" data-loader-status>Preparando a arena do bolao...</p>
+        <p class="loader-card__status" data-loader-status>Preparando a arena do bolão...</p>
         <a class="arena-button is-locked" href="{{ route('arena') }}" aria-disabled="true" data-arena-entry>
             Entrar na arena
         </a>

@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const registerData = await registerResponse.json();
 
         if (!registerResponse.ok || !registerData.success) {
-            showFeedback(registerFeedback, (registerData.errors || ['Nao foi possivel cadastrar.']).join(' '), 'error');
+            showFeedback(registerFeedback, (registerData.errors || ['Não foi possível cadastrar.']).join(' '), 'error');
             return;
         }
 
@@ -186,11 +186,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const profileData = await profileResponse.json();
 
         if (!profileResponse.ok || !profileData.success) {
-            showFeedback(profileFeedback, (profileData.errors || ['Nao foi possivel completar o perfil.']).join(' '), 'error');
+            showFeedback(profileFeedback, (profileData.errors || ['Não foi possível completar o perfil.']).join(' '), 'error');
             return;
         }
 
-        showFeedback(profileFeedback, 'Perfil completo. Voce recebera avisos dos novos eventos.', 'success');
+        showFeedback(profileFeedback, 'Perfil completo. Você receberá avisos dos novos eventos.', 'success');
         window.setTimeout(() => window.location.reload(), 900);
     });
 
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const statusMessages = [
-        'Preparando a arena do bolao...',
+        'Preparando a arena do bolão...',
         'Ajustando luz, clima e entrada...',
         'Tudo pronto. Pode entrar.'
     ];

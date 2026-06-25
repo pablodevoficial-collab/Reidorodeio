@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const show = (node, text, cls = '') => { if (!node) return; node.textContent = text || ''; node.className = `arena-board__feedback ${cls}`.trim(); };
   const money = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   const dateLabel = (v) => v ? new Date(v).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : 'Sem prazo';
-  const statusMap = { open: 'Inscricoes abertas', closed: 'Inscricoes encerradas', always_open: 'Entrada liberada' };
+  const statusMap = { open: 'Inscrições abertas', closed: 'Inscrições encerradas', always_open: 'Entrada liberada' };
   const isAuth = app.dataset.authenticated === 'true';
   const eventId = app.dataset.eventId;
   const supportUrl = app.dataset.supportUrl;
@@ -58,9 +58,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!grid) return;
     if (!leagues.length) {
       grid.innerHTML = '';
-      organizerName && (organizerName.textContent = 'Bolao oficial');
-      organizerMeta && (organizerMeta.textContent = 'Nenhum bolao encontrado');
-      show(feedback, 'Nenhum bolao oficial encontrado para este evento.', 'is-error');
+      organizerName && (organizerName.textContent = 'Bolão oficial');
+      organizerMeta && (organizerMeta.textContent = 'Nenhum bolão encontrado');
+      show(feedback, 'Nenhum bolão oficial encontrado para este evento.', 'is-error');
       return;
     }
     const featured = leagues[0];
@@ -69,8 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
       organizerLogo.dataset.fallbackSrc = fallbackLogo;
       bindImageFallbacks(organizerLogo.parentElement || organizerLogo);
     }
-    if (organizerName) organizerName.textContent = featured.organizer?.name || featured.rodeio?.nome || 'Bolao oficial';
-    if (organizerMeta) organizerMeta.textContent = featured.name || 'Bolao oficial';
+    if (organizerName) organizerName.textContent = featured.organizer?.name || featured.rodeio?.nome || 'Bolão oficial';
+    if (organizerMeta) organizerMeta.textContent = featured.name || 'Bolão oficial';
     show(feedback, 'Arena oficial carregada.');
     grid.innerHTML = leagues.map((league) => `
       <article class="arena-card">
@@ -78,13 +78,13 @@ document.addEventListener('DOMContentLoaded', () => {
           <img src="${safeImage(league.image_url || league.rodeio?.logo_url, fallbackLogo)}" data-fallback-src="${fallbackLogo}" alt="${league.name}">
           <span class="arena-card__badge">${statusMap[league.registration_status] || 'Arena oficial'}</span>
         </div>
-        <div><h3>${league.name}</h3><p>${league.modalidade?.nome || 'Bolao oficial'}${league.divisao ? ` . ${league.divisao}` : ''}${league.organizer?.name ? ` . ${league.organizer.name}` : ''}</p></div>
+        <div><h3>${league.name}</h3><p>${league.modalidade?.nome || 'Bolão oficial'}${league.divisao ? ` . ${league.divisao}` : ''}${league.organizer?.name ? ` . ${league.organizer.name}` : ''}</p></div>
         <div class="arena-card__meta">
-          <span>Premiacao<strong>${league.prize_type === 'physical' ? (league.prize_description || 'Premio fisico') : money(league.prize_pool || league.total_prize)}</strong></span>
+          <span>Premiação<strong>${league.prize_type === 'physical' ? (league.prize_description || 'Prêmio físico') : money(league.prize_pool || league.total_prize)}</strong></span>
           <span>Entradas<strong>${league.teams_count}${league.max_users ? ` / ${league.max_users}` : ''}</strong></span>
         </div>
         <div class="arena-card__foot">
-          <span>Entrada<strong>${league.is_premium ? 'Premium' : (Number(league.price) > 0 ? money(league.price) : 'Gratis')}</strong></span>
+          <span>Entrada<strong>${league.is_premium ? 'Premium' : (Number(league.price) > 0 ? money(league.price) : 'Grátis')}</strong></span>
           <span>Prazo<strong>${dateLabel(league.registration_deadline || league.closes_at)}</strong></span>
         </div>
         <div class="arena-card__actions">${cardAction(league)}</div>
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function loadLeagues() {
-    show(feedback, 'Carregando boloes oficiais...');
+    show(feedback, 'Carregando bolões oficiais...');
     try {
       let leagues = await fetchLeagues(true);
       leagues = leagues.filter((item) => item.is_active || item.event_finalized);
@@ -114,13 +114,13 @@ document.addEventListener('DOMContentLoaded', () => {
         leagues = await fetchLeagues(false);
         leagues = leagues.filter((item) => item.is_active || item.event_finalized);
         if (leagues.length) {
-          show(feedback, 'Mostrando boloes ativos da arena geral.');
+          show(feedback, 'Mostrando bolões ativos da arena geral.');
         }
       }
 
       render(leagues);
     } catch (error) {
-      show(feedback, 'Nao foi possivel carregar os boloes da arena.', 'is-error');
+      show(feedback, 'Não foi possível carregar os bolões da arena.', 'is-error');
     }
   }
 

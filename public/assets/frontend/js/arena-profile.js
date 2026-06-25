@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     form.whatsapp.value = user.mobile || '';
     form.birth_date.value = user.birth_date ? formatBirth(user.birth_date.split('-').reverse().join('')) : '';
     form.pix_key.value = user.pix_key || '';
-    if (pixTitle) pixTitle.textContent = user.pix_key ? 'Pix pronto para premiacao' : 'Cadastre sua chave Pix';
+    if (pixTitle) pixTitle.textContent = user.pix_key ? 'Pix pronto para premiação' : 'Cadastre sua chave Pix';
     if (pixCopy) pixCopy.textContent = user.pix_key ? `${user.pix_key_type || 'pix'}: ${user.pix_key}` : 'Sem chave Pix cadastrada no perfil.';
   };
 
@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await response.json();
       if (response.ok && data.user) apply(data.user);
     } catch (error) {
-      show('Nao foi possivel carregar seu perfil.', 'is-error');
+      show('Não foi possível carregar seu perfil.', 'is-error');
     }
   }
 
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
         body: payload
       });
       const data = await response.json();
-      if (!response.ok || !data.ok) throw new Error(data.message || 'Nao foi possivel salvar.');
+      if (!response.ok || !data.ok) throw new Error(data.message || 'Não foi possível salvar.');
       apply(data.user || {});
       show(data.message || 'Perfil salvo com sucesso.', 'is-success');
     } catch (error) {

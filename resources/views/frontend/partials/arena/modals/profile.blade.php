@@ -8,7 +8,7 @@
             <input type="email" name="email" placeholder="E-mail" required>
             <input type="text" name="whatsapp" placeholder="WhatsApp" required>
             <input type="text" name="birth_date" placeholder="Nascimento (DD/MM/AAAA)" required>
-            <input type="text" name="pix_key" placeholder="Chave Pix para premios" required>
+            <input type="text" name="pix_key" placeholder="Chave Pix para prêmios" required>
             <button class="arena-button arena-button--solid" type="submit">Salvar perfil</button>
             <div class="rr-form-step__feedback" data-profile-sheet-feedback></div>
         </form>

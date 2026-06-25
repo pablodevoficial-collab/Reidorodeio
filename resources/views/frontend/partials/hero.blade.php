@@ -12,11 +12,11 @@
 
     <section class="hero__content">
         <div class="hero__copy">
-            <span class="eyebrow">Arena pronta para o bolao</span>
-            <h1>Monte sua equipe com clima de rodeio grande e entrada sem enrolacao.</h1>
+            <span class="eyebrow">Arena pronta para o bol&atilde;o</span>
+            <h1>Monte sua equipe com clima de rodeio grande e entrada sem enrola&ccedil;&atilde;o.</h1>
             <p>
-                Um front direto ao ponto para o laço comprido: escolha o evento, veja a disputa e entre na montagem do time
-                com a sensacao de arena ao vivo.
+                Um front direto ao ponto para o la&ccedil;o comprido: escolha o evento, veja a disputa e entre na montagem do time
+                com a sensa&ccedil;&atilde;o de arena ao vivo.
             </p>
             <div class="hero__cta">
                 <a class="button button--gold" href="#eventos" data-scroll-target="eventos">Montar equipe agora</a>
@@ -25,7 +25,7 @@
             <ul class="hero__stats">
                 <li><strong>3 toques</strong><span>para cair na montagem</span></li>
                 <li><strong>Ao vivo</strong><span>cara de arena noturna</span></li>
-                <li><strong>Mobile first</strong><span>feito para entrar rapido</span></li>
+                <li><strong>Mobile first</strong><span>feito para entrar r&aacute;pido</span></li>
             </ul>
         </div>
 
@@ -33,13 +33,13 @@
             <div class="feature-card">
                 <span class="feature-card__label">Evento em destaque</span>
                 <h2>Circuito Rei do Rodeio</h2>
-                <p>Escolha o bolao principal, confira a fase e siga direto para escalar.</p>
+                <p>Escolha o bol&atilde;o principal, confira a fase e siga direto para escalar.</p>
                 <div class="feature-card__meta">
-                    <span>Laço comprido</span>
+                    <span>La&ccedil;o comprido</span>
                     <span>Noite decisiva</span>
-                    <span>Premiacao em alta</span>
+                    <span>Premia&ccedil;&atilde;o em alta</span>
                 </div>
-                <a class="button button--panel" href="#eventos" data-scroll-target="eventos">Escolher bolao</a>
+                <a class="button button--panel" href="#eventos" data-scroll-target="eventos">Escolher bol&atilde;o</a>
             </div>
         </aside>
     </section>

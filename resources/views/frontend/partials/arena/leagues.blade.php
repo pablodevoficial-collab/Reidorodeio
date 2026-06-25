@@ -1,9 +1,9 @@
 <section class="arena-board">
     <div class="arena-board__head">
         <div class="arena-board__title">
-            <span class="arena-board__eyebrow">Bolao oficial</span>
+            <span class="arena-board__eyebrow">Bolão oficial</span>
             <h2 data-organizer-name>Rei do Rodeio</h2>
-            <p data-organizer-meta>Nenhum bolao oficial no momento.</p>
+            <p data-organizer-meta>Nenhum bolão oficial no momento.</p>
         </div>
         <div class="arena-board__brand">
             <div class="arena-board__brand-logo" data-organizer-logo>
