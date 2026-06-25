@@ -263,6 +263,20 @@ class FantasyLeagueApiController extends Controller
         return $this->countEligibleCompetitorsForLeague($league) >= self::MIN_COMPETITORS_TO_ENABLE_ENTRY;
     }
 
+    public function indexSafe(Request $request)
+    {
+        try {
+            return $this->index($request);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'file' => basename($e->getFile()),
+                'line' => $e->getLine(),
+            ], 500);
+        }
+    }
+
     public function index(Request $request)
     {
         $validated = $request->validate([

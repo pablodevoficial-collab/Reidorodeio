@@ -40,7 +40,7 @@ Route::prefix('realtime')->middleware('throttle:api-general')->group(function ()
 });
 
 Route::prefix('fantasy')->middleware('throttle:api-general')->group(function () {
-    Route::get('/leagues', [FantasyLeagueApiController::class, 'index']);
+    Route::get('/leagues', [FantasyLeagueApiController::class, 'indexSafe']);
     Route::get('/leagues/{leagueId}', [FantasyLeagueApiController::class, 'show']);
     Route::get('/leagues/{leagueId}/available-competitors', [FantasyLeagueApiController::class, 'availableCompetitors']);
     Route::get('/leagues/{leagueId}/ranking', [FantasyLeagueApiController::class, 'leagueRanking']);
