@@ -9,11 +9,15 @@
         </div>
 
         <section class="arena-entry__stage" data-entry-stage="picker">
+            <div class="arena-entry__selection-head">
+                <strong>Seus 4 slots</strong>
+                <span data-entry-counter>0/4 selecionados</span>
+            </div>
+            <div class="arena-entry__slots" data-entry-slots></div>
             <label class="arena-entry__search">
                 <span class="arena-entry__search-icon" aria-hidden="true"></span>
                 <input type="text" placeholder="Pesquisar competidor" data-entry-search>
             </label>
-            <div class="arena-entry__slots" data-entry-slots></div>
             <div class="arena-entry__feedback" data-entry-feedback></div>
             <div class="arena-entry__list" data-entry-list></div>
             <button class="arena-button arena-button--solid" type="button" disabled data-entry-pay>
@@ -25,6 +29,7 @@
             <div class="arena-entry__payment-card">
                 <strong data-entry-payment-title>Pix gerado com sucesso</strong>
                 <p data-entry-payment-copy>Escaneie o QR Code ou copie o código Pix abaixo.</p>
+                <div class="arena-entry__payment-status" data-entry-payment-status></div>
                 <div class="arena-entry__qr" data-entry-qr-wrap>
                     <img alt="QR Code Pix" hidden data-entry-qr-image>
                     <pre hidden data-entry-qr-text></pre>
