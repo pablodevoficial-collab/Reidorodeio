@@ -8,6 +8,7 @@ use App\Models\Rodeio;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ArenaController extends Controller
@@ -230,7 +231,7 @@ class ArenaController extends Controller
             if (str_starts_with($lower, 'assets/')) {
                 $url = asset($value);
             } else {
-                $url = asset('storage/' . $value);
+                $url = Storage::disk('public')->url($value);
             }
         }
 
