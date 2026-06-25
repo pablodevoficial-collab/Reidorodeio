@@ -1,3 +1,4 @@
+<button type="button" hidden aria-hidden="true" data-open-register></button>
 <div class="rr-modal" hidden data-auth-modal>
     <div class="rr-modal__backdrop" data-close-modal></div>
     <div class="rr-modal__dialog">
