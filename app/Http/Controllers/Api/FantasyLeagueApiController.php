@@ -62,6 +62,15 @@ class FantasyLeagueApiController extends Controller
         return $url . '?v=' . $version;
     }
 
+    private function sponsorLogoUrl(?string $path): ?string
+    {
+        if (!$path) {
+            return null;
+        }
+
+        return asset('storage/' . ltrim($path, '/'));
+    }
+
     private function normalizeCompetitorFotoUrl(?string $foto): string
     {
         return publicStorageUrl($foto) ?: asset('assets/images/logo_icon/favicon.png');
@@ -278,6 +287,7 @@ class FantasyLeagueApiController extends Controller
             ->with([
                 'rodeio:id,name,logo,status_transmissao,divisao_atual,updated_at',
                 'modalidade:id,nome,tem_divisoes,divisoes',
+                'organizerSponsor:id,name,logo,url',
             ])
             ->withCount('teams')
             ->orderByDesc('id');
@@ -348,7 +358,8 @@ class FantasyLeagueApiController extends Controller
 
             $entryMode = $isPremiumLeague ? 'premium' : ($isFreeLeague ? 'free' : number_format($price, 2, '.', ''));
 
-            $imageUrl = $this->publicImageUrl($league->image);
+            $organizerLogoUrl = $league->organizerSponsor ? $this->sponsorLogoUrl($league->organizerSponsor->logo) : null;
+            $imageUrl = $organizerLogoUrl ?: $this->publicImageUrl($league->image);
             if ($imageUrl) {
                 $imageUrl .= (str_contains($imageUrl, '?') ? '&' : '?') . 'v=' . (($league->updated_at?->timestamp) ?: time());
             }
@@ -400,6 +411,12 @@ class FantasyLeagueApiController extends Controller
                     'tem_divisoes' => (bool) ($league->modalidade->tem_divisoes ?? false),
                     'divisoes' => $league->modalidade->divisoes_nomes ?? [],
                 ] : null,
+                'organizer' => $league->organizerSponsor ? [
+                    'id' => $league->organizerSponsor->id,
+                    'name' => $league->organizerSponsor->name,
+                    'logo_url' => $organizerLogoUrl,
+                    'url' => $league->organizerSponsor->url,
+                ] : null,
                 'divisao' => $league->divisao,
             ];
         })->toArray();
@@ -411,6 +428,7 @@ class FantasyLeagueApiController extends Controller
             ->with([
                 'rodeio:id,name,logo,status_transmissao,divisao_atual,updated_at',
                 'modalidade:id,nome,tem_divisoes,divisoes',
+                'organizerSponsor:id,name,logo,url',
             ])
             ->withCount('teams')
             ->find($leagueId);
@@ -483,7 +501,8 @@ class FantasyLeagueApiController extends Controller
 
         $entryMode = $isPremiumLeague ? 'premium' : ($isFreeLeague ? 'free' : number_format($price, 2, '.', ''));
 
-        $imageUrl = $this->publicImageUrl($league->image);
+        $organizerLogoUrl = $league->organizerSponsor ? $this->sponsorLogoUrl($league->organizerSponsor->logo) : null;
+        $imageUrl = $organizerLogoUrl ?: $this->publicImageUrl($league->image);
         if ($imageUrl) {
             $imageUrl .= (str_contains($imageUrl, '?') ? '&' : '?') . 'v=' . (($league->updated_at?->timestamp) ?: time());
         }
@@ -529,6 +548,12 @@ class FantasyLeagueApiController extends Controller
                     'nome' => $league->modalidade->nome,
                     'tem_divisoes' => (bool) ($league->modalidade->tem_divisoes ?? false),
                     'divisoes' => $league->modalidade->divisoes_nomes ?? [],
+                ] : null,
+                'organizer' => $league->organizerSponsor ? [
+                    'id' => $league->organizerSponsor->id,
+                    'name' => $league->organizerSponsor->name,
+                    'logo_url' => $organizerLogoUrl,
+                    'url' => $league->organizerSponsor->url,
                 ] : null,
                 'event_finalized' => $league->rodeio && $league->rodeio->status_transmissao === 'finalizado',
             ], $this->resolveEligibleVoucherCredits($request->user())),

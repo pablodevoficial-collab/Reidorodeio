@@ -18,6 +18,7 @@ class ArenaController extends Controller
             'pageTitle' => 'Arena Rei do Rodeio',
             'arenaEvent' => $arena['event'],
             'hasArenaEvent' => $arena['has_event'],
+            'supportUrl' => $this->supportUrl(),
         ]);
     }
 
@@ -123,5 +124,13 @@ class ArenaController extends Controller
         } catch (\Throwable) {
             return null;
         }
+    }
+
+    private function supportUrl(): string
+    {
+        $phone = '5547997953323';
+        $text = urlencode('Ola! Preciso de ajuda na arena oficial do bolao.');
+
+        return "https://wa.me/{$phone}?text={$text}";
     }
 }

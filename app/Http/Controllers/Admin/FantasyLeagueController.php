@@ -7,6 +7,7 @@ use App\Models\FantasyLeague;
 use App\Models\Rodeio;
 use App\Models\Modalidade;
 use App\Models\Competitor;
+use App\Models\Sponsor;
 use App\Services\FantasyLeagueOpeningReminderService;
 use App\Services\FinalizeFantasyLeagueService;
 use Illuminate\Http\UploadedFile;
@@ -54,6 +55,7 @@ class FantasyLeagueController extends Controller
             'season_id' => $validated['season_id'] ?? null,
             'rodeio_id' => isset($validated['rodeio_id']) ? (int) $validated['rodeio_id'] : null,
             'modalidade_id' => isset($validated['modalidade_id']) ? (int) $validated['modalidade_id'] : null,
+            'organizer_sponsor_id' => isset($validated['organizer_sponsor_id']) ? (int) $validated['organizer_sponsor_id'] : null,
             'divisao' => (string) ($validated['divisao'] ?? ''),
             'closes_at' => $validated['closes_at'] ?? null,
             'registration_deadline' => $validated['registration_deadline'] ?? null,
@@ -698,7 +700,8 @@ class FantasyLeagueController extends Controller
         $pageTitle = 'Adicionar Liga';
         $rodeios = Rodeio::orderBy('id', 'desc')->get(['id', 'name']);
         $modalidades = Modalidade::orderBy('id', 'desc')->get(['id', 'rodeio_id', 'nome', 'tem_divisoes', 'divisoes']);
-        return view('admin.fantasy_leagues.create', compact('pageTitle', 'rodeios', 'modalidades'));
+        $sponsors = Sponsor::query()->where('is_active', true)->orderBy('name')->get(['id', 'name']);
+        return view('admin.fantasy_leagues.create', compact('pageTitle', 'rodeios', 'modalidades', 'sponsors'));
     }
 
     public function store(Request $request, FantasyLeagueOpeningReminderService $openingReminderService)
@@ -722,6 +725,7 @@ class FantasyLeagueController extends Controller
             'season_id' => 'nullable|integer|min:1',
             'rodeio_id' => 'required|exists:rodeios,id',
             'modalidade_id' => 'required|exists:modalidades,id',
+            'organizer_sponsor_id' => 'nullable|exists:sponsors,id',
             'divisao' => 'nullable|string|max:60',
             'closes_at' => 'nullable|date',
             'registration_deadline' => 'nullable|date',
@@ -859,7 +863,8 @@ class FantasyLeagueController extends Controller
         $pageTitle = 'Editar Liga';
         $rodeios = Rodeio::orderBy('id', 'desc')->get(['id', 'name']);
         $modalidades = Modalidade::orderBy('id', 'desc')->get(['id', 'rodeio_id', 'nome', 'tem_divisoes', 'divisoes']);
-        return view('admin.fantasy_leagues.edit', compact('pageTitle', 'fantasyLeague', 'rodeios', 'modalidades'));
+        $sponsors = Sponsor::query()->where('is_active', true)->orderBy('name')->get(['id', 'name']);
+        return view('admin.fantasy_leagues.edit', compact('pageTitle', 'fantasyLeague', 'rodeios', 'modalidades', 'sponsors'));
     }
 
     public function update(Request $request, FantasyLeague $fantasyLeague, FantasyLeagueOpeningReminderService $openingReminderService)
@@ -883,6 +888,7 @@ class FantasyLeagueController extends Controller
             'season_id' => 'nullable|integer|min:1',
             'rodeio_id' => 'required|exists:rodeios,id',
             'modalidade_id' => 'required|exists:modalidades,id',
+            'organizer_sponsor_id' => 'nullable|exists:sponsors,id',
             'divisao' => 'nullable|string|max:60',
             'closes_at' => 'nullable|date',
             'registration_deadline' => 'nullable|date',

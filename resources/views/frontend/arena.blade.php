@@ -2,106 +2,47 @@
 
 @section('body-class', 'front-shell')
 
+@section('page-style')
+<link rel="stylesheet" href="{{ versionedAsset('assets/frontend/css/arena-hub.css', (string) @filemtime(public_path('assets/frontend/css/arena-hub.css'))) }}">
+<link rel="stylesheet" href="{{ versionedAsset('assets/frontend/css/arena-hub-mobile.css', (string) @filemtime(public_path('assets/frontend/css/arena-hub-mobile.css'))) }}">
+@endsection
+
 @section('content')
-<main class="arena-page">
-    <section
-        class="arena-hero {{ $hasArenaEvent ? 'arena-hero--event' : 'arena-hero--empty' }}"
-        data-arena-state
-        data-has-event="{{ $hasArenaEvent ? 'true' : 'false' }}"
-        data-arena-status-url="{{ route('arena.status') }}"
-        data-register-url="{{ route('user.register') }}"
-        data-check-user-url="{{ route('user.checkUser') }}"
-        data-profile-url="{{ route('user.profile.update') }}"
-    >
-        <img class="arena-hero__logo" src="{{ asset('assets/images/logo/logorei.png') }}" alt="Rei do Rodeio">
-        @if($hasArenaEvent)
-        <span class="arena-hero__eyebrow">{{ $arenaEvent['status_label'] }}</span>
-        <h1>{{ $arenaEvent['label'] }}</h1>
-        <p>{{ $arenaEvent['is_live'] ? 'A arena esta em movimento agora.' : 'Evento cadastrado na arena. Aguarde a abertura oficial do bolao.' }}</p>
-        <div class="arena-hero__meta">
-            @if($arenaEvent['start_label'])
-            <span>Inicio {{ $arenaEvent['start_label'] }}</span>
-            @endif
-            @if($arenaEvent['end_label'])
-            <span>Fim {{ $arenaEvent['end_label'] }}</span>
-            @endif
-        </div>
-        @else
-        <span class="arena-hero__eyebrow">Arena do bolao</span>
-        <h1>Nenhum evento agora.</h1>
-        <p>Assim que um novo evento for cadastrado, a arena volta a abrir para o bolao e para a montagem da equipe.</p>
-        @guest
-        <div class="arena-hero__actions">
-            <button class="arena-button arena-button--solid" type="button" data-open-register>Cadastre-se para receber notificacoes</button>
-        </div>
-        @endguest
-        @endif
-    </section>
+<main
+    class="arena-shell"
+    data-arena-app
+    data-has-event="{{ $hasArenaEvent ? 'true' : 'false' }}"
+    data-event-id="{{ $arenaEvent['id'] ?? '' }}"
+    data-event-name="{{ $arenaEvent['label'] ?? '' }}"
+    data-event-status="{{ $arenaEvent['status_label'] ?? '' }}"
+    data-event-start="{{ $arenaEvent['start_label'] ?? '' }}"
+    data-event-end="{{ $arenaEvent['end_label'] ?? '' }}"
+    data-arena-status-url="{{ route('arena.status') }}"
+    data-leagues-url="{{ url('/api/fantasy/leagues') }}"
+    data-login-url="{{ route('user.login') }}"
+    data-register-url="{{ route('user.register') }}"
+    data-check-user-url="{{ route('user.checkUser') }}"
+    data-profile-url="{{ route('user.profile.update') }}"
+    data-profile-api-url="{{ url('/api/fantasy/user/profile') }}"
+    data-support-url="{{ $supportUrl }}"
+    data-authenticated="{{ auth()->check() ? 'true' : 'false' }}"
+>
+    @include('frontend.partials.arena.utility-bar')
+    @include('frontend.partials.arena.hero')
+    @include('frontend.partials.arena.leagues')
 </main>
 
+@include('frontend.partials.arena.modals.rules')
+@include('frontend.partials.arena.modals.profile')
+@include('frontend.partials.arena.modals.pix')
 @guest
-<div class="rr-modal" hidden data-auth-modal>
-    <div class="rr-modal__backdrop" data-close-modal></div>
-    <div class="rr-modal__dialog">
-        <button class="rr-modal__close" type="button" data-close-modal>&times;</button>
-        <form class="rr-form-step" data-register-form>
-            <div class="rr-step-panel" data-step-panel="mobile">
-                <h2>Receba avisos da arena</h2>
-                <p>Digite seu WhatsApp para verificar se ele ja esta disponivel.</p>
-                <input type="text" name="mobile" placeholder="WhatsApp" inputmode="numeric" required>
-                <button class="arena-button arena-button--solid rr-step-button" type="button" data-check-mobile>
-                    <span>Verificar</span>
-                </button>
-            </div>
-
-            <div class="rr-step-panel" style="display:none" data-step-panel="password">
-                <h2>Crie sua senha</h2>
-                <p>Agora escolha a senha que sera usada no acesso a arena.</p>
-                <input type="password" name="password" placeholder="Senha" required>
-                <input type="password" name="password_confirmation" placeholder="Confirme a senha" required>
-                <button class="arena-button arena-button--solid rr-step-button" type="submit">
-                    <span>Continuar</span>
-                </button>
-            </div>
-
-            <div class="rr-form-step__feedback" data-register-feedback></div>
-        </form>
-
-        <form class="rr-form-step" style="display:none" data-profile-form>
-            <div class="rr-step-panel" data-profile-panel="cpf">
-                <h2>Complete o perfil para receber premios</h2>
-                <p>Vamos validar seu CPF antes de seguir.</p>
-                <input type="text" name="cpf" placeholder="CPF" inputmode="numeric" required>
-                <button class="arena-button arena-button--solid rr-step-button" type="button" data-check-cpf>
-                    <span>Verificar CPF</span>
-                </button>
-            </div>
-
-            <div class="rr-step-panel" style="display:none" data-profile-panel="name">
-                <h2>Qual e o seu nome?</h2>
-                <p>Informe o nome completo do perfil que vai receber premios.</p>
-                <input type="text" name="fullname" placeholder="Nome completo" required>
-                <button class="arena-button arena-button--solid rr-step-button" type="button" data-next-profile>
-                    <span>Continuar</span>
-                </button>
-            </div>
-
-            <div class="rr-step-panel" style="display:none" data-profile-panel="birthdate">
-                <h2>Ultimo passo</h2>
-                <p>Agora confirme sua data de nascimento.</p>
-                <input type="date" name="birthdate" required>
-                <button class="arena-button arena-button--solid rr-step-button" type="submit">
-                    <span>Finalizar cadastro</span>
-                </button>
-            </div>
-
-            <div class="rr-form-step__feedback" data-profile-feedback></div>
-        </form>
-    </div>
-</div>
+@include('frontend.partials.arena.modals.register')
 @endguest
 @endsection
 
 @section('page-script')
 <script src="{{ versionedAsset('assets/frontend/js/arena-live.js', (string) @filemtime(public_path('assets/frontend/js/arena-live.js'))) }}"></script>
+<script src="{{ versionedAsset('assets/frontend/js/arena-hub.js', (string) @filemtime(public_path('assets/frontend/js/arena-hub.js'))) }}"></script>
+<script src="{{ versionedAsset('assets/frontend/js/arena-profile.js', (string) @filemtime(public_path('assets/frontend/js/arena-profile.js'))) }}"></script>
+<script src="{{ versionedAsset('assets/frontend/js/app.js', (string) @filemtime(public_path('assets/frontend/js/app.js'))) }}"></script>
 @endsection

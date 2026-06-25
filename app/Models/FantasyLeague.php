@@ -35,6 +35,7 @@ class FantasyLeague extends Model
         'season_id',
         'rodeio_id',
         'modalidade_id',
+        'organizer_sponsor_id',
         'divisao',
         'closes_at',
         'registration_deadline',
@@ -59,6 +60,7 @@ class FantasyLeague extends Model
         'season_id' => 'integer',
         'rodeio_id' => 'integer',
         'modalidade_id' => 'integer',
+        'organizer_sponsor_id' => 'integer',
         'divisao' => 'string',
         'closes_at' => 'datetime',
         'registration_deadline' => 'datetime',
@@ -160,6 +162,11 @@ class FantasyLeague extends Model
     public function modalidade(): BelongsTo
     {
         return $this->belongsTo(Modalidade::class, 'modalidade_id');
+    }
+
+    public function organizerSponsor(): BelongsTo
+    {
+        return $this->belongsTo(Sponsor::class, 'organizer_sponsor_id');
     }
 
     public function teams(): HasMany

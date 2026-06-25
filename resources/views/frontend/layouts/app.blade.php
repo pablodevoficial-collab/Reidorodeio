@@ -13,10 +13,10 @@
     <link rel="stylesheet" href="{{ versionedAsset('assets/frontend/css/app.css', (string) @filemtime(public_path('assets/frontend/css/app.css'))) }}">
     <link rel="stylesheet" href="{{ versionedAsset('assets/frontend/css/arena.css', (string) @filemtime(public_path('assets/frontend/css/arena.css'))) }}">
     <link rel="stylesheet" href="{{ versionedAsset('assets/frontend/css/responsive.css', (string) @filemtime(public_path('assets/frontend/css/responsive.css'))) }}">
+    @yield('page-style')
 </head>
 <body class="@yield('body-class', 'front-shell')">
     @yield('content')
-    <script src="{{ versionedAsset('assets/frontend/js/app.js', (string) @filemtime(public_path('assets/frontend/js/app.js'))) }}"></script>
     @yield('page-script')
 </body>
 </html>

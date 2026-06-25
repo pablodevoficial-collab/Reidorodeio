@@ -107,6 +107,19 @@
 
                             <div class="col-md-6">
                                 <div class="fantasy-form-group">
+                                    <label><i class="las la-star"></i> @lang('Patrocinador organizador')</label>
+                                    <select name="organizer_sponsor_id" class="fantasy-form-control">
+                                        <option value="">@lang('Usar logo padrão do rodeio')</option>
+                                        @foreach(($sponsors ?? []) as $sponsor)
+                                            <option value="{{ $sponsor->id }}" @selected(old('organizer_sponsor_id') == $sponsor->id)>{{ $sponsor->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <small class="fantasy-form-help"><i class="las la-info-circle"></i> @lang('Se definido, a logo do patrocinador aparece no card deste bolão na arena.')</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="fantasy-form-group">
                                     <label><i class="las la-image"></i> @lang('Imagem do bolão')</label>
                                     <div class="fantasy-context-card">
                                         <div class="fantasy-context-card__title">@lang('Origem da imagem')</div>
