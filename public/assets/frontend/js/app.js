@@ -38,9 +38,26 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!button) return;
         button.classList.toggle('is-loading', loading);
     };
+    const resetWizard = () => {
+        if (registerForm) registerForm.reset();
+        if (profileForm) {
+            profileForm.reset();
+            profileForm.hidden = true;
+        }
+
+        if (registerMobilePanel) registerMobilePanel.hidden = false;
+        if (registerPasswordPanel) registerPasswordPanel.hidden = true;
+        if (profileCpfPanel) profileCpfPanel.hidden = false;
+        if (profileNamePanel) profileNamePanel.hidden = true;
+        if (profileBirthdatePanel) profileBirthdatePanel.hidden = true;
+
+        showFeedback(registerFeedback, '', '');
+        showFeedback(profileFeedback, '', '');
+    };
 
     const openModal = () => {
         if (!authModal) return;
+        resetWizard();
         authModal.removeAttribute('hidden');
         document.body.style.overflow = 'hidden';
     };
@@ -146,6 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
         showFeedback(profileFeedback, 'Finalizando perfil...', 'success');
 
+        const cpf = digits(profileForm.cpf.value);
         const names = splitName(profileForm.fullname.value);
         const profileResponse = await fetch(arenaHero.dataset.profileUrl, {
             method: 'POST',
