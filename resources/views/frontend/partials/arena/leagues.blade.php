@@ -2,7 +2,7 @@
     <div class="arena-board__head">
         <div>
             <span class="arena-board__eyebrow">Bolao oficial</span>
-            <h2>Boloes ativos na arena</h2>
+            <h2>Bolao ativo</h2>
         </div>
         <button class="arena-chip" type="button" data-refresh-leagues>Atualizar</button>
     </div>

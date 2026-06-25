@@ -1,15 +1,18 @@
-<section class="arena-utility">
-    <div class="arena-utility__brand">
-        <img src="{{ asset('assets/images/logo/logorei.png') }}" alt="Rei do Rodeio">
+<aside class="arena-utility">
+    <div class="arena-utility__profile">
+        <div class="arena-utility__avatar">{{ auth()->check() ? strtoupper(substr((string) auth()->user()->username, 0, 1)) : 'R' }}</div>
         <div>
-            <span>Rei do Rodeio</span>
-            <strong>Arena oficial do bolao</strong>
+            <span>{{ auth()->check() ? 'Seu acesso' : 'Arena oficial' }}</span>
+            <strong>{{ auth()->check() ? (auth()->user()->username ?? 'Perfil') : 'Rei do Rodeio' }}</strong>
         </div>
     </div>
     <div class="arena-utility__actions">
-        <button class="arena-chip" type="button" data-open-rules>Regras</button>
-        <a class="arena-chip" href="{{ $supportUrl }}" target="_blank" rel="noopener">Suporte</a>
-        <button class="arena-chip" type="button" data-open-profile>{{ auth()->check() ? 'Perfil' : 'Cadastre-se' }}</button>
-        <button class="arena-chip arena-chip--accent" type="button" data-open-pix>{{ auth()->check() ? 'Pix' : 'Entrar' }}</button>
+        <button class="arena-tool" type="button" data-open-profile>Perfil</button>
+        <button class="arena-tool" type="button" data-open-pix>Pix</button>
+        <button class="arena-tool" type="button" data-open-rules>Regras</button>
+        <a class="arena-tool" href="{{ $supportUrl }}" target="_blank" rel="noopener">Suporte</a>
     </div>
-</section>
+    @auth
+    <a class="arena-logout" href="{{ route('user.logout') }}" aria-label="Logout">↗</a>
+    @endauth
+</aside>

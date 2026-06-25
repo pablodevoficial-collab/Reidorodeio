@@ -25,11 +25,16 @@
     data-profile-url="{{ route('user.profile.update') }}"
     data-profile-api-url="{{ url('/api/fantasy/user/profile') }}"
     data-support-url="{{ $supportUrl }}"
+    data-logout-url="{{ auth()->check() ? route('user.logout') : '' }}"
     data-authenticated="{{ auth()->check() ? 'true' : 'false' }}"
 >
-    @include('frontend.partials.arena.utility-bar')
-    @include('frontend.partials.arena.hero')
-    @include('frontend.partials.arena.leagues')
+    <section class="arena-layout">
+        @include('frontend.partials.arena.utility-bar')
+        <div class="arena-main">
+            @include('frontend.partials.arena.hero')
+            @include('frontend.partials.arena.leagues')
+        </div>
+    </section>
 </main>
 
 @include('frontend.partials.arena.modals.rules')

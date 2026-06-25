@@ -1,19 +1,18 @@
 @media (max-width: 980px){
-  .arena-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .arena-stage{grid-template-columns:1fr;gap:12px}
-  .arena-stage__crest{min-height:260px}
+  .arena-layout{grid-template-columns:1fr}
+  .arena-utility{position:static;order:2}
 }
 @media (max-width: 720px){
   .arena-shell{width:min(100% - 16px,1240px);padding:14px 0 34px}
   .arena-utility,.arena-stage,.arena-board,.arena-sheet{border-radius:24px}
-  .arena-utility{padding:14px;align-items:flex-start;flex-direction:column}
-  .arena-utility__brand img{width:54px}
-  .arena-utility__actions{width:100%;justify-content:flex-start}
+  .arena-utility{padding:14px}
+  .arena-utility__actions{grid-template-columns:repeat(2,minmax(0,1fr))}
   .arena-chip{flex:1 1 calc(50% - 10px)}
-  .arena-stage{padding:22px 18px}
+  .arena-stage{padding:18px 16px}
   .arena-stage h1,.arena-sheet h2{font-size:clamp(2.8rem,15vw,4.5rem)}
-  .arena-stage__meta{display:grid;grid-template-columns:1fr}
-  .arena-stage__crest img{width:min(100%,320px)}
+  .arena-stage__organizer-logo{width:70px;height:70px;border-radius:20px}
+  .arena-stage__organizer-logo img{width:54px;height:54px}
+  .arena-stage__organizer-copy strong{font-size:2rem}
   .arena-board{padding:20px 16px 22px}
   .arena-board__head{align-items:flex-start;flex-direction:column}
   .arena-grid{grid-template-columns:1fr}
@@ -22,7 +21,6 @@
   .arena-card__actions{flex-direction:column}
 }
 @media (max-width: 480px){
-  .arena-chip{flex-basis:100%}
-  .arena-stage__crest{min-height:220px}
+  .arena-tool{min-height:40px}
   .arena-sheet{width:min(100% - 12px,520px);padding:24px 16px}
 }

@@ -3,7 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!app) return;
   const grid = document.querySelector('[data-leagues-grid]');
   const feedback = document.querySelector('[data-leagues-feedback]');
-  const countMeta = document.querySelector('[data-stage-meta="count"]');
+  const organizerLogo = document.querySelector('[data-organizer-logo] img');
+  const organizerName = document.querySelector('[data-organizer-name]');
+  const organizerMeta = document.querySelector('[data-organizer-meta]');
   const openRegister = () => document.querySelector('[data-open-register]')?.click();
   const show = (node, text, cls = '') => { if (!node) return; node.textContent = text || ''; node.className = `arena-board__feedback ${cls}`.trim(); };
   const money = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -38,11 +40,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!grid) return;
     if (!leagues.length) {
       grid.innerHTML = '';
-      countMeta && (countMeta.textContent = 'Nenhum bolao encontrado');
+      organizerMeta && (organizerMeta.textContent = 'Nenhum bolao encontrado');
       show(feedback, 'Nenhum bolao oficial encontrado para este evento.', 'is-error');
       return;
     }
-    countMeta && (countMeta.textContent = `${leagues.length} bolao${leagues.length > 1 ? 'es' : ''} oficial(is)`);
+    const featured = leagues[0];
+    if (organizerLogo) organizerLogo.src = featured.organizer?.logo_url || featured.image_url || featured.rodeio?.logo_url || '/assets/images/logo/logorei.png';
+    if (organizerName) organizerName.textContent = featured.organizer?.name || featured.rodeio?.nome || featured.name || 'Organizador';
+    if (organizerMeta) organizerMeta.textContent = featured.name || 'Bolao oficial';
     show(feedback, 'Arena oficial carregada.');
     grid.innerHTML = leagues.map((league) => `
       <article class="arena-card">
