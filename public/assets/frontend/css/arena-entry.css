@@ -2,6 +2,7 @@
 .arena-entry__head{display:grid;gap:8px}
 .arena-entry__step-badge{justify-self:start;padding:7px 12px;border-radius:999px;border:1px solid rgba(255,202,114,.22);background:rgba(255,202,114,.08);color:var(--gold);font-size:.76rem;letter-spacing:.16em;text-transform:uppercase}
 .arena-entry__stage{display:grid;gap:16px}
+.arena-entry__stage[hidden]{display:none}
 .arena-entry__selection-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .arena-entry__selection-head strong{font-size:1rem}
 .arena-entry__selection-head span{font-size:.84rem;color:var(--muted)}
