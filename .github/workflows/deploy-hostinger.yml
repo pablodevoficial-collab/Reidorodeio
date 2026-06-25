@@ -1,0 +1,30 @@
+name: Deploy Hostinger
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate webhook secret
+        env:
+          HOSTINGER_WEBHOOK_URL: ${{ secrets.HOSTINGER_WEBHOOK_URL }}
+        run: |
+          if [ -z "$HOSTINGER_WEBHOOK_URL" ]; then
+            echo "HOSTINGER_WEBHOOK_URL secret is not configured."
+            exit 1
+          fi
+
+      - name: Trigger Hostinger deploy webhook
+        env:
+          HOSTINGER_WEBHOOK_URL: ${{ secrets.HOSTINGER_WEBHOOK_URL }}
+        run: |
+          curl --fail --silent --show-error \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -d "{\"ref\":\"${GITHUB_REF}\",\"sha\":\"${GITHUB_SHA}\",\"repository\":\"${GITHUB_REPOSITORY}\"}" \
+            "$HOSTINGER_WEBHOOK_URL"
