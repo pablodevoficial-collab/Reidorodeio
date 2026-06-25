@@ -20,6 +20,63 @@ class FantasyLeagueApiController extends Controller
 {
     private const MIN_COMPETITORS_TO_ENABLE_ENTRY = 8;
 
+    private function publicDiskRelativePath(?string $path): string
+    {
+        $value = trim((string) ($path ?? ''));
+        if ($value === '') {
+            return '';
+        }
+
+        $value = str_replace('\\', '/', $value);
+
+        if (preg_match('~^(https?:)?//~i', $value)) {
+            return $value;
+        }
+
+        $value = ltrim($value, '/');
+
+        if (str_starts_with(strtolower($value), 'public/')) {
+            $value = substr($value, 7);
+        }
+
+        if (str_starts_with(strtolower($value), 'storage/')) {
+            $value = substr($value, 8);
+        }
+
+        return ltrim($value, '/');
+    }
+
+    private function resolvePublicMediaUrl(?string $path): ?string
+    {
+        $relative = $this->publicDiskRelativePath($path);
+        if ($relative === '') {
+            return null;
+        }
+
+        if (preg_match('~^(https?:)?//~i', $relative)) {
+            return $relative;
+        }
+
+        if (str_starts_with(strtolower($relative), 'assets/')) {
+            return asset($relative);
+        }
+
+        $candidatePaths = [
+            storage_path('app/public/' . $relative),
+            storage_path($relative),
+            public_path('storage/' . $relative),
+            public_path($relative),
+        ];
+
+        foreach ($candidatePaths as $candidate) {
+            if (is_file($candidate)) {
+                return asset('storage/' . $relative);
+            }
+        }
+
+        return null;
+    }
+
     private function organizerSponsorSupported(): bool
     {
         return Schema::hasTable('sponsors') && Schema::hasColumn('fantasy_leagues', 'organizer_sponsor_id');
@@ -58,12 +115,7 @@ class FantasyLeagueApiController extends Controller
 
     private function publicImageUrl(?string $path): ?string
     {
-        $resolved = publicStorageUrl($path);
-        if ($resolved === '') {
-            return null;
-        }
-
-        return $resolved;
+        return $this->resolvePublicMediaUrl($path);
     }
 
     private function rodeioLogoUrl($rodeio): ?string
@@ -74,9 +126,9 @@ class FantasyLeagueApiController extends Controller
 
         $url = Route::has('rodeios.logo')
             ? route('rodeios.logo', $rodeio)
-            : publicStorageUrl($rodeio->logo);
+            : $this->resolvePublicMediaUrl($rodeio->logo);
 
-        if ($url === '') {
+        if (blank($url)) {
             return null;
         }
 
@@ -87,11 +139,7 @@ class FantasyLeagueApiController extends Controller
 
     private function sponsorLogoUrl(?string $path): ?string
     {
-        if (!$path) {
-            return null;
-        }
-
-        return asset('storage/' . ltrim($path, '/'));
+        return $this->resolvePublicMediaUrl($path);
     }
 
     private function normalizeCompetitorFotoUrl(?string $foto): string

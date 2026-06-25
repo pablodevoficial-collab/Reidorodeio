@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const app = document.querySelector('[data-arena-app]');
   if (!app) return;
+  const fallbackLogo = '/assets/images/logo/logorei.png';
   const grid = document.querySelector('[data-leagues-grid]');
   const feedback = document.querySelector('[data-leagues-feedback]');
   const organizerLogo = document.querySelector('[data-organizer-logo] img');
@@ -34,6 +35,18 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.querySelector('[data-refresh-leagues]')?.addEventListener('click', () => loadLeagues());
 
+  const safeImage = (primary, fallback) => primary || fallback || fallbackLogo;
+  const bindImageFallbacks = (scope) => {
+    if (!scope) return;
+    scope.querySelectorAll('img[data-fallback-src]').forEach((img) => {
+      img.addEventListener('error', () => {
+        const nextSrc = img.dataset.fallbackSrc || fallbackLogo;
+        if (img.src.endsWith(nextSrc)) return;
+        img.src = nextSrc;
+      }, { once: true });
+    });
+  };
+
   const cardAction = (league) => {
     if (!isAuth) return '<button class="arena-button arena-button--solid" data-card-register>Entrar para disputar</button>';
     if (!league.entry_enabled) return '<button class="arena-button arena-button--ghost" data-card-rules>Evento aguardando competidores</button>';
@@ -50,14 +63,18 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     const featured = leagues[0];
-    if (organizerLogo) organizerLogo.src = featured.organizer?.logo_url || featured.image_url || featured.rodeio?.logo_url || '/assets/images/logo/logorei.png';
+    if (organizerLogo) {
+      organizerLogo.src = safeImage(featured.organizer?.logo_url || featured.image_url || featured.rodeio?.logo_url, fallbackLogo);
+      organizerLogo.dataset.fallbackSrc = fallbackLogo;
+      bindImageFallbacks(organizerLogo.parentElement || organizerLogo);
+    }
     if (organizerName) organizerName.textContent = featured.organizer?.name || featured.rodeio?.nome || featured.name || 'Organizador';
     if (organizerMeta) organizerMeta.textContent = featured.name || 'Bolao oficial';
     show(feedback, 'Arena oficial carregada.');
     grid.innerHTML = leagues.map((league) => `
       <article class="arena-card">
         <div class="arena-card__media">
-          <img src="${league.image_url || league.rodeio?.logo_url || '/assets/images/logo/logorei.png'}" alt="${league.name}">
+          <img src="${safeImage(league.image_url || league.rodeio?.logo_url, fallbackLogo)}" data-fallback-src="${fallbackLogo}" alt="${league.name}">
           <span class="arena-card__badge">${statusMap[league.registration_status] || 'Arena oficial'}</span>
         </div>
         <div><h3>${league.name}</h3><p>${league.modalidade?.nome || 'Bolao oficial'}${league.divisao ? ` . ${league.divisao}` : ''}${league.organizer?.name ? ` . ${league.organizer.name}` : ''}</p></div>
@@ -71,6 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         <div class="arena-card__actions">${cardAction(league)}</div>
       </article>`).join('');
+    bindImageFallbacks(grid);
     grid.querySelectorAll('[data-card-register]').forEach((n) => n.addEventListener('click', openRegister));
     grid.querySelectorAll('[data-card-rules]').forEach((n) => n.addEventListener('click', () => openModal(rulesModal)));
     grid.querySelectorAll('[data-card-profile]').forEach((n) => n.addEventListener('click', () => openModal(profileModal)));
