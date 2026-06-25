@@ -3,6 +3,8 @@
 .arena-main{display:grid;gap:18px}
 .arena-utility,.arena-board,.arena-sheet{border:1px solid rgba(255,198,110,.16);border-radius:30px;background:linear-gradient(180deg,rgba(7,9,14,.92),rgba(11,13,19,.9));box-shadow:var(--shadow)}
 .arena-utility{position:sticky;top:24px;padding:16px;display:grid;gap:14px}
+.arena-utility__toggle{display:none}
+.arena-utility__panel{display:grid;gap:14px}
 .arena-utility__profile{display:flex;align-items:center;gap:12px}
 .arena-utility__avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffca72,#ff7a1a);color:#281402;font-weight:900}
 .arena-utility__profile span,.arena-board__eyebrow{display:block;color:var(--gold);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase}
@@ -44,3 +46,8 @@
 .arena-sheet__stack article{padding:14px 14px 16px;border-radius:18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05)}
 .arena-sheet__stack strong{display:block;margin-bottom:6px;color:var(--gold)}
 .arena-form input{min-height:54px;padding:0 16px;border:1px solid rgba(255,255,255,.1);border-radius:14px;background:rgba(255,255,255,.04);color:var(--text);font:inherit}
+.arena-utility__toggle-copy{display:grid;gap:4px;text-align:left}
+.arena-utility__toggle-copy span{display:block;color:var(--gold);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase}
+.arena-utility__toggle-copy strong{font-size:.98rem;color:var(--text)}
+.arena-utility__toggle-arrow{width:12px;height:12px;border-right:2px solid #ffca72;border-bottom:2px solid #ffca72;transform:rotate(-135deg);transition:transform .28s ease}
+.arena-utility.is-open .arena-utility__toggle-arrow{transform:rotate(45deg)}

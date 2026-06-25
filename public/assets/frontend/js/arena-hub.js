@@ -4,6 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const fallbackLogo = '/assets/images/logo/logorei.png';
   const grid = document.querySelector('[data-leagues-grid]');
   const feedback = document.querySelector('[data-leagues-feedback]');
+  const utility = document.querySelector('.arena-utility');
+  const utilityToggle = document.querySelector('[data-utility-toggle]');
   const organizerLogo = document.querySelector('[data-organizer-logo] img');
   const organizerName = document.querySelector('[data-organizer-name]');
   const organizerMeta = document.querySelector('[data-organizer-meta]');
@@ -34,6 +36,27 @@ document.addEventListener('DOMContentLoaded', () => {
     window.open(supportUrl, '_blank', 'noopener,noreferrer');
   });
   document.querySelector('[data-refresh-leagues]')?.addEventListener('click', () => loadLeagues());
+
+  const syncUtilityState = () => {
+    if (!utility || !utilityToggle) return;
+    const isDesktop = window.innerWidth > 720;
+    if (isDesktop) {
+      utility.classList.remove('is-open');
+      utilityToggle.setAttribute('aria-expanded', 'false');
+      return;
+    }
+    const expanded = utility.classList.contains('is-open');
+    utilityToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+  };
+
+  utilityToggle?.addEventListener('click', () => {
+    if (!utility || window.innerWidth > 720) return;
+    utility.classList.toggle('is-open');
+    syncUtilityState();
+  });
+
+  window.addEventListener('resize', syncUtilityState);
+  syncUtilityState();
 
   const safeImage = (primary, fallback) => primary || fallback || fallbackLogo;
   const bindImageFallbacks = (scope) => {

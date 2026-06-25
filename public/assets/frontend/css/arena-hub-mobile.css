@@ -5,7 +5,11 @@
 @media (max-width: 720px){
   .arena-shell{width:min(100% - 16px,1240px);padding:14px 0 34px}
   .arena-utility,.arena-board,.arena-sheet{border-radius:24px}
-  .arena-utility{padding:14px}
+  .arena-utility{padding:12px;background:rgba(8,10,16,.94)}
+  .arena-utility__toggle{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;min-height:58px;padding:0 16px;border:1px solid rgba(255,202,114,.34);border-radius:18px;background:rgba(12,14,20,.96);color:var(--text)}
+  .arena-utility__panel{max-height:0;overflow:hidden;opacity:0;transform:translateY(14px);transition:max-height .34s ease,opacity .26s ease,transform .34s ease;padding:0 2px}
+  .arena-utility.is-open .arena-utility__panel{max-height:320px;opacity:1;transform:translateY(0);padding-top:14px}
+  .arena-utility__profile{display:none}
   .arena-utility__actions{grid-template-columns:repeat(2,minmax(0,1fr))}
   .arena-chip{flex:1 1 calc(50% - 10px)}
   .arena-sheet h2{font-size:clamp(2.8rem,15vw,4.5rem)}
@@ -22,5 +26,6 @@
 }
 @media (max-width: 480px){
   .arena-tool{min-height:40px}
+  .arena-utility__actions{grid-template-columns:1fr}
   .arena-sheet{width:min(100% - 12px,520px);padding:24px 16px}
 }
