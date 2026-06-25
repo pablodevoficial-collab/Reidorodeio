@@ -10,7 +10,7 @@
 
         <section class="arena-entry__stage" data-entry-stage="picker">
             <label class="arena-entry__search">
-                <span aria-hidden="true">🔎</span>
+                <span class="arena-entry__search-icon" aria-hidden="true"></span>
                 <input type="text" placeholder="Pesquisar competidor" data-entry-search>
             </label>
             <div class="arena-entry__slots" data-entry-slots></div>

@@ -2,6 +2,8 @@
 .arena-entry__head{display:grid;gap:8px}
 .arena-entry__stage{display:grid;gap:16px}
 .arena-entry__search{display:flex;align-items:center;gap:10px;min-height:56px;padding:0 16px;border:1px solid rgba(255,255,255,.1);border-radius:18px;background:rgba(255,255,255,.04)}
+.arena-entry__search-icon{width:18px;height:18px;border:2px solid var(--gold);border-radius:50%;position:relative;flex:0 0 18px}
+.arena-entry__search-icon::after{content:'';position:absolute;width:8px;height:2px;right:-6px;bottom:-3px;background:var(--gold);transform:rotate(45deg);border-radius:2px}
 .arena-entry__search input{flex:1;border:0;background:transparent;color:var(--text);font:inherit;outline:none}
 .arena-entry__slots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
 .arena-entry__slot{min-height:110px;padding:12px;border:1px dashed rgba(255,202,114,.3);border-radius:20px;background:rgba(255,255,255,.03);display:grid;justify-items:center;align-content:center;gap:8px;text-align:center}

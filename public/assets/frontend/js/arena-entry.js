@@ -32,6 +32,10 @@ document.addEventListener('DOMContentLoaded', () => {
     node.className = `arena-entry__feedback ${cls}`.trim();
   };
   const api = (path) => `${app.dataset.fantasyBaseUrl}${path}`;
+  const qrSource = (value) => {
+    if (!value) return '';
+    return String(value).startsWith('data:image') ? value : `data:image/png;base64,${value}`;
+  };
   const jsonFetch = async (url, options = {}) => {
     const response = await fetch(url, { headers: { Accept: 'application/json', ...options.headers }, ...options });
     const data = await response.json().catch(() => ({}));
@@ -89,6 +93,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  const loadMyTeam = async (leagueId) => {
+    try {
+      const data = await jsonFetch(api(`/leagues/${leagueId}/teams/me`));
+      return data.data || null;
+    } catch (error) {
+      return null;
+    }
+  };
+
   const handleApproved = async () => {
     showStage('success');
     await loadProfile();
@@ -127,6 +140,8 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.removeAttribute('hidden');
     document.body.style.overflow = 'hidden';
     try {
+      const existingTeam = await loadMyTeam(league.id);
+      if (existingTeam) return handleApproved();
       const data = await jsonFetch(api(`/leagues/${league.id}/available-competitors?only_available=1`));
       state.all = Array.isArray(data.data) ? data.data : [];
       renderSlots();
@@ -160,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
       state.pixCode = data.qr_code || '';
       qrImage.hidden = !data.qr_code_base64;
       qrText.hidden = Boolean(data.qr_code_base64);
-      if (data.qr_code_base64) qrImage.src = data.qr_code_base64;
+      if (data.qr_code_base64) qrImage.src = qrSource(data.qr_code_base64);
       else qrText.textContent = state.pixCode || 'Pix indisponível no momento.';
       showStage('payment');
       showText(paymentFeedback, 'Aguardando confirmação do pagamento...');
