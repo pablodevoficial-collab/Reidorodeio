@@ -1,16 +1,4 @@
 <section class="arena-board">
-    <div class="arena-board__head">
-        <div class="arena-board__title">
-            <span class="arena-board__eyebrow">Bolao oficial</span>
-            <h2 data-organizer-name>{{ $arenaLeagueBrand['name'] ?? 'Rei do Rodeio' }}</h2>
-            <p data-organizer-meta>{{ $arenaLeagueBrand['meta'] ?? 'Nenhum bolao oficial no momento.' }}</p>
-        </div>
-        <div class="arena-board__brand">
-            <div class="arena-board__brand-logo" data-organizer-logo>
-                <img src="{{ $arenaLeagueBrand['logo_url'] ?? asset('assets/images/logo/logorei.png') }}" alt="Organizador da arena">
-            </div>
-        </div>
-    </div>
     <div class="arena-board__toolbar">
         <button class="arena-chip" type="button" data-refresh-leagues>Atualizar</button>
     </div>

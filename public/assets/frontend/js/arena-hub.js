@@ -7,9 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const feedback = document.querySelector('[data-leagues-feedback]');
   const utility = document.querySelector('.arena-utility');
   const utilityToggle = document.querySelector('[data-utility-toggle]');
-  const organizerLogo = document.querySelector('[data-organizer-logo] img');
-  const organizerName = document.querySelector('[data-organizer-name]');
-  const organizerMeta = document.querySelector('[data-organizer-meta]');
   const isAuth = app.dataset.authenticated === 'true';
   const eventId = app.dataset.eventId;
   const supportUrl = app.dataset.supportUrl;
@@ -91,19 +88,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!grid) return;
     if (!leagues.length) {
       grid.innerHTML = '';
-      if (organizerName) organizerName.textContent = 'Bolão oficial';
-      if (organizerMeta) organizerMeta.textContent = 'Nenhum bolão encontrado.';
       return show(feedback, 'Nenhum bolão oficial encontrado para este evento.', 'is-error');
     }
 
-    const featured = leagues[0];
-    if (organizerLogo) {
-      organizerLogo.src = safeImage(featured.organizer?.logo_url || featured.image_url || featured.rodeio?.logo_url, fallbackLogo);
-      organizerLogo.dataset.fallbackSrc = fallbackLogo;
-      bindImageFallbacks(organizerLogo.parentElement || organizerLogo);
-    }
-    if (organizerName) organizerName.textContent = featured.organizer?.name || featured.name || 'Bolão oficial';
-    if (organizerMeta) organizerMeta.textContent = featured.organizer?.name ? 'Organizador em destaque na arena' : 'Bolão oficial carregado.';
     show(feedback, 'Arena oficial carregada.');
 
     grid.innerHTML = leagues.map((league) => `
