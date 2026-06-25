@@ -17,6 +17,7 @@
 </head>
 <body class="@yield('body-class', 'front-shell')">
     @yield('content')
+    <script src="{{ versionedAsset('assets/frontend/js/app.js', (string) @filemtime(public_path('assets/frontend/js/app.js'))) }}"></script>
     @yield('page-script')
 </body>
 </html>

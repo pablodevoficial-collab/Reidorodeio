@@ -44,5 +44,4 @@
 <script src="{{ versionedAsset('assets/frontend/js/arena-live.js', (string) @filemtime(public_path('assets/frontend/js/arena-live.js'))) }}"></script>
 <script src="{{ versionedAsset('assets/frontend/js/arena-hub.js', (string) @filemtime(public_path('assets/frontend/js/arena-hub.js'))) }}"></script>
 <script src="{{ versionedAsset('assets/frontend/js/arena-profile.js', (string) @filemtime(public_path('assets/frontend/js/arena-profile.js'))) }}"></script>
-<script src="{{ versionedAsset('assets/frontend/js/app.js', (string) @filemtime(public_path('assets/frontend/js/app.js'))) }}"></script>
 @endsection
