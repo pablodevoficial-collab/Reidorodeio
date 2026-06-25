@@ -1,12 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
     const arenaEntry = document.querySelector('[data-arena-entry]');
     const loaderStatus = document.querySelector('[data-loader-status]');
-    const arenaHero = document.querySelector('.arena-hero');
+    const arenaApp = document.querySelector('[data-arena-app]');
     const authModal = document.querySelector('[data-auth-modal]');
     const openRegister = document.querySelector('[data-open-register]');
     const closeModalButtons = document.querySelectorAll('[data-close-modal]');
+    const authChoicePanel = document.querySelector('[data-auth-panel="choice"]');
+    const authChoiceFeedback = document.querySelector('[data-auth-choice-feedback]');
+    const loginForm = document.querySelector('[data-login-form]');
     const registerForm = document.querySelector('[data-register-form]');
     const profileForm = document.querySelector('[data-profile-form]');
+    const loginFeedback = document.querySelector('[data-login-feedback]');
     const registerFeedback = document.querySelector('[data-register-feedback]');
     const profileFeedback = document.querySelector('[data-profile-feedback]');
     const registerMobilePanel = document.querySelector('[data-step-panel="mobile"]');
@@ -17,6 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkMobileButton = document.querySelector('[data-check-mobile]');
     const checkCpfButton = document.querySelector('[data-check-cpf]');
     const nextProfileButton = document.querySelector('[data-next-profile]');
+    const authActionButtons = document.querySelectorAll('[data-auth-action]');
+    const authBackButtons = document.querySelectorAll('[data-auth-back]');
 
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
 
@@ -34,33 +40,67 @@ document.addEventListener('DOMContentLoaded', () => {
             lastname: parts.slice(1).join(' ') || '',
         };
     };
+
     const toggleLoading = (button, loading) => {
         if (!button) return;
         button.classList.toggle('is-loading', loading);
     };
+
     const showPanel = (node, display = 'grid') => {
         if (!node) return;
         node.style.display = display;
     };
+
     const hidePanel = (node) => {
         if (!node) return;
         node.style.display = 'none';
     };
+
     const resetWizard = () => {
-        if (registerForm) registerForm.reset();
+        loginForm?.reset();
+        registerForm?.reset();
+
         if (profileForm) {
             profileForm.reset();
             hidePanel(profileForm);
         }
 
+        showPanel(authChoicePanel);
+        hidePanel(loginForm);
+        hidePanel(registerForm);
         showPanel(registerMobilePanel);
         hidePanel(registerPasswordPanel);
         showPanel(profileCpfPanel);
         hidePanel(profileNamePanel);
         hidePanel(profileBirthdatePanel);
 
+        showFeedback(authChoiceFeedback, '', '');
+        showFeedback(loginFeedback, '', '');
         showFeedback(registerFeedback, '', '');
         showFeedback(profileFeedback, '', '');
+    };
+
+    const switchAuthFlow = (mode) => {
+        hidePanel(authChoicePanel);
+        hidePanel(loginForm);
+        hidePanel(registerForm);
+        hidePanel(profileForm);
+
+        if (mode === 'login') {
+            showPanel(loginForm);
+            loginForm?.querySelector('input[name="identifier"]')?.focus();
+            return;
+        }
+
+        if (mode === 'register') {
+            showPanel(registerForm);
+            showPanel(registerMobilePanel);
+            hidePanel(registerPasswordPanel);
+            registerForm?.querySelector('input[name="mobile"]')?.focus();
+            return;
+        }
+
+        showPanel(authChoicePanel);
     };
 
     const openModal = () => {
@@ -78,9 +118,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
     openRegister?.addEventListener('click', openModal);
     closeModalButtons.forEach((button) => button.addEventListener('click', closeModal));
+
     authModal?.addEventListener('click', (event) => {
         if (event.target === authModal) {
             closeModal();
+        }
+    });
+
+    authActionButtons.forEach((button) => {
+        button.addEventListener('click', () => switchAuthFlow(button.dataset.authAction));
+    });
+
+    authBackButtons.forEach((button) => {
+        button.addEventListener('click', resetWizard);
+    });
+
+    loginForm?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const identifier = digits(loginForm.identifier.value);
+        const password = loginForm.password.value;
+
+        if (!identifier) {
+            showFeedback(loginFeedback, 'Informe seu CPF ou WhatsApp.', 'error');
+            return;
+        }
+
+        showFeedback(loginFeedback, 'Entrando na arena...', 'success');
+        const submitButton = loginForm.querySelector('button[type="submit"]');
+        toggleLoading(submitButton, true);
+
+        try {
+            const response = await fetch(arenaApp?.dataset.loginUrl || '/user/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ cpf: identifier, password })
+            });
+
+            const data = await response.json();
+            if (!response.ok || !data.success) {
+                throw new Error((data.errors || ['Não foi possível entrar.']).join(' '));
+            }
+
+            showFeedback(loginFeedback, data.message || 'Login realizado com sucesso.', 'success');
+            window.setTimeout(() => {
+                window.location.href = data.redirect_url || window.location.href;
+            }, 400);
+        } catch (error) {
+            showFeedback(loginFeedback, error.message, 'error');
+        } finally {
+            toggleLoading(submitButton, false);
         }
     });
 
@@ -89,22 +180,31 @@ document.addEventListener('DOMContentLoaded', () => {
         showFeedback(registerFeedback, 'Verificando WhatsApp...', 'success');
         toggleLoading(checkMobileButton, true);
 
-        const checkResponse = await fetch(arenaHero.dataset.checkUserUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
-            body: JSON.stringify({ field: 'mobile', value: mobile }),
-        });
-        const checkData = await checkResponse.json();
-        toggleLoading(checkMobileButton, false);
+        try {
+            const checkResponse = await fetch(arenaApp?.dataset.checkUserUrl || '/user/check-user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ field: 'mobile', value: mobile })
+            });
+            const checkData = await checkResponse.json();
 
-        if (!checkData.available) {
-            showFeedback(registerFeedback, checkData.message, 'error');
-            return;
+            if (!checkData.available) {
+                showFeedback(registerFeedback, checkData.message, 'error');
+                return;
+            }
+
+            showFeedback(registerFeedback, 'WhatsApp liberado. Agora crie sua senha.', 'success');
+            hidePanel(registerMobilePanel);
+            showPanel(registerPasswordPanel);
+        } catch (error) {
+            showFeedback(registerFeedback, 'Não foi possível validar seu WhatsApp agora.', 'error');
+        } finally {
+            toggleLoading(checkMobileButton, false);
         }
-
-        showFeedback(registerFeedback, 'WhatsApp liberado. Agora crie sua senha.', 'success');
-        hidePanel(registerMobilePanel);
-        showPanel(registerPasswordPanel);
     });
 
     registerForm?.addEventListener('submit', async (event) => {
@@ -114,22 +214,33 @@ document.addEventListener('DOMContentLoaded', () => {
         const mobile = digits(registerForm.mobile.value);
         const password = registerForm.password.value;
         const passwordConfirmation = registerForm.password_confirmation.value;
+        const submitButton = registerForm.querySelector('button[type="submit"]');
+        toggleLoading(submitButton, true);
 
-        const registerResponse = await fetch(arenaHero.dataset.registerUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
-            body: JSON.stringify({ mobile, password, password_confirmation: passwordConfirmation }),
-        });
-        const registerData = await registerResponse.json();
+        try {
+            const registerResponse = await fetch(arenaApp?.dataset.registerUrl || '/user/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ mobile, password, password_confirmation: passwordConfirmation })
+            });
+            const registerData = await registerResponse.json();
 
-        if (!registerResponse.ok || !registerData.success) {
-            showFeedback(registerFeedback, (registerData.errors || ['Não foi possível cadastrar.']).join(' '), 'error');
-            return;
+            if (!registerResponse.ok || !registerData.success) {
+                throw new Error((registerData.errors || ['Não foi possível cadastrar.']).join(' '));
+            }
+
+            showFeedback(registerFeedback, 'Conta criada. Falta completar o perfil.', 'success');
+            hidePanel(registerForm);
+            showPanel(profileForm);
+        } catch (error) {
+            showFeedback(registerFeedback, error.message, 'error');
+        } finally {
+            toggleLoading(submitButton, false);
         }
-
-        showFeedback(registerFeedback, 'Conta criada. Falta completar o perfil.', 'success');
-        hidePanel(registerForm);
-        showPanel(profileForm);
     });
 
     checkCpfButton?.addEventListener('click', async () => {
@@ -137,22 +248,31 @@ document.addEventListener('DOMContentLoaded', () => {
         showFeedback(profileFeedback, 'Verificando CPF...', 'success');
         toggleLoading(checkCpfButton, true);
 
-        const cpfCheckResponse = await fetch(arenaHero.dataset.checkUserUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
-            body: JSON.stringify({ field: 'cpf', value: cpf }),
-        });
-        const cpfCheckData = await cpfCheckResponse.json();
-        toggleLoading(checkCpfButton, false);
+        try {
+            const cpfCheckResponse = await fetch(arenaApp?.dataset.checkUserUrl || '/user/check-user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ field: 'cpf', value: cpf })
+            });
+            const cpfCheckData = await cpfCheckResponse.json();
 
-        if (!cpfCheckData.available) {
-            showFeedback(profileFeedback, cpfCheckData.message, 'error');
-            return;
+            if (!cpfCheckData.available) {
+                showFeedback(profileFeedback, cpfCheckData.message, 'error');
+                return;
+            }
+
+            showFeedback(profileFeedback, 'CPF liberado. Agora informe seu nome.', 'success');
+            hidePanel(profileCpfPanel);
+            showPanel(profileNamePanel);
+        } catch (error) {
+            showFeedback(profileFeedback, 'Não foi possível validar seu CPF agora.', 'error');
+        } finally {
+            toggleLoading(checkCpfButton, false);
         }
-
-        showFeedback(profileFeedback, 'CPF liberado. Agora informe seu nome.', 'success');
-        hidePanel(profileCpfPanel);
-        showPanel(profileNamePanel);
     });
 
     nextProfileButton?.addEventListener('click', () => {
@@ -173,25 +293,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const cpf = digits(profileForm.cpf.value);
         const names = splitName(profileForm.fullname.value);
-        const profileResponse = await fetch(arenaHero.dataset.profileUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
-            body: JSON.stringify({
-                cpf,
-                firstname: names.firstname,
-                lastname: names.lastname,
-                birthdate: profileForm.birthdate.value,
-            }),
-        });
-        const profileData = await profileResponse.json();
+        const submitButton = profileForm.querySelector('button[type="submit"]');
+        toggleLoading(submitButton, true);
 
-        if (!profileResponse.ok || !profileData.success) {
-            showFeedback(profileFeedback, (profileData.errors || ['Não foi possível completar o perfil.']).join(' '), 'error');
-            return;
+        try {
+            const profileResponse = await fetch(arenaApp?.dataset.profileUrl || '/user/profile/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    cpf,
+                    firstname: names.firstname,
+                    lastname: names.lastname,
+                    birthdate: profileForm.birthdate.value
+                })
+            });
+            const profileData = await profileResponse.json();
+
+            if (!profileResponse.ok || !profileData.success) {
+                throw new Error((profileData.errors || ['Não foi possível completar o perfil.']).join(' '));
+            }
+
+            showFeedback(profileFeedback, 'Perfil completo. Você receberá avisos dos novos eventos.', 'success');
+            window.setTimeout(() => window.location.reload(), 900);
+        } catch (error) {
+            showFeedback(profileFeedback, error.message, 'error');
+        } finally {
+            toggleLoading(submitButton, false);
         }
-
-        showFeedback(profileFeedback, 'Perfil completo. Você receberá avisos dos novos eventos.', 'success');
-        window.setTimeout(() => window.location.reload(), 900);
     });
 
     if (!arenaEntry || !loaderStatus) {
