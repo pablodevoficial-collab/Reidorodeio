@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\FantasyLeague;
 use App\Models\Rodeio;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 class ArenaController extends Controller
@@ -18,6 +20,7 @@ class ArenaController extends Controller
             'pageTitle' => 'Arena Rei do Rodeio',
             'arenaEvent' => $arena['event'],
             'hasArenaEvent' => $arena['has_event'],
+            'arenaLeagueBrand' => $this->resolveLeagueBrand($arena['event']['id'] ?? null),
             'supportUrl' => $this->supportUrl(),
         ]);
     }
@@ -132,5 +135,111 @@ class ArenaController extends Controller
         $text = urlencode('Ola! Preciso de ajuda na arena oficial do bolao.');
 
         return "https://api.whatsapp.com/send?phone={$phone}&text={$text}";
+    }
+
+    private function resolveLeagueBrand(?int $rodeioId): array
+    {
+        $fallback = [
+            'name' => 'Rei do Rodeio',
+            'meta' => 'Nenhum bolão oficial no momento.',
+            'logo_url' => asset('assets/images/logo/logorei.png'),
+        ];
+
+        if (!Schema::hasTable('fantasy_leagues')) {
+            return $fallback;
+        }
+
+        $league = FantasyLeague::query()
+            ->with([
+                'rodeio:id,name,nome,titulo,logo',
+                'organizerSponsor:id,name,logo',
+            ])
+            ->when($rodeioId, function ($query, $rodeioId) {
+                $query->where('rodeio_id', (int) $rodeioId);
+            })
+            ->where(function ($query) {
+                $query->where('is_active', true);
+
+                if (Schema::hasColumn('fantasy_leagues', 'status')) {
+                    $query->orWhere('status', 'finalized');
+                }
+            })
+            ->orderByDesc('is_active')
+            ->orderByDesc('updated_at')
+            ->orderByDesc('id')
+            ->first();
+
+        if (!$league) {
+            return $fallback;
+        }
+
+        $organizerName = trim((string) ($league->organizerSponsor->name ?? ''));
+        $rodeioName = trim((string) ($league->rodeio->nome ?? $league->rodeio->name ?? $league->rodeio->titulo ?? ''));
+
+        return [
+            'name' => $organizerName !== '' ? $organizerName : ($rodeioName !== '' ? $rodeioName : 'Bolão oficial'),
+            'meta' => trim((string) ($league->name ?? 'Bolão oficial')),
+            'logo_url' => $this->resolveLeagueBrandLogo($league) ?: $fallback['logo_url'],
+        ];
+    }
+
+    private function resolveLeagueBrandLogo(FantasyLeague $league): ?string
+    {
+        $sponsorLogo = trim((string) ($league->organizerSponsor->logo ?? ''));
+        if ($sponsorLogo !== '') {
+            return $this->publicMediaUrl($sponsorLogo, $league->updated_at?->timestamp);
+        }
+
+        $leagueImage = trim((string) ($league->image ?? ''));
+        if ($leagueImage !== '') {
+            return $this->publicMediaUrl($leagueImage, $league->updated_at?->timestamp);
+        }
+
+        $rodeioLogo = trim((string) ($league->rodeio->logo ?? ''));
+        if ($rodeioLogo !== '') {
+            return $this->publicMediaUrl($rodeioLogo, $league->updated_at?->timestamp);
+        }
+
+        return null;
+    }
+
+    private function publicMediaUrl(?string $path, ?int $version = null): ?string
+    {
+        $value = trim((string) ($path ?? ''));
+        if ($value === '') {
+            return null;
+        }
+
+        if (preg_match('~^(https?:)?//~i', $value)) {
+            $url = $value;
+        } else {
+            $value = str_replace('\\', '/', $value);
+            $value = ltrim($value, '/');
+            $lower = strtolower($value);
+
+            if (str_starts_with($lower, 'public/')) {
+                $value = substr($value, 7);
+                $lower = strtolower($value);
+            }
+
+            if (str_starts_with($lower, 'storage/')) {
+                $value = substr($value, 8);
+                $lower = strtolower($value);
+            }
+
+            if (str_starts_with($lower, 'assets/')) {
+                $url = asset($value);
+            } else {
+                $url = asset('storage/' . $value);
+            }
+        }
+
+        if (!$version) {
+            return $url;
+        }
+
+        $joiner = str_contains($url, '?') ? '&' : '?';
+
+        return $url . $joiner . 'v=' . $version;
     }
 }

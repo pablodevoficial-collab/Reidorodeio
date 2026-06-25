@@ -1,13 +1,13 @@
 <section class="arena-board">
     <div class="arena-board__head">
         <div class="arena-board__title">
-            <span class="arena-board__eyebrow">Bolão oficial</span>
-            <h2 data-organizer-name>Rei do Rodeio</h2>
-            <p data-organizer-meta>Nenhum bolão oficial no momento.</p>
+            <span class="arena-board__eyebrow">Bolao oficial</span>
+            <h2 data-organizer-name>{{ $arenaLeagueBrand['name'] ?? 'Rei do Rodeio' }}</h2>
+            <p data-organizer-meta>{{ $arenaLeagueBrand['meta'] ?? 'Nenhum bolao oficial no momento.' }}</p>
         </div>
         <div class="arena-board__brand">
             <div class="arena-board__brand-logo" data-organizer-logo>
-                <img src="{{ asset('assets/images/logo/logorei.png') }}" alt="Organizador da arena">
+                <img src="{{ $arenaLeagueBrand['logo_url'] ?? asset('assets/images/logo/logorei.png') }}" alt="Organizador da arena">
             </div>
         </div>
     </div>
