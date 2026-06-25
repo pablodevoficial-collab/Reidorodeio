@@ -48,7 +48,7 @@ class ArenaController extends Controller
             return ['has_event' => false, 'event' => null];
         }
 
-        $label = (string) ($rodeio->nome ?? $rodeio->name ?? $rodeio->titulo ?? ('Rodeio #' . $rodeio->id));
+        $label = $this->rodeioLabel($rodeio);
         $status = $this->normalizeStatus((string) ($rodeio->status_transmissao ?? $rodeio->status ?? 'programado'));
 
         return [
@@ -151,7 +151,7 @@ class ArenaController extends Controller
 
         $league = FantasyLeague::query()
             ->with([
-                'rodeio:id,name,nome,titulo,logo',
+                'rodeio',
                 'organizerSponsor:id,name,logo',
             ])
             ->when($rodeioId, function ($query, $rodeioId) {
@@ -174,7 +174,7 @@ class ArenaController extends Controller
         }
 
         $organizerName = trim((string) ($league->organizerSponsor->name ?? ''));
-        $rodeioName = trim((string) ($league->rodeio->nome ?? $league->rodeio->name ?? $league->rodeio->titulo ?? ''));
+        $rodeioName = trim($this->rodeioLabel($league->rodeio));
 
         return [
             'name' => $organizerName !== '' ? $organizerName : ($rodeioName !== '' ? $rodeioName : 'Bolão oficial'),
@@ -241,5 +241,23 @@ class ArenaController extends Controller
         $joiner = str_contains($url, '?') ? '&' : '?';
 
         return $url . $joiner . 'v=' . $version;
+    }
+
+    private function rodeioLabel(?Rodeio $rodeio): string
+    {
+        if (!$rodeio) {
+            return '';
+        }
+
+        foreach (['nome', 'titulo', 'name'] as $column) {
+            if (Schema::hasColumn('rodeios', $column)) {
+                $value = trim((string) ($rodeio->{$column} ?? ''));
+                if ($value !== '') {
+                    return $value;
+                }
+            }
+        }
+
+        return 'Rodeio #' . $rodeio->id;
     }
 }
