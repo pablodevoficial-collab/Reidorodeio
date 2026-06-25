@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
       url.searchParams.set('only_active', '1');
       const response = await fetch(url.toString(), { headers: { Accept: 'application/json' } });
       const data = await response.json();
-      const leagues = Array.isArray(data) ? data : [];
+      const leagues = Array.isArray(data?.data) ? data.data : [];
       render(leagues.filter((item) => item.is_active || item.event_finalized));
     } catch (error) {
       show(feedback, 'Nao foi possivel carregar os boloes da arena.', 'is-error');
