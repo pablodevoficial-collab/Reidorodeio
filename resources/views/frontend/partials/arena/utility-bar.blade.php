@@ -10,9 +10,9 @@
         <button class="arena-tool" type="button" data-open-profile>Perfil</button>
         <button class="arena-tool" type="button" data-open-pix>Pix</button>
         <button class="arena-tool" type="button" data-open-rules>Regras</button>
-        <a class="arena-tool" href="{{ $supportUrl }}" target="_blank" rel="noopener">Suporte</a>
+        <button class="arena-tool" type="button" data-open-support>Suporte</button>
     </div>
     @auth
-    <a class="arena-logout" href="{{ route('user.logout') }}" aria-label="Logout">↗</a>
+    <a class="arena-logout" href="{{ route('user.logout') }}" aria-label="Logout">&nearr;</a>
     @endauth
 </aside>

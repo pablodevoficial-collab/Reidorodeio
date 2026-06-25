@@ -131,6 +131,6 @@ class ArenaController extends Controller
         $phone = '5547997953323';
         $text = urlencode('Ola! Preciso de ajuda na arena oficial do bolao.');
 
-        return "https://wa.me/{$phone}?text={$text}";
+        return "https://api.whatsapp.com/send?phone={$phone}&text={$text}";
     }
 }

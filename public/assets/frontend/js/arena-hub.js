@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const statusMap = { open: 'Inscricoes abertas', closed: 'Inscricoes encerradas', always_open: 'Entrada liberada' };
   const isAuth = app.dataset.authenticated === 'true';
   const eventId = app.dataset.eventId;
+  const supportUrl = app.dataset.supportUrl;
 
   const rulesModal = document.querySelector('[data-rules-modal]');
   const profileModal = document.querySelector('[data-profile-modal]');
@@ -27,6 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('[data-open-pix]')?.addEventListener('click', () => isAuth ? openModal(pixModal) : openRegister());
   document.querySelectorAll('[data-close-pix]').forEach((n) => n.addEventListener('click', () => closeModal(pixModal)));
   document.querySelector('[data-pix-primary]')?.addEventListener('click', () => { closeModal(pixModal); isAuth ? openModal(profileModal) : openRegister(); });
+  document.querySelector('[data-open-support]')?.addEventListener('click', () => {
+    if (!supportUrl) return;
+    window.open(supportUrl, '_blank', 'noopener,noreferrer');
+  });
   document.querySelector('[data-refresh-leagues]')?.addEventListener('click', () => loadLeagues());
 
   const cardAction = (league) => {
