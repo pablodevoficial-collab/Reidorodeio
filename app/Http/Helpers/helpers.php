@@ -206,7 +206,7 @@ function normalizePublicAssetPath($path) {
     return ltrim($value, '/');
 }
 
-function publicStorageBaseUrl(): string {
+function publicAssetBaseUrl(): string {
     static $cached = null;
 
     if ($cached !== null) {
@@ -236,19 +236,48 @@ function publicStorageBaseUrl(): string {
         return rtrim(str_replace('\\', '/', $value), '/');
     };
 
+    $basePath = $normalizePath(base_path());
+    $publicPath = $normalizePath(public_path());
+    $baseName = strtolower(basename($basePath));
+
     $documentRoot = $_SERVER['DOCUMENT_ROOT'] ?? '';
     if (is_string($documentRoot) && trim($documentRoot) !== '' && $requestBase !== '') {
         $documentRoot = $normalizePath($documentRoot);
-        $basePath = $normalizePath(base_path());
-        $publicPath = $normalizePath(public_path());
 
         if ($documentRoot === $basePath) {
-            return $cached = $requestBase . '/public/storage';
+            return $cached = $requestBase . '/public';
         }
 
         if ($documentRoot === $publicPath) {
-            return $cached = $requestBase . '/storage';
+            return $cached = $requestBase;
         }
+    }
+
+    if ($requestBase !== '' && $baseName === 'public_html' && is_dir(base_path('public'))) {
+        return $cached = $requestBase . '/public';
+    }
+
+    return $cached = $requestBase !== '' ? $requestBase : rtrim(url('/'), '/');
+}
+
+function publicAssetUrl(string $path): string {
+    $relative = normalizePublicAssetPath($path);
+    if ($relative === '') {
+        return publicAssetBaseUrl();
+    }
+
+    if (preg_match('/^https?:\/\//i', $relative)) {
+        return $relative;
+    }
+
+    return rtrim(publicAssetBaseUrl(), '/') . '/' . ltrim($relative, '/');
+}
+
+function publicStorageBaseUrl(): string {
+    static $cached = null;
+
+    if ($cached !== null) {
+        return $cached;
     }
 
     $configured = trim((string) config('filesystems.disks.public.url', ''));
@@ -257,16 +286,10 @@ function publicStorageBaseUrl(): string {
             return $cached = rtrim($configured, '/');
         }
 
-        if ($requestBase !== '') {
-            return $cached = $requestBase . '/' . trim($configured, '/');
-        }
+        return $cached = rtrim(publicAssetBaseUrl(), '/') . '/' . trim($configured, '/');
     }
 
-    if ($requestBase !== '') {
-        return $cached = $requestBase . '/storage';
-    }
-
-    return $cached = rtrim(asset('storage'), '/');
+    return $cached = rtrim(publicAssetBaseUrl(), '/') . '/storage';
 }
 
 function publicStorageUrl($path): string {
@@ -287,7 +310,7 @@ function publicStorageUrl($path): string {
     $lower = strtolower($value);
 
     if (str_starts_with($lower, 'assets/')) {
-        return asset($value);
+        return publicAssetUrl($value);
     }
 
     if (str_starts_with($lower, 'storage/')) {
@@ -306,14 +329,14 @@ function getImage($image, $size = null) {
 
     $relativePath = normalizePublicAssetPath($image);
     if ($relativePath !== '' && is_file(public_path($relativePath))) {
-        return asset($relativePath);
+        return publicAssetUrl($relativePath);
     }
 
     if ($size) {
         return route('placeholder.image', $size);
     }
 
-    return asset('assets/images/default.png');
+    return publicAssetUrl('assets/images/default.png');
 }
 
 function siteFavicon() {
@@ -340,7 +363,7 @@ function siteLogo() {
 }
 
 function versionedAsset(string $path, ?string $version = null): string {
-    $url = asset(ltrim($path, '/'));
+    $url = publicAssetUrl($path);
     $resolvedVersion = $version ?: date('Ymd');
     $joiner = str_contains($url, '?') ? '&' : '?';
 

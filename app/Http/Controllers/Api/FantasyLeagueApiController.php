@@ -58,7 +58,7 @@ class FantasyLeagueApiController extends Controller
         }
 
         if (str_starts_with(strtolower($relative), 'assets/')) {
-            return asset($relative);
+            return publicAssetUrl($relative);
         }
 
         $candidatePaths = [
@@ -70,11 +70,11 @@ class FantasyLeagueApiController extends Controller
 
         foreach ($candidatePaths as $candidate) {
             if (is_file($candidate)) {
-                return asset('storage/' . $relative);
+                return publicStorageUrl($relative);
             }
         }
 
-        return null;
+        return publicStorageUrl($relative);
     }
 
     private function organizerSponsorSupported(): bool
@@ -144,7 +144,7 @@ class FantasyLeagueApiController extends Controller
 
     private function normalizeCompetitorFotoUrl(?string $foto): string
     {
-        return publicStorageUrl($foto) ?: asset('assets/images/logo_icon/favicon.png');
+        return publicStorageUrl($foto) ?: publicAssetUrl('assets/images/logo_icon/favicon.png');
     }
 
     private function normalizeUserAvatarUrl(?string $image): ?string
@@ -159,10 +159,10 @@ class FantasyLeagueApiController extends Controller
         }
 
         if (str_contains($image, '/')) {
-            return asset(ltrim($image, '/'));
+            return publicAssetUrl($image);
         }
 
-        return asset('assets/images/user/profile/' . $image);
+        return publicAssetUrl('assets/images/user/profile/' . $image);
     }
 
     private function resolveFantasyRankingIdentity(FantasyTeam $team): array
