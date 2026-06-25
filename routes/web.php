@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Frontend\ArenaController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\FacebookDataDeletionController;
 use Illuminate\Support\Facades\Route;
@@ -8,9 +9,8 @@ Route::view('/', 'frontend.home', [
     'pageTitle' => 'Rei do Rodeio',
 ])->name('home');
 
-Route::view('/arena', 'frontend.arena', [
-    'pageTitle' => 'Arena Rei do Rodeio',
-])->name('arena');
+Route::get('/arena', [ArenaController::class, 'show'])->name('arena');
+Route::get('/arena/status', [ArenaController::class, 'status'])->name('arena.status');
 
 Route::redirect('/bolao', '/arena')->name('bolao');
 

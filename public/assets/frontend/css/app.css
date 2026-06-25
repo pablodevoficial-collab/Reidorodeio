@@ -163,6 +163,27 @@ img { display: block; max-width: 100%; }
     max-width: 560px;
 }
 
+.arena-hero--event {
+    max-width: 620px;
+}
+
+.arena-hero__meta {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+}
+
+.arena-hero__meta span {
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 202, 114, 0.18);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text);
+    font-size: .92rem;
+}
+
 @keyframes arena-progress {
     from { width: 0; }
     to { width: 100%; }

@@ -5,12 +5,28 @@
 @section('content')
 <main class="arena-page">
     <section
-        class="arena-hero arena-hero--empty"
+        class="arena-hero {{ $hasArenaEvent ? 'arena-hero--event' : 'arena-hero--empty' }}"
+        data-arena-state
+        data-has-event="{{ $hasArenaEvent ? 'true' : 'false' }}"
+        data-arena-status-url="{{ route('arena.status') }}"
         data-register-url="{{ route('user.register') }}"
         data-check-user-url="{{ route('user.checkUser') }}"
         data-profile-url="{{ route('user.profile.update') }}"
     >
         <img class="arena-hero__logo" src="{{ asset('assets/images/logo/logorei.png') }}" alt="Rei do Rodeio">
+        @if($hasArenaEvent)
+        <span class="arena-hero__eyebrow">{{ $arenaEvent['status_label'] }}</span>
+        <h1>{{ $arenaEvent['label'] }}</h1>
+        <p>{{ $arenaEvent['is_live'] ? 'A arena esta em movimento agora.' : 'Evento cadastrado na arena. Aguarde a abertura oficial do bolao.' }}</p>
+        <div class="arena-hero__meta">
+            @if($arenaEvent['start_label'])
+            <span>Inicio {{ $arenaEvent['start_label'] }}</span>
+            @endif
+            @if($arenaEvent['end_label'])
+            <span>Fim {{ $arenaEvent['end_label'] }}</span>
+            @endif
+        </div>
+        @else
         <span class="arena-hero__eyebrow">Arena do bolao</span>
         <h1>Nenhum evento agora.</h1>
         <p>Assim que um novo evento for cadastrado, a arena volta a abrir para o bolao e para a montagem da equipe.</p>
@@ -19,6 +35,7 @@
             <button class="arena-button arena-button--solid" type="button" data-open-register>Cadastre-se para receber notificacoes</button>
         </div>
         @endguest
+        @endif
     </section>
 </main>
 
@@ -83,4 +100,8 @@
     </div>
 </div>
 @endguest
+@endsection
+
+@section('page-script')
+<script src="{{ versionedAsset('assets/frontend/js/arena-live.js', (string) @filemtime(public_path('assets/frontend/js/arena-live.js'))) }}"></script>
 @endsection
