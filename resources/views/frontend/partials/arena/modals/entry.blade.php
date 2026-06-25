@@ -3,10 +3,7 @@
     <div class="rr-modal__dialog arena-sheet arena-entry">
         <button class="rr-modal__close" type="button" data-entry-close>&times;</button>
         <div class="arena-entry__head">
-            <span class="arena-entry__step-badge">Passo 1 de 3</span>
-            <span class="arena-board__eyebrow">Monte sua equipe</span>
-            <h2 data-entry-title>Entrar na disputa</h2>
-            <p data-entry-subtitle>Escolha quatro competidores para liberar sua entrada.</p>
+            <span class="arena-entry__step-badge">Passo 1/3</span>
         </div>
 
         <section class="arena-entry__stage" data-entry-stage="picker">
@@ -30,7 +27,7 @@
 
         <section class="arena-entry__stage" hidden data-entry-stage="payment">
             <div class="arena-entry__head">
-                <span class="arena-entry__step-badge">Passo 2 de 3</span>
+                <span class="arena-entry__step-badge">Passo 2/3</span>
             </div>
             <div class="arena-entry__payment-card">
                 <strong data-entry-payment-title>Pix gerado com sucesso</strong>
@@ -47,7 +44,7 @@
 
         <section class="arena-entry__stage" hidden data-entry-stage="success">
             <div class="arena-entry__head">
-                <span class="arena-entry__step-badge">Passo 3 de 3</span>
+                <span class="arena-entry__step-badge">Passo 3/3</span>
             </div>
             <div class="arena-entry__success">
                 <div class="arena-entry__check" aria-hidden="true"></div>
