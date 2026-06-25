@@ -1,9 +1,6 @@
 <aside class="arena-utility">
     <button class="arena-utility__toggle" type="button" data-utility-toggle aria-expanded="false">
-        <div class="arena-utility__toggle-copy">
-            <span>{{ auth()->check() ? 'Seu acesso' : 'Arena oficial' }}</span>
-            <strong>{{ auth()->check() ? (auth()->user()->username ?? 'Perfil') : 'Rei do Rodeio' }}</strong>
-        </div>
+        <strong class="arena-utility__toggle-label">Menu</strong>
         <span class="arena-utility__toggle-arrow" aria-hidden="true"></span>
     </button>
     <div class="arena-utility__panel" data-utility-panel>
