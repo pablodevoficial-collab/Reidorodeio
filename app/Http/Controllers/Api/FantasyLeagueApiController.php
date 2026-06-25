@@ -12,6 +12,7 @@ use App\Services\FantasyTeamEntryRuleService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 
@@ -61,7 +62,14 @@ class FantasyLeagueApiController extends Controller
             return null;
         }
 
-        $url = route('rodeios.logo', $rodeio);
+        $url = Route::has('rodeios.logo')
+            ? route('rodeios.logo', $rodeio)
+            : publicStorageUrl($rodeio->logo);
+
+        if ($url === '') {
+            return null;
+        }
+
         $version = (string) (($rodeio->updated_at?->timestamp) ?: time());
 
         return $url . '?v=' . $version;
