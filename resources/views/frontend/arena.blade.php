@@ -5,6 +5,7 @@
 @section('page-style')
 <link rel="stylesheet" href="{{ versionedAsset('assets/frontend/css/arena-hub.css', (string) @filemtime(public_path('assets/frontend/css/arena-hub.css'))) }}">
 <link rel="stylesheet" href="{{ versionedAsset('assets/frontend/css/arena-hub-mobile.css', (string) @filemtime(public_path('assets/frontend/css/arena-hub-mobile.css'))) }}">
+<link rel="stylesheet" href="{{ versionedAsset('assets/frontend/css/arena-entry.css', (string) @filemtime(public_path('assets/frontend/css/arena-entry.css'))) }}">
 @endsection
 
 @section('content')
@@ -24,6 +25,7 @@
     data-check-user-url="{{ route('user.checkUser') }}"
     data-profile-url="{{ route('user.profile.update') }}"
     data-profile-api-url="{{ url('/api/fantasy/user/profile') }}"
+    data-fantasy-base-url="{{ url('/api/fantasy') }}"
     data-support-url="{{ $supportUrl }}"
     data-logout-url="{{ auth()->check() ? route('user.logout') : '' }}"
     data-authenticated="{{ auth()->check() ? 'true' : 'false' }}"
@@ -39,6 +41,7 @@
 @include('frontend.partials.arena.modals.rules')
 @include('frontend.partials.arena.modals.profile')
 @include('frontend.partials.arena.modals.pix')
+@include('frontend.partials.arena.modals.entry')
 @guest
 @include('frontend.partials.arena.modals.register')
 @endguest
@@ -47,5 +50,6 @@
 @section('page-script')
 <script src="{{ versionedAsset('assets/frontend/js/arena-live.js', (string) @filemtime(public_path('assets/frontend/js/arena-live.js'))) }}"></script>
 <script src="{{ versionedAsset('assets/frontend/js/arena-hub.js', (string) @filemtime(public_path('assets/frontend/js/arena-hub.js'))) }}"></script>
+<script src="{{ versionedAsset('assets/frontend/js/arena-entry.js', (string) @filemtime(public_path('assets/frontend/js/arena-entry.js'))) }}"></script>
 <script src="{{ versionedAsset('assets/frontend/js/arena-profile.js', (string) @filemtime(public_path('assets/frontend/js/arena-profile.js'))) }}"></script>
 @endsection
