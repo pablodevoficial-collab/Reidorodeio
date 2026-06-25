@@ -66,16 +66,30 @@ document.addEventListener('DOMContentLoaded', () => {
     grid.querySelectorAll('[data-card-profile]').forEach((n) => n.addEventListener('click', () => openModal(profileModal)));
   };
 
+  async function fetchLeagues(useEventFilter) {
+    const url = new URL(app.dataset.leaguesUrl, window.location.origin);
+    if (useEventFilter && eventId) url.searchParams.set('rodeio_id', eventId);
+    url.searchParams.set('only_active', '1');
+    const response = await fetch(url.toString(), { headers: { Accept: 'application/json' } });
+    const data = await response.json();
+    return Array.isArray(data?.data) ? data.data : [];
+  }
+
   async function loadLeagues() {
     show(feedback, 'Carregando boloes oficiais...');
     try {
-      const url = new URL(app.dataset.leaguesUrl, window.location.origin);
-      if (eventId) url.searchParams.set('rodeio_id', eventId);
-      url.searchParams.set('only_active', '1');
-      const response = await fetch(url.toString(), { headers: { Accept: 'application/json' } });
-      const data = await response.json();
-      const leagues = Array.isArray(data?.data) ? data.data : [];
-      render(leagues.filter((item) => item.is_active || item.event_finalized));
+      let leagues = await fetchLeagues(true);
+      leagues = leagues.filter((item) => item.is_active || item.event_finalized);
+
+      if (!leagues.length) {
+        leagues = await fetchLeagues(false);
+        leagues = leagues.filter((item) => item.is_active || item.event_finalized);
+        if (leagues.length) {
+          show(feedback, 'Mostrando boloes ativos da arena geral.');
+        }
+      }
+
+      render(leagues);
     } catch (error) {
       show(feedback, 'Nao foi possivel carregar os boloes da arena.', 'is-error');
     }
