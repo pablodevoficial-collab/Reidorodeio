@@ -37,7 +37,7 @@
                 </button>
             </div>
 
-            <div class="rr-step-panel" hidden data-step-panel="password">
+            <div class="rr-step-panel" style="display:none" data-step-panel="password">
                 <h2>Crie sua senha</h2>
                 <p>Agora escolha a senha que sera usada no acesso a arena.</p>
                 <input type="password" name="password" placeholder="Senha" required>
@@ -50,7 +50,7 @@
             <div class="rr-form-step__feedback" data-register-feedback></div>
         </form>
 
-        <form class="rr-form-step" hidden data-profile-form>
+        <form class="rr-form-step" style="display:none" data-profile-form>
             <div class="rr-step-panel" data-profile-panel="cpf">
                 <h2>Complete o perfil para receber premios</h2>
                 <p>Vamos validar seu CPF antes de seguir.</p>
@@ -60,7 +60,7 @@
                 </button>
             </div>
 
-            <div class="rr-step-panel" hidden data-profile-panel="name">
+            <div class="rr-step-panel" style="display:none" data-profile-panel="name">
                 <h2>Qual e o seu nome?</h2>
                 <p>Informe o nome completo do perfil que vai receber premios.</p>
                 <input type="text" name="fullname" placeholder="Nome completo" required>
@@ -69,7 +69,7 @@
                 </button>
             </div>
 
-            <div class="rr-step-panel" hidden data-profile-panel="birthdate">
+            <div class="rr-step-panel" style="display:none" data-profile-panel="birthdate">
                 <h2>Ultimo passo</h2>
                 <p>Agora confirme sua data de nascimento.</p>
                 <input type="date" name="birthdate" required>

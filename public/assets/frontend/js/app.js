@@ -38,18 +38,26 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!button) return;
         button.classList.toggle('is-loading', loading);
     };
+    const showPanel = (node, display = 'grid') => {
+        if (!node) return;
+        node.style.display = display;
+    };
+    const hidePanel = (node) => {
+        if (!node) return;
+        node.style.display = 'none';
+    };
     const resetWizard = () => {
         if (registerForm) registerForm.reset();
         if (profileForm) {
             profileForm.reset();
-            profileForm.hidden = true;
+            hidePanel(profileForm);
         }
 
-        if (registerMobilePanel) registerMobilePanel.hidden = false;
-        if (registerPasswordPanel) registerPasswordPanel.hidden = true;
-        if (profileCpfPanel) profileCpfPanel.hidden = false;
-        if (profileNamePanel) profileNamePanel.hidden = true;
-        if (profileBirthdatePanel) profileBirthdatePanel.hidden = true;
+        showPanel(registerMobilePanel);
+        hidePanel(registerPasswordPanel);
+        showPanel(profileCpfPanel);
+        hidePanel(profileNamePanel);
+        hidePanel(profileBirthdatePanel);
 
         showFeedback(registerFeedback, '', '');
         showFeedback(profileFeedback, '', '');
@@ -95,8 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         showFeedback(registerFeedback, 'WhatsApp liberado. Agora crie sua senha.', 'success');
-        registerMobilePanel.hidden = true;
-        registerPasswordPanel.hidden = false;
+        hidePanel(registerMobilePanel);
+        showPanel(registerPasswordPanel);
     });
 
     registerForm?.addEventListener('submit', async (event) => {
@@ -120,8 +128,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         showFeedback(registerFeedback, 'Conta criada. Falta completar o perfil.', 'success');
-        registerForm.hidden = true;
-        profileForm.hidden = false;
+        hidePanel(registerForm);
+        showPanel(profileForm);
     });
 
     checkCpfButton?.addEventListener('click', async () => {
@@ -143,8 +151,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         showFeedback(profileFeedback, 'CPF liberado. Agora informe seu nome.', 'success');
-        profileCpfPanel.hidden = true;
-        profileNamePanel.hidden = false;
+        hidePanel(profileCpfPanel);
+        showPanel(profileNamePanel);
     });
 
     nextProfileButton?.addEventListener('click', () => {
@@ -155,8 +163,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         showFeedback(profileFeedback, 'Perfeito. Falta a data de nascimento.', 'success');
-        profileNamePanel.hidden = true;
-        profileBirthdatePanel.hidden = false;
+        hidePanel(profileNamePanel);
+        showPanel(profileBirthdatePanel);
     });
 
     profileForm?.addEventListener('submit', async (event) => {
