@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!grid) return;
     if (!leagues.length) {
       grid.innerHTML = '';
+      organizerName && (organizerName.textContent = 'Bolao oficial');
       organizerMeta && (organizerMeta.textContent = 'Nenhum bolao encontrado');
       show(feedback, 'Nenhum bolao oficial encontrado para este evento.', 'is-error');
       return;
@@ -68,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
       organizerLogo.dataset.fallbackSrc = fallbackLogo;
       bindImageFallbacks(organizerLogo.parentElement || organizerLogo);
     }
-    if (organizerName) organizerName.textContent = featured.organizer?.name || featured.rodeio?.nome || featured.name || 'Organizador';
+    if (organizerName) organizerName.textContent = featured.organizer?.name || featured.rodeio?.nome || 'Bolao oficial';
     if (organizerMeta) organizerMeta.textContent = featured.name || 'Bolao oficial';
     show(feedback, 'Arena oficial carregada.');
     grid.innerHTML = leagues.map((league) => `

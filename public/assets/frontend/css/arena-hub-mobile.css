@@ -4,17 +4,17 @@
 }
 @media (max-width: 720px){
   .arena-shell{width:min(100% - 16px,1240px);padding:14px 0 34px}
-  .arena-utility,.arena-stage,.arena-board,.arena-sheet{border-radius:24px}
+  .arena-utility,.arena-board,.arena-sheet{border-radius:24px}
   .arena-utility{padding:14px}
   .arena-utility__actions{grid-template-columns:repeat(2,minmax(0,1fr))}
   .arena-chip{flex:1 1 calc(50% - 10px)}
-  .arena-stage{padding:18px 16px}
-  .arena-stage h1,.arena-sheet h2{font-size:clamp(2.8rem,15vw,4.5rem)}
-  .arena-stage__organizer-logo{width:70px;height:70px;border-radius:20px}
-  .arena-stage__organizer-logo img{width:54px;height:54px}
-  .arena-stage__organizer-copy strong{font-size:2rem}
+  .arena-sheet h2{font-size:clamp(2.8rem,15vw,4.5rem)}
   .arena-board{padding:20px 16px 22px}
   .arena-board__head{align-items:flex-start;flex-direction:column}
+  .arena-board__brand{width:100%;justify-content:flex-start}
+  .arena-board__brand-logo{width:70px;height:70px;border-radius:20px}
+  .arena-board__brand-logo img{width:54px;height:54px}
+  .arena-board__toolbar{justify-content:flex-start}
   .arena-grid{grid-template-columns:1fr}
   .arena-card{min-height:auto;padding:16px}
   .arena-card__meta,.arena-card__foot{grid-template-columns:1fr}
