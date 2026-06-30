@@ -117,10 +117,7 @@
   border-color:rgba(255,255,255,.12);
 }
 .arena-sheet{width:min(100% - 20px,520px);margin:min(10vh,72px) auto 0;padding:28px 22px}
-.arena-ranking{width:min(100% - 20px,760px);max-height:min(88vh,820px);display:grid;grid-template-rows:auto auto minmax(0,1fr);overflow:hidden}
-.arena-ranking__head{display:grid;gap:6px;margin-bottom:12px}
-.arena-ranking__head h2{margin:0}
-.arena-ranking__head p{margin:0;color:var(--muted)}
+.arena-ranking{width:min(100% - 20px,760px);max-height:min(88vh,820px);display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden}
 .arena-ranking__row{padding:12px;border-radius:18px;background:rgba(255,255,255,.012);border:1px solid rgba(255,255,255,.05)}
 .arena-ranking__feedback{min-height:20px;color:var(--muted);margin-bottom:10px}
 .arena-ranking__list{display:grid;grid-template-rows:auto minmax(0,1fr);gap:14px;min-height:0;overflow:hidden}

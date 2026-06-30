@@ -14,8 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const profileModal = document.querySelector('[data-profile-modal]');
   const pixModal = document.querySelector('[data-pix-modal]');
   const rankingModal = document.querySelector('[data-ranking-modal]');
-  const rankingTitle = document.querySelector('[data-ranking-title]');
-  const rankingSubtitle = document.querySelector('[data-ranking-subtitle]');
   const rankingFeedback = document.querySelector('[data-ranking-feedback]');
   const rankingList = document.querySelector('[data-ranking-list]');
   const refreshButton = document.querySelector('[data-refresh-leagues]');
@@ -181,8 +179,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const participantLabel = (item) => item ? (item.display_name || item.user_name || 'Usuário') : 'Aguardando entrada';
     const teamLabel = (item) => item ? (item.team_name || 'Equipe oficial') : 'Vaga premiada disponível';
 
-    if (rankingTitle) rankingTitle.textContent = data?.league_name ? `Ranking - ${data.league_name}` : 'Ranking do bolão';
-    if (rankingSubtitle) rankingSubtitle.textContent = `${paid || positionCount} posições pagas para acompanhar`;
     const podium = [1, 2, 3].map((position) => {
       const item = rankingByPosition.get(position);
       return `
@@ -225,7 +221,6 @@ document.addEventListener('DOMContentLoaded', () => {
       openModal(rankingModal);
       if (rankingFeedback) rankingFeedback.textContent = 'Carregando ranking...';
       if (rankingList) rankingList.innerHTML = '';
-      if (rankingTitle && leagueName) rankingTitle.textContent = `Ranking - ${leagueName}`;
       renderRanking(data);
       if (rankingFeedback) rankingFeedback.textContent = '';
     } catch (error) {
