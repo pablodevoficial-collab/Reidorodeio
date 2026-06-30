@@ -29,7 +29,7 @@
             ['route' => 'admin.live_transmission.index', 'label' => 'Ao vivo', 'icon' => 'las la-broadcast-tower'],
             ['route' => 'admin.quick_scoring.index', 'label' => 'Pontuação rápida', 'icon' => 'las la-bolt'],
             ['route' => 'admin.dynamic_selection.index', 'label' => 'Seleção dinâmica', 'icon' => 'las la-vector-square'],
-            ['route' => 'admin.reports.transactions', 'label' => 'Financeiro', 'icon' => 'las la-wallet'],
+            ['route' => 'admin.report.login.history', 'label' => 'Financeiro', 'icon' => 'las la-wallet'],
             ['route' => 'admin.ticket.index', 'label' => 'Suporte', 'icon' => 'las la-life-ring'],
             ['route' => 'admin.users.all', 'label' => 'Usuários', 'icon' => 'las la-users'],
             ['route' => 'admin.app_control.dashboard', 'label' => 'App Control', 'icon' => 'las la-mobile'],
