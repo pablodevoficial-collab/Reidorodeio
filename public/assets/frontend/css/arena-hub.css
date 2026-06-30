@@ -6,7 +6,8 @@
 .arena-utility__toggle{display:none}
 .arena-utility__panel{display:grid;gap:14px}
 .arena-utility__profile{display:flex;align-items:center;gap:12px}
-.arena-utility__avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#ffca72,#ff7a1a);color:#281402;font-weight:900}
+.arena-utility__avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;overflow:hidden;background:linear-gradient(135deg,#ffca72,#ff7a1a);color:#281402;font-weight:900}
+.arena-utility__avatar img{width:100%;height:100%;display:block;object-fit:cover}
 .arena-utility__profile span,.arena-board__eyebrow{display:block;color:var(--gold);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase}
 .arena-utility__profile strong,.arena-board__head h2{font-size:1rem}
 .arena-utility__actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
