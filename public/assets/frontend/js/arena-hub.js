@@ -107,10 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
     show(feedback, 'Arena oficial carregada.');
 
     grid.innerHTML = leagues.map((league) => {
-      const summary = league.ranking_summary || null;
-      const leaderName = summary?.leader_name || 'Em atualização';
-      const leaderPoints = summary?.leader_points ?? '---';
-
       return `
       <article class="arena-card">
         <div class="arena-card__media">
@@ -123,10 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="arena-card__meta">
           <span>Premiação<strong class="arena-card__value">${league.prize_type === 'physical' ? (league.prize_description || 'Prêmio físico') : money(league.total_prize || league.prize_pool)}</strong></span>
           <span>Entradas<strong class="arena-card__value">${league.teams_count} / 100</strong></span>
-        </div>
-        <div class="arena-card__ranking">
-          <span>Ranking<strong class="arena-card__value">${leaderName} #1</strong></span>
-          <span>Pontuação<strong class="arena-card__value">${leaderPoints}</strong></span>
         </div>
         <div class="arena-card__foot">
           <span>Entrada<strong class="arena-card__value">${league.is_premium ? 'Premium' : (Number(league.price) > 0 ? money(league.price) : 'Grátis')}</strong></span>
@@ -218,23 +210,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  async function enrichRanking(leagues) {
-    return Promise.all(leagues.map(async (league) => {
-      try {
-        const ranking = await fetchLeagueRanking(league.id);
-        return {
-          ...league,
-          ranking_summary: ranking ? {
-            leader_name: ranking.ranking?.[0]?.display_name || ranking.ranking?.[0]?.user_name || 'Líder',
-            leader_points: ranking.ranking?.[0]?.points ?? '---',
-          } : null,
-        };
-      } catch (error) {
-        return { ...league, ranking_summary: null };
-      }
-    }));
-  }
-
   async function loadLeagues() {
     show(feedback, 'Carregando bolões oficiais...');
     setRefreshState(true);
@@ -244,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
         leagues = (await fetchLeagues(false)).filter((item) => item.is_active || item.event_finalized);
         if (leagues.length) show(feedback, 'Mostrando bolões ativos da arena geral.');
       }
-      render(await enrichRanking(leagues));
+      render(leagues);
     } catch (error) {
       show(feedback, 'Não foi possível carregar os bolões da arena.', 'is-error');
     } finally {
