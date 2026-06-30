@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const refreshButton = document.querySelector('[data-refresh-leagues]');
   const statusMap = { open: 'Inscrições abertas', closed: 'Inscrições encerradas', always_open: 'Entrada liberada' };
   const rankingCache = new Map();
-  const minRefreshMs = 5000;
+  const minRefreshMs = 3000;
   let isRefreshing = false;
   let refreshRunId = 0;
 
