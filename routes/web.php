@@ -3,12 +3,14 @@
 use App\Http\Controllers\Frontend\ArenaController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\FacebookDataDeletionController;
+use App\Http\Controllers\SponsorLogoController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [ArenaController::class, 'home'])->name('home');
 
 Route::get('/arena', [ArenaController::class, 'show'])->name('arena');
 Route::get('/arena/status', [ArenaController::class, 'status'])->name('arena.status');
+Route::get('/sponsors/{sponsor}/logo', [SponsorLogoController::class, 'show'])->name('sponsors.logo');
 
 Route::redirect('/bolao', '/arena')->name('bolao');
 

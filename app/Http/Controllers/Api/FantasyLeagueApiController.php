@@ -7,6 +7,7 @@ use App\Models\AppUserVoucher;
 use App\Models\Modalidade;
 use App\Models\FantasyLeague;
 use App\Models\FantasyTeam;
+use App\Models\Sponsor;
 use App\Models\User;
 use App\Services\FantasyTeamEntryRuleService;
 use Illuminate\Http\Request;
@@ -137,9 +138,15 @@ class FantasyLeagueApiController extends Controller
         return $url . '?v=' . $version;
     }
 
-    private function sponsorLogoUrl(?string $path): ?string
+    private function sponsorLogoUrl(?Sponsor $sponsor): ?string
     {
-        return $this->resolvePublicMediaUrl($path);
+        if (!$sponsor || blank($sponsor->logo ?? null) || !Route::has('sponsors.logo')) {
+            return null;
+        }
+
+        $version = (string) (($sponsor->updated_at?->timestamp) ?: $sponsor->id ?: time());
+
+        return route('sponsors.logo', $sponsor) . '?v=' . $version;
     }
 
     private function normalizeCompetitorFotoUrl(?string $foto): string
@@ -471,7 +478,7 @@ class FantasyLeagueApiController extends Controller
             $entryMode = $isPremiumLeague ? 'premium' : ($isFreeLeague ? 'free' : number_format($price, 2, '.', ''));
 
             $organizerLogoUrl = $supportsOrganizerSponsor && $league->organizerSponsor
-                ? $this->sponsorLogoUrl($league->organizerSponsor->logo)
+                ? $this->sponsorLogoUrl($league->organizerSponsor)
                 : null;
             $imageUrl = $organizerLogoUrl ?: $this->publicImageUrl($league->image);
             if ($imageUrl) {
@@ -617,7 +624,7 @@ class FantasyLeagueApiController extends Controller
         $entryMode = $isPremiumLeague ? 'premium' : ($isFreeLeague ? 'free' : number_format($price, 2, '.', ''));
 
         $organizerLogoUrl = $supportsOrganizerSponsor && $league->organizerSponsor
-            ? $this->sponsorLogoUrl($league->organizerSponsor->logo)
+            ? $this->sponsorLogoUrl($league->organizerSponsor)
             : null;
         $imageUrl = $organizerLogoUrl ?: $this->publicImageUrl($league->image);
         if ($imageUrl) {

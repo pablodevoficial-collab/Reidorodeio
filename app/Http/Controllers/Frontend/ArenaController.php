@@ -21,7 +21,7 @@ class ArenaController extends Controller
         return view('frontend.home', [
             'pageTitle' => 'Rei do Rodeio',
             'loaderSponsor' => $loaderSponsor,
-            'loaderSponsorLogoUrl' => $this->loaderSponsorLogoUrl($loaderSponsor?->logo),
+            'loaderSponsorLogoUrl' => $this->loaderSponsorLogoUrl($loaderSponsor),
         ]);
     }
 
@@ -167,29 +167,15 @@ class ArenaController extends Controller
         }
     }
 
-    private function loaderSponsorLogoUrl(?string $path): ?string
+    private function loaderSponsorLogoUrl(?Sponsor $sponsor): ?string
     {
-        $value = trim((string) ($path ?? ''));
-        if ($value === '') {
+        if (!$sponsor) {
             return null;
         }
 
-        if (preg_match('~^(https?:)?//~i', $value)) {
-            return $value;
-        }
+        $version = (string) (($sponsor->updated_at?->timestamp) ?: $sponsor->id ?: time());
 
-        $value = str_replace('\\', '/', $value);
-        $value = ltrim($value, '/');
-
-        if (str_starts_with(strtolower($value), 'public/')) {
-            $value = substr($value, 7);
-        }
-
-        if (str_starts_with(strtolower($value), 'storage/')) {
-            return publicAssetUrl($value);
-        }
-
-        return publicAssetUrl('storage/' . $value);
+        return route('sponsors.logo', $sponsor) . '?v=' . $version;
     }
 
     private function resolveLeagueBrand(?int $rodeioId): array
@@ -240,9 +226,10 @@ class ArenaController extends Controller
 
     private function resolveLeagueBrandLogo(FantasyLeague $league): ?string
     {
-        $sponsorLogo = trim((string) ($league->organizerSponsor->logo ?? ''));
-        if ($sponsorLogo !== '') {
-            return $this->publicMediaUrl($sponsorLogo, $league->updated_at?->timestamp);
+        if ($league->organizerSponsor && trim((string) ($league->organizerSponsor->logo ?? '')) !== '') {
+            $version = (string) (($league->organizerSponsor->updated_at?->timestamp) ?: $league->updated_at?->timestamp ?: time());
+
+            return route('sponsors.logo', $league->organizerSponsor) . '?v=' . $version;
         }
 
         $leagueImage = trim((string) ($league->image ?? ''));

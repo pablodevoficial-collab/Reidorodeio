@@ -1,6 +1,6 @@
 @php
     $isEdit = isset($sponsor);
-    $currentLogo = $isEdit && $sponsor->logo ? asset('storage/' . $sponsor->logo) : null;
+    $currentLogo = $isEdit && $sponsor->logo ? route('sponsors.logo', $sponsor) : null;
 @endphp
 
 <style>
