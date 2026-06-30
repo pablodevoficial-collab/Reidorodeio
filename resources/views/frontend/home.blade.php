@@ -9,7 +9,7 @@
 
         <div class="loader-title" aria-hidden="true">
             <span class="loader-title__line">Bolão</span>
-            <span class="loader-title__line loader-title__line--accent">de Rodeio</span>
+            <span class="loader-title__line loader-title__line--accent">de Laço</span>
         </div>
 
         <div class="loader-card__progress" aria-hidden="true">
