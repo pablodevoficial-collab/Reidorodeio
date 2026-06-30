@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\FantasyLeague;
 use App\Models\Rodeio;
+use App\Models\Sponsor;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Schema;
@@ -13,6 +14,14 @@ use Illuminate\View\View;
 
 class ArenaController extends Controller
 {
+    public function home(): View
+    {
+        return view('frontend.home', [
+            'pageTitle' => 'Rei do Rodeio',
+            'loaderSponsors' => $this->activeLoaderSponsors(),
+        ]);
+    }
+
     public function show(): View
     {
         $arena = $this->resolveArenaState();
@@ -136,6 +145,23 @@ class ArenaController extends Controller
         $text = urlencode('Ola! Preciso de ajuda na arena oficial do bolao.');
 
         return "https://api.whatsapp.com/send?phone={$phone}&text={$text}";
+    }
+
+    private function activeLoaderSponsors()
+    {
+        try {
+            if (!Schema::hasTable('sponsors')) {
+                return collect();
+            }
+
+            return Sponsor::query()
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->orderByDesc('id')
+                ->get(['id', 'name', 'logo']);
+        } catch (\Throwable) {
+            return collect();
+        }
     }
 
     private function resolveLeagueBrand(?int $rodeioId): array
