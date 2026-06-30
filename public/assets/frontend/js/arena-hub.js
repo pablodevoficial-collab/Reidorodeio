@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const rankingList = document.querySelector('[data-ranking-list]');
   const statusMap = { open: 'Inscrições abertas', closed: 'Inscrições encerradas', always_open: 'Entrada liberada' };
   const rankingCache = new Map();
+  const minRefreshMs = 5000;
+  let isRefreshing = false;
 
   const show = (node, text, cls = '') => {
     if (!node) return;
@@ -92,6 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const rankingAction = (league) => `<button class="arena-button arena-button--ghost" data-open-ranking data-league-id="${league.id}" data-league-name="${league.name}">Ranking</button>`;
 
   const setRefreshState = (active) => {
+    isRefreshing = active;
     grid?.querySelectorAll('.arena-card').forEach((card) => {
       card.classList.toggle('is-refreshing', active);
     });
@@ -114,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const deadline = dateLabel(league.registration_deadline || league.closes_at);
 
       return `
-      <article class="arena-card">
+      <article class="arena-card ${isRefreshing ? 'is-refreshing' : ''}">
         <div class="arena-card__media">
           <span class="arena-card__badge">${statusMap[league.registration_status] || 'Arena oficial'}</span>
         </div>
@@ -236,6 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function loadLeagues() {
     show(feedback, 'Carregando bolões oficiais...');
+    const startedAt = Date.now();
     setRefreshState(true);
     try {
       let leagues = (await fetchLeagues(true)).filter((item) => item.is_active || item.event_finalized);
@@ -247,6 +251,10 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (error) {
       show(feedback, 'Não foi possível carregar os bolões da arena.', 'is-error');
     } finally {
+      const elapsed = Date.now() - startedAt;
+      if (elapsed < minRefreshMs) {
+        await new Promise((resolve) => setTimeout(resolve, minRefreshMs - elapsed));
+      }
       setRefreshState(false);
     }
   }
