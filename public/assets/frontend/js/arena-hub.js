@@ -197,15 +197,20 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const openRanking = async (leagueId, leagueName) => {
-    if (!rankingModal) return;
-    openModal(rankingModal);
-    if (rankingFeedback) rankingFeedback.textContent = 'Carregando ranking...';
-    if (rankingList) rankingList.innerHTML = '';
-    if (rankingTitle && leagueName) rankingTitle.textContent = `Ranking - ${leagueName}`;
     try {
       const cached = rankingCache.get(leagueId);
       const data = cached || await fetchLeagueRanking(leagueId);
       if (!cached) rankingCache.set(leagueId, data);
+      const ranking = Array.isArray(data?.ranking) ? data.ranking.slice(0, 100) : [];
+      if (!ranking.length) {
+        show(feedback, 'Este bolão ainda não tem posições no ranking para exibir.', 'is-error');
+        return;
+      }
+      if (!rankingModal) return;
+      openModal(rankingModal);
+      if (rankingFeedback) rankingFeedback.textContent = 'Carregando ranking...';
+      if (rankingList) rankingList.innerHTML = '';
+      if (rankingTitle && leagueName) rankingTitle.textContent = `Ranking - ${leagueName}`;
       renderRanking(data);
       if (rankingFeedback) rankingFeedback.textContent = '';
     } catch (error) {
