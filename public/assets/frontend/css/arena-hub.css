@@ -1,6 +1,6 @@
 .arena-shell{width:min(100% - 24px,1240px);margin:0 auto;padding:24px 0 56px}
-.arena-layout{display:grid;grid-template-columns:280px minmax(0,1fr);gap:22px;align-items:start}
-.arena-main{display:grid;gap:18px}
+.arena-layout{display:grid;grid-template-columns:240px minmax(760px,760px);gap:22px;justify-content:center;align-items:start}
+.arena-main{display:grid;gap:18px;width:100%}
 .arena-utility,.arena-board,.arena-sheet{border:1px solid rgba(255,198,110,.16);border-radius:30px;background:linear-gradient(180deg,rgba(7,9,14,.92),rgba(11,13,19,.9));box-shadow:var(--shadow)}
 .arena-utility{position:sticky;top:24px;padding:16px;display:grid;gap:14px}
 .arena-utility__toggle{display:none}

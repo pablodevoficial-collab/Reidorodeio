@@ -3,11 +3,26 @@
 use App\Http\Controllers\Frontend\ArenaController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\FacebookDataDeletionController;
+use App\Models\Sponsor;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
 
-Route::view('/', 'frontend.home', [
-    'pageTitle' => 'Rei do Rodeio',
-])->name('home');
+Route::get('/', function () {
+    $sponsors = collect();
+
+    if (Schema::hasTable('sponsors')) {
+        $sponsors = Sponsor::query()
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderByDesc('id')
+            ->get(['id', 'name', 'logo']);
+    }
+
+    return view('frontend.home', [
+        'pageTitle' => 'Rei do Rodeio',
+        'loaderSponsors' => $sponsors,
+    ]);
+})->name('home');
 
 Route::get('/arena', [ArenaController::class, 'show'])->name('arena');
 Route::get('/arena/status', [ArenaController::class, 'status'])->name('arena.status');

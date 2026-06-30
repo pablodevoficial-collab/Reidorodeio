@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
     grid.innerHTML = leagues.map((league) => `
       <article class="arena-card">
         <div class="arena-card__media">
-          <img src="${safeImage(league.image_url || league.rodeio?.logo_url, fallbackLogo)}" data-fallback-src="${fallbackLogo}" alt="${league.name}">
+          <img src="${safeImage(league.organizer?.logo_url || league.image_url || league.rodeio?.logo_url, fallbackLogo)}" data-fallback-src="${fallbackLogo}" alt="${league.name}">
           <span class="arena-card__badge">${statusMap[league.registration_status] || 'Arena oficial'}</span>
         </div>
         <div><h3>${league.organizer?.name || league.name}</h3><p>${league.name}${league.modalidade?.nome ? ` • ${league.modalidade.nome}` : ''}${league.divisao ? ` • ${league.divisao}` : ''}</p></div>
