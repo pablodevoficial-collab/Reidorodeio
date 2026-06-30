@@ -28,9 +28,17 @@
   .arena-card{min-height:auto;padding:16px}
   .arena-card__meta,.arena-card__foot{grid-template-columns:1fr}
   .arena-card__actions{flex-direction:column}
-  .arena-ranking{max-height:86vh}
-  .arena-ranking__podium{grid-template-columns:1fr;align-items:stretch}
-  .arena-ranking__podium-card,.arena-ranking__podium-card--1,.arena-ranking__podium-card--2,.arena-ranking__podium-card--3{min-height:auto}
+  .arena-ranking{max-height:88vh;margin:4vh auto 0}
+  .arena-ranking__list{gap:10px}
+  .arena-ranking__podium{grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:7px}
+  .arena-ranking__podium-card{min-height:94px;padding:10px 8px;border-radius:14px;gap:3px}
+  .arena-ranking__podium-card--1{min-height:112px}
+  .arena-ranking__podium-card--2{min-height:102px}
+  .arena-ranking__podium-card--3{min-height:94px}
+  .arena-ranking__podium-card strong{font-size:1.45rem}
+  .arena-ranking__podium-card span{font-size:.78rem;line-height:1.1}
+  .arena-ranking__podium-card small{font-size:.68rem;line-height:1.15}
+  .arena-ranking__podium-card em{font-size:.76rem;line-height:1.12}
   .arena-ranking__row{grid-template-columns:42px minmax(0,1fr) 86px}
 }
 @media (max-width: 480px){
