@@ -19,10 +19,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const rankingMeta = document.querySelector('[data-ranking-meta]');
   const rankingFeedback = document.querySelector('[data-ranking-feedback]');
   const rankingList = document.querySelector('[data-ranking-list]');
+  const refreshButton = document.querySelector('[data-refresh-leagues]');
   const statusMap = { open: 'Inscrições abertas', closed: 'Inscrições encerradas', always_open: 'Entrada liberada' };
   const rankingCache = new Map();
   const minRefreshMs = 5000;
   let isRefreshing = false;
+  let refreshRunId = 0;
 
   const show = (node, text, cls = '') => {
     if (!node) return;
@@ -62,7 +64,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (supportUrl) window.open(supportUrl, '_blank', 'noopener,noreferrer');
   });
 
-  const refreshButton = document.querySelector('[data-refresh-leagues]');
   refreshButton?.addEventListener('click', () => loadLeagues());
 
   const syncUtilityState = () => {
@@ -95,6 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const setRefreshState = (active) => {
     isRefreshing = active;
+    if (refreshButton) refreshButton.disabled = active;
     grid?.querySelectorAll('.arena-card').forEach((card) => {
       card.classList.toggle('is-refreshing', active);
     });
@@ -239,6 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function loadLeagues() {
     show(feedback, 'Carregando bolões oficiais...');
+    const runId = ++refreshRunId;
     const startedAt = Date.now();
     setRefreshState(true);
     try {
@@ -255,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (elapsed < minRefreshMs) {
         await new Promise((resolve) => setTimeout(resolve, minRefreshMs - elapsed));
       }
-      setRefreshState(false);
+      if (runId === refreshRunId) setRefreshState(false);
     }
   }
 
