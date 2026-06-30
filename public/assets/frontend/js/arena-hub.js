@@ -89,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   const rankingAction = (league) => `<button class="arena-button arena-button--ghost" data-open-ranking data-league-id="${league.id}" data-league-name="${league.name}">Ranking</button>`;
+  const canShowRanking = (league) => Number(league.teams_count || 0) > 0;
 
   const setRefreshState = (active) => {
     grid?.querySelectorAll('.arena-card').forEach((card) => {
@@ -133,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <span>Prazo<strong class="arena-card__value">${dateLabel(league.registration_deadline || league.closes_at)}</strong></span>
         </div>
         <div class="arena-card__actions">${cardAction(league)}</div>
-        <div class="arena-card__actions arena-card__actions--secondary">${rankingAction(league)}</div>
+        ${canShowRanking(league) ? `<div class="arena-card__actions arena-card__actions--secondary">${rankingAction(league)}</div>` : ''}
       </article>`;
     }).join('');
 
