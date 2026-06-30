@@ -167,7 +167,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const paid = Number(data?.display_paid_positions || data?.paid_positions || 0);
     const prizePool = Number(data?.prize_pool || 0);
     const distribution = data?.distribution || {};
-    const positionCount = Math.max(paid, ranking.length, 3);
+    const maxUsers = Number(data?.max_users || 0);
+    const positionCount = Math.max(maxUsers, paid, ranking.length, 3);
     const rankingByPosition = new Map(ranking.map((item) => [Number(item.position), item]));
 
     const prizeForPosition = (position) => {
