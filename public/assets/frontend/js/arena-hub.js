@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const money = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   const dateLabel = (v) => v ? new Date(v).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : 'Sem prazo';
   const sponsorLabel = (league) => league.organizer?.name || league.name;
+  const slotValue = (value) => `<strong class="arena-card__value" data-slot-text="${String(value).replace(/"/g, '&quot;')}">${value}</strong>`;
 
   const openModal = (modal) => {
     if (!modal) return;
@@ -107,6 +108,11 @@ document.addEventListener('DOMContentLoaded', () => {
     show(feedback, 'Arena oficial carregada.');
 
     grid.innerHTML = leagues.map((league) => {
+      const prize = league.prize_type === 'physical' ? (league.prize_description || 'Prêmio físico') : money(league.total_prize || league.prize_pool);
+      const entries = `${league.teams_count} / 100`;
+      const price = league.is_premium ? 'Premium' : (Number(league.price) > 0 ? money(league.price) : 'Grátis');
+      const deadline = dateLabel(league.registration_deadline || league.closes_at);
+
       return `
       <article class="arena-card">
         <div class="arena-card__media">
@@ -117,12 +123,12 @@ document.addEventListener('DOMContentLoaded', () => {
           <p>${league.name}${league.modalidade?.nome ? ` • ${league.modalidade.nome}` : ''}${league.divisao ? ` • ${league.divisao}` : ''}</p>
         </div>
         <div class="arena-card__meta">
-          <span>Premiação<strong class="arena-card__value">${league.prize_type === 'physical' ? (league.prize_description || 'Prêmio físico') : money(league.total_prize || league.prize_pool)}</strong></span>
-          <span>Entradas<strong class="arena-card__value">${league.teams_count} / 100</strong></span>
+          <span>Premiação${slotValue(prize)}</span>
+          <span>Entradas${slotValue(entries)}</span>
         </div>
         <div class="arena-card__foot">
-          <span>Entrada<strong class="arena-card__value">${league.is_premium ? 'Premium' : (Number(league.price) > 0 ? money(league.price) : 'Grátis')}</strong></span>
-          <span>Prazo<strong class="arena-card__value">${dateLabel(league.registration_deadline || league.closes_at)}</strong></span>
+          <span>Entrada${slotValue(price)}</span>
+          <span>Prazo${slotValue(deadline)}</span>
         </div>
         <div class="arena-card__actions">${cardAction(league)}</div>
         <div class="arena-card__actions arena-card__actions--secondary">${rankingAction(league)}</div>

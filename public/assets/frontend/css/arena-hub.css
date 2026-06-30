@@ -114,45 +114,41 @@
 }
 .arena-card__value{display:inline-block;position:relative;transform-origin:center;transition:transform .2s ease, filter .2s ease, opacity .2s ease}
 .arena-card.is-refreshing .arena-card__value{
-  min-width:86px;
-  min-height:28px;
-  padding:3px 10px;
+  min-width:max-content;
+  min-height:1.2em;
+  padding:0;
   overflow:hidden;
   color:transparent;
-  border-left:1px solid rgba(255,202,114,.7);
-  border-right:1px solid rgba(255,202,114,.7);
-  background:linear-gradient(180deg, rgba(3,3,4,.96), rgba(31,25,10,.9) 52%, rgba(3,3,4,.96));
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06), 0 0 16px rgba(255,170,54,.2);
-  filter:brightness(1.24);
+  filter:brightness(1.18);
 }
 .arena-card.is-refreshing .arena-card__value::before{
-  content:"777\A R$ 100\A 000\A $$$\A 250\A 8000\A ***\A 100";
+  content:attr(data-slot-text);
   position:absolute;
-  inset:-42px 0 auto;
-  color:#ffe6a6;
-  white-space:pre;
-  text-align:center;
-  font-family:'Teko',sans-serif;
-  font-size:1.28rem;
-  line-height:28px;
-  letter-spacing:.08em;
-  text-shadow:0 0 10px rgba(255,184,73,.7);
-  animation:slotReel .42s linear infinite;
+  inset:0;
+  color:var(--text);
+  white-space:nowrap;
+  font:inherit;
+  line-height:inherit;
+  text-shadow:0 0 10px rgba(255,184,73,.45);
+  animation:slotTextRoll .32s linear infinite;
 }
 .arena-card.is-refreshing .arena-card__value::after{
-  content:"";
+  content:attr(data-slot-text);
   position:absolute;
-  left:0;
-  right:0;
-  top:50%;
-  height:2px;
-  transform:translateY(-50%);
-  background:linear-gradient(90deg, transparent, rgba(255,202,114,.95), transparent);
-  box-shadow:0 0 12px rgba(255,202,114,.8);
+  inset:0;
+  color:var(--gold);
+  white-space:nowrap;
+  font:inherit;
+  line-height:inherit;
+  opacity:.55;
+  animation:slotTextRoll .32s linear infinite reverse;
 }
-@keyframes slotReel{
-  0%{transform:translateY(0)}
-  100%{transform:translateY(112px)}
+@keyframes slotTextRoll{
+  0%{transform:translateY(-115%);opacity:.15}
+  22%{transform:translateY(-42%);opacity:.55}
+  48%{transform:translateY(0);opacity:1}
+  74%{transform:translateY(42%);opacity:.55}
+  100%{transform:translateY(115%);opacity:.15}
 }
 .arena-sheet{width:min(100% - 20px,520px);margin:min(10vh,72px) auto 0;padding:28px 22px}
 .arena-ranking{width:min(100% - 20px,760px)}
