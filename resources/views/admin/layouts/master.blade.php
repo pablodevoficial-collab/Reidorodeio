@@ -1,6 +1,6 @@
 <!-- meta tags and other links -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
@@ -11,7 +11,7 @@
     <link rel="shortcut icon" type="image/png" href="{{ siteFavicon() }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Teko:wght@500;600;700&display=swap" rel="stylesheet">
     
     <!-- Ícones -->
     <link rel="stylesheet" href="{{ asset('assets/global/css/line-awesome.min.css') }}">
@@ -26,8 +26,8 @@
 
     <style>
         :root {
-            --rr-font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
-            --rr-font-display: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+            --rr-font-body: 'Barlow', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+            --rr-font-display: 'Teko', 'Barlow', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
         }
 
         body,
@@ -54,7 +54,8 @@
         .modal-title {
             font-family: var(--rr-font-display) !important;
             font-weight: 700;
-            letter-spacing: -0.01em;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
         }
 
         table .user .thumb img {
@@ -68,6 +69,16 @@
             padding: 6px;
             color: #626262;
             font-weight: 500;
+        }
+        body.admin-shell {
+            background:
+                radial-gradient(circle at top, rgba(249, 115, 22, 0.16), transparent 22%),
+                radial-gradient(circle at right bottom, rgba(37, 99, 235, 0.12), transparent 24%),
+                linear-gradient(180deg, #050816 0%, #020617 100%) !important;
+        }
+        .page-title {
+            font-size: 1.7rem;
+            letter-spacing: .03em;
         }
         .pointer-events-none {
             pointer-events: none;
@@ -112,8 +123,8 @@
     @stack('style')
 
     <!-- Tema final do painel admin, alinhado ao frontend -->
-    <link rel="stylesheet" href="{{ asset('assets/admin/css/modern-theme.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/admin/css/bolao-admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/admin/css/modern-theme.css') }}">
 </head>
 
 <body class="admin-shell">
