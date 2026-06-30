@@ -42,6 +42,7 @@
 @include('frontend.partials.arena.modals.profile')
 @include('frontend.partials.arena.modals.pix')
 @include('frontend.partials.arena.modals.entry')
+@include('frontend.partials.arena.modals.ranking')
 @guest
 @include('frontend.partials.arena.modals.register')
 @endguest
