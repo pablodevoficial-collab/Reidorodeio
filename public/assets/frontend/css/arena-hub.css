@@ -144,6 +144,15 @@
 .arena-sheet__stack,.arena-form{display:grid;gap:14px}
 .arena-sheet__stack article{padding:14px 14px 16px;border-radius:18px;background:rgba(255,255,255,.012);border:1px solid rgba(255,255,255,.05)}
 .arena-sheet__stack strong{display:block;margin-bottom:6px;color:var(--gold)}
+.arena-profile-head{display:grid;gap:6px;margin-bottom:4px}
+.arena-profile-head span{color:var(--gold);font:800 .78rem/1 'Barlow',sans-serif;letter-spacing:.18em;text-transform:uppercase}
+.arena-profile-head h2{margin:0}
+.arena-profile-head p{margin:0;color:var(--muted);line-height:1.45}
+.arena-profile-summary{display:grid;gap:4px;padding:16px;border:1px solid rgba(255,202,114,.2);border-radius:20px;background:linear-gradient(135deg,rgba(255,202,114,.13),rgba(255,122,26,.06));box-shadow:inset 0 0 0 1px rgba(255,255,255,.03)}
+.arena-profile-summary span{color:var(--muted);font:800 .72rem/1 'Barlow',sans-serif;text-transform:uppercase;letter-spacing:.16em}
+.arena-profile-summary strong{color:#fff7e8;font:900 2rem/.95 'Barlow Condensed',sans-serif;letter-spacing:.02em;text-shadow:0 0 18px rgba(255,202,114,.22)}
+.arena-profile-summary small{color:var(--muted);line-height:1.35}
+.arena-profile-complete-fields{display:grid;gap:14px}
 .arena-profile-photo{display:flex;align-items:center;gap:14px;padding:12px;border:1px solid rgba(255,202,114,.18);border-radius:18px;background:rgba(255,255,255,.018);cursor:pointer}
 .arena-profile-photo__preview{width:62px;height:62px;border-radius:18px;display:grid;place-items:center;overflow:hidden;flex:0 0 auto;background:linear-gradient(135deg,rgba(255,202,114,.24),rgba(255,122,26,.18));border:1px solid rgba(255,202,114,.28);color:var(--gold);font:900 .7rem/1 'Barlow',sans-serif;text-transform:uppercase;letter-spacing:.12em}
 .arena-profile-photo__preview img{width:100%;height:100%;display:block;object-fit:cover}

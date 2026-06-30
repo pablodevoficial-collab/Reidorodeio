@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\ProfilePhotoRequest;
 use App\Services\ProfilePhotoApprovalService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 use App\Rules\FileTypeValidate;
 
@@ -153,6 +155,53 @@ class UserProfileController extends Controller
             'photo_status' => $photoStatus,
             'photo_pending_review' => $photoStatus === 'pending',
             'photo_reviewed_at' => $latestPhotoRequest?->reviewed_at?->toIso8601String(),
+            'winnings' => $this->buildWinningsPayload($user),
+        ];
+    }
+
+    private function buildWinningsPayload($user): array
+    {
+        if (!$user) {
+            return [
+                'total' => 0.0,
+                'fantasy' => 0.0,
+                'x1' => 0.0,
+            ];
+        }
+
+        $fantasy = 0.0;
+        $x1 = 0.0;
+
+        try {
+            if (Schema::hasTable('fantasy_teams') && Schema::hasColumn('fantasy_teams', 'prize_won')) {
+                $query = DB::table('fantasy_teams')
+                    ->where('user_id', $user->id)
+                    ->where('prize_won', '>', 0);
+
+                if (Schema::hasColumn('fantasy_teams', 'prize_paid_at')) {
+                    $query->whereNotNull('prize_paid_at');
+                }
+
+                $fantasy = (float) $query->sum('prize_won');
+            }
+        } catch (\Throwable $e) {
+            $fantasy = 0.0;
+        }
+
+        try {
+            if (Schema::hasTable('user_x1_stats') && Schema::hasColumn('user_x1_stats', 'total_prize_won')) {
+                $x1 = (float) DB::table('user_x1_stats')
+                    ->where('user_id', $user->id)
+                    ->sum('total_prize_won');
+            }
+        } catch (\Throwable $e) {
+            $x1 = 0.0;
+        }
+
+        return [
+            'total' => round($fantasy + $x1, 2),
+            'fantasy' => round($fantasy, 2),
+            'x1' => round($x1, 2),
         ];
     }
 
