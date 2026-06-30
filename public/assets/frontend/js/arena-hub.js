@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const rankingModal = document.querySelector('[data-ranking-modal]');
   const rankingTitle = document.querySelector('[data-ranking-title]');
   const rankingSubtitle = document.querySelector('[data-ranking-subtitle]');
-  const rankingMeta = document.querySelector('[data-ranking-meta]');
   const rankingFeedback = document.querySelector('[data-ranking-feedback]');
   const rankingList = document.querySelector('[data-ranking-list]');
   const refreshButton = document.querySelector('[data-refresh-leagues]');
@@ -184,14 +183,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (rankingTitle) rankingTitle.textContent = data?.league_name ? `Ranking - ${data.league_name}` : 'Ranking do bolão';
     if (rankingSubtitle) rankingSubtitle.textContent = `${paid || positionCount} posições pagas para acompanhar`;
-    if (rankingMeta) {
-      rankingMeta.innerHTML = `
-        <span>Participantes<strong>${data?.total_teams ?? 0}</strong></span>
-        <span>Posições pagas<strong>${paid}</strong></span>
-        <span>Premiação<strong>${data?.prize_pool ? money(data.prize_pool) : 'A definir'}</strong></span>
-      `;
-    }
-
     const podium = [1, 2, 3].map((position) => {
       const item = rankingByPosition.get(position);
       return `

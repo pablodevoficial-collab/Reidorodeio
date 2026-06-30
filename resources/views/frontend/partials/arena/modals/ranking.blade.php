@@ -6,7 +6,6 @@
             <h2 data-ranking-title>Ranking do bolão</h2>
             <p data-ranking-subtitle>Carregando posições...</p>
         </div>
-        <div class="arena-ranking__meta" data-ranking-meta></div>
         <div class="arena-ranking__feedback" data-ranking-feedback></div>
         <div class="arena-ranking__list" data-ranking-list></div>
     </div>

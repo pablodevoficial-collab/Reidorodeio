@@ -26,7 +26,6 @@
   .arena-card__meta,.arena-card__foot{grid-template-columns:1fr}
   .arena-card__actions{flex-direction:column}
   .arena-ranking{max-height:86vh}
-  .arena-ranking__meta{grid-template-columns:1fr}
   .arena-ranking__podium{grid-template-columns:1fr;align-items:stretch}
   .arena-ranking__podium-card,.arena-ranking__podium-card--1,.arena-ranking__podium-card--2,.arena-ranking__podium-card--3{min-height:auto}
   .arena-ranking__row{grid-template-columns:42px minmax(0,1fr) 86px}
