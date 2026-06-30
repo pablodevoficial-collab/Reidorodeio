@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const prizeForPosition = (position) => {
       if (data?.prize_type === 'physical') return data?.prize_description || 'Prêmio físico';
       const percent = Number(distribution[position] || 0);
-      if (!percent || !prizePool) return 'A definir';
+      if (!percent || !prizePool) return '';
       return money((prizePool * percent) / 100);
     };
     const participantLabel = (item) => item ? (item.display_name || item.user_name || 'Usuário') : 'Aguardando entrada';
