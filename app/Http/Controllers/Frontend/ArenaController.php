@@ -16,9 +16,12 @@ class ArenaController extends Controller
 {
     public function home(): View
     {
+        $loaderSponsor = $this->primaryLoaderSponsor();
+
         return view('frontend.home', [
             'pageTitle' => 'Rei do Rodeio',
-            'loaderSponsor' => $this->primaryLoaderSponsor(),
+            'loaderSponsor' => $loaderSponsor,
+            'loaderSponsorLogoUrl' => $this->loaderSponsorLogoUrl($loaderSponsor?->logo),
         ]);
     }
 
@@ -162,6 +165,31 @@ class ArenaController extends Controller
         } catch (\Throwable) {
             return null;
         }
+    }
+
+    private function loaderSponsorLogoUrl(?string $path): ?string
+    {
+        $value = trim((string) ($path ?? ''));
+        if ($value === '') {
+            return null;
+        }
+
+        if (preg_match('~^(https?:)?//~i', $value)) {
+            return $value;
+        }
+
+        $value = str_replace('\\', '/', $value);
+        $value = ltrim($value, '/');
+
+        if (str_starts_with(strtolower($value), 'public/')) {
+            $value = substr($value, 7);
+        }
+
+        if (str_starts_with(strtolower($value), 'storage/')) {
+            return publicAssetUrl($value);
+        }
+
+        return publicAssetUrl('storage/' . $value);
     }
 
     private function resolveLeagueBrand(?int $rodeioId): array

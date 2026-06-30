@@ -11,7 +11,7 @@
             <div class="loader-sponsor" aria-label="Patrocinador da arena">
                 <div class="loader-sponsor__item">
                     <img
-                        src="{{ publicStorageUrl($loaderSponsor->logo) }}"
+                        src="{{ $loaderSponsorLogoUrl }}"
                         alt="{{ $loaderSponsor->name }}"
                     >
                 </div>
