@@ -1,6 +1,6 @@
 @media (max-width: 980px){
   .arena-layout{grid-template-columns:1fr}
-  .arena-utility{position:fixed;top:auto;right:50%;bottom:18px;left:auto;z-index:40;order:2;width:auto;max-width:calc(100vw - 24px);height:auto;transform:translateX(50%)}
+  .arena-utility{position:fixed;top:auto;right:50%;bottom:18px;left:auto;z-index:20;order:2;width:auto;max-width:calc(100vw - 24px);height:auto;transform:translateX(50%)}
 }
 @media (max-width: 720px){
   .arena-shell{width:min(100% - 16px,1240px);padding:14px 0 112px}
