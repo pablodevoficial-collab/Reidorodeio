@@ -1,7 +1,7 @@
 @media (max-width: 980px) {
     body {
         background:
-            linear-gradient(180deg, rgba(3, 5, 8, 0.25), rgba(3, 5, 8, 0.92)),
+            linear-gradient(180deg, rgba(255, 235, 190, 0.24), rgba(3, 5, 8, 0.72)),
             url('/assets/images/backgrounds/mobilebg.png') center top / cover no-repeat,
             #050608;
     }

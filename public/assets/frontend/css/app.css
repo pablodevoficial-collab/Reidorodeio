@@ -41,6 +41,23 @@ img { display: block; max-width: 100%; }
     margin: 0 auto;
     display: grid;
     place-items: center;
+    position: relative;
+    isolation: isolate;
+}
+
+.loader-screen::before,
+.arena-page::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at top, rgba(255, 235, 190, 0.34), transparent 32%),
+        radial-gradient(circle at center, rgba(255, 214, 153, 0.14), transparent 58%),
+        linear-gradient(180deg, rgba(255, 240, 210, 0.12), rgba(3, 5, 8, 0.08));
+    mix-blend-mode: screen;
+    opacity: .92;
+    z-index: -1;
 }
 
 .loader-card,
