@@ -50,7 +50,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('[data-open-support]')?.addEventListener('click', () => {
     if (supportUrl) window.open(supportUrl, '_blank', 'noopener,noreferrer');
   });
-  document.querySelector('[data-refresh-leagues]')?.addEventListener('click', () => loadLeagues());
+
+  const refreshButton = document.querySelector('[data-refresh-leagues]');
+  refreshButton?.addEventListener('click', () => loadLeagues());
 
   const syncUtilityState = () => {
     if (!utility || !utilityToggle) return;
@@ -78,6 +80,12 @@ document.addEventListener('DOMContentLoaded', () => {
     return `<button class="arena-button arena-button--solid" data-open-entry data-league-id="${league.id}" data-league-name="${league.name}">Entrar na disputa</button>`;
   };
 
+  const setRefreshState = (active) => {
+    grid?.querySelectorAll('.arena-card').forEach((card) => {
+      card.classList.toggle('is-refreshing', active);
+    });
+  };
+
   const render = (leagues) => {
     if (!grid) return;
     if (!leagues.length) {
@@ -88,7 +96,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     show(feedback, 'Arena oficial carregada.');
 
-    grid.innerHTML = leagues.map((league) => `
+    grid.innerHTML = leagues.map((league) => {
+      const summary = league.ranking_summary || null;
+      const leaderName = summary?.leader_name || 'Em atualização';
+      const leaderPoints = summary?.leader_points ?? '---';
+
+      return `
       <article class="arena-card">
         <div class="arena-card__media">
           <span class="arena-card__badge">${statusMap[league.registration_status] || 'Arena oficial'}</span>
@@ -98,15 +111,20 @@ document.addEventListener('DOMContentLoaded', () => {
           <p>${league.name}${league.modalidade?.nome ? ` • ${league.modalidade.nome}` : ''}${league.divisao ? ` • ${league.divisao}` : ''}</p>
         </div>
         <div class="arena-card__meta">
-          <span>Premiação<strong>${league.prize_type === 'physical' ? (league.prize_description || 'Prêmio físico') : money(league.total_prize || league.prize_pool)}</strong></span>
-          <span>Meta de entradas<strong>${league.teams_count} / 100</strong></span>
+          <span>Premiação<strong class="arena-card__value">${league.prize_type === 'physical' ? (league.prize_description || 'Prêmio físico') : money(league.total_prize || league.prize_pool)}</strong></span>
+          <span>Entradas<strong class="arena-card__value">${league.teams_count} / 100</strong></span>
+        </div>
+        <div class="arena-card__ranking">
+          <span>Ranking<strong class="arena-card__value">${leaderName} #1</strong></span>
+          <span>Pontuação<strong class="arena-card__value">${leaderPoints}</strong></span>
         </div>
         <div class="arena-card__foot">
-          <span>Entrada<strong>${league.is_premium ? 'Premium' : (Number(league.price) > 0 ? money(league.price) : 'Grátis')}</strong></span>
-          <span>Prazo<strong>${dateLabel(league.registration_deadline || league.closes_at)}</strong></span>
+          <span>Entrada<strong class="arena-card__value">${league.is_premium ? 'Premium' : (Number(league.price) > 0 ? money(league.price) : 'Grátis')}</strong></span>
+          <span>Prazo<strong class="arena-card__value">${dateLabel(league.registration_deadline || league.closes_at)}</strong></span>
         </div>
         <div class="arena-card__actions">${cardAction(league)}</div>
-      </article>`).join('');
+      </article>`;
+    }).join('');
 
     grid.querySelectorAll('[data-card-register]').forEach((n) => n.addEventListener('click', openRegister));
     grid.querySelectorAll('[data-card-rules]').forEach((n) => n.addEventListener('click', () => openModal(rulesModal)));
@@ -121,17 +139,44 @@ document.addEventListener('DOMContentLoaded', () => {
     return Array.isArray(data?.data) ? data.data : [];
   }
 
+  async function fetchLeagueRanking(leagueId) {
+    const base = (app.dataset.fantasyBaseUrl || '').replace(/\/$/, '');
+    const response = await fetch(`${base}/leagues/${leagueId}/ranking`, { headers: { Accept: 'application/json' } });
+    const data = await response.json();
+    return data?.data || null;
+  }
+
+  async function enrichRanking(leagues) {
+    return Promise.all(leagues.map(async (league) => {
+      try {
+        const ranking = await fetchLeagueRanking(league.id);
+        return {
+          ...league,
+          ranking_summary: ranking ? {
+            leader_name: ranking.ranking?.[0]?.display_name || ranking.ranking?.[0]?.user_name || 'Líder',
+            leader_points: ranking.ranking?.[0]?.points ?? '---',
+          } : null,
+        };
+      } catch (error) {
+        return { ...league, ranking_summary: null };
+      }
+    }));
+  }
+
   async function loadLeagues() {
     show(feedback, 'Carregando bolões oficiais...');
+    setRefreshState(true);
     try {
       let leagues = (await fetchLeagues(true)).filter((item) => item.is_active || item.event_finalized);
       if (!leagues.length) {
         leagues = (await fetchLeagues(false)).filter((item) => item.is_active || item.event_finalized);
         if (leagues.length) show(feedback, 'Mostrando bolões ativos da arena geral.');
       }
-      render(leagues);
+      render(await enrichRanking(leagues));
     } catch (error) {
       show(feedback, 'Não foi possível carregar os bolões da arena.', 'is-error');
+    } finally {
+      setRefreshState(false);
     }
   }
 
