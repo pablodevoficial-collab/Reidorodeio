@@ -7,19 +7,13 @@
     <section class="loader-card" aria-labelledby="loader-title">
         <h1 class="sr-only" id="loader-title">Rei do Rodeio</h1>
 
-        @if(($loaderSponsors ?? collect())->isNotEmpty())
-            <div class="loader-sponsors" aria-label="Patrocinadores da arena">
-                <div class="loader-sponsors__track">
-                    @foreach ([$loaderSponsors, $loaderSponsors] as $group)
-                        @foreach ($group as $sponsor)
-                            <div class="loader-sponsors__item">
-                                <img
-                                    src="{{ publicStorageUrl($sponsor->logo) }}"
-                                    alt="{{ $sponsor->name }}"
-                                >
-                            </div>
-                        @endforeach
-                    @endforeach
+        @if($loaderSponsor)
+            <div class="loader-sponsor" aria-label="Patrocinador da arena">
+                <div class="loader-sponsor__item">
+                    <img
+                        src="{{ publicStorageUrl($loaderSponsor->logo) }}"
+                        alt="{{ $loaderSponsor->name }}"
+                    >
                 </div>
             </div>
         @endif

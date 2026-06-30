@@ -18,7 +18,7 @@ class ArenaController extends Controller
     {
         return view('frontend.home', [
             'pageTitle' => 'Rei do Rodeio',
-            'loaderSponsors' => $this->activeLoaderSponsors(),
+            'loaderSponsor' => $this->primaryLoaderSponsor(),
         ]);
     }
 
@@ -147,20 +147,20 @@ class ArenaController extends Controller
         return "https://api.whatsapp.com/send?phone={$phone}&text={$text}";
     }
 
-    private function activeLoaderSponsors()
+    private function primaryLoaderSponsor(): ?Sponsor
     {
         try {
             if (!Schema::hasTable('sponsors')) {
-                return collect();
+                return null;
             }
 
             return Sponsor::query()
                 ->where('is_active', true)
                 ->orderBy('sort_order')
                 ->orderByDesc('id')
-                ->get(['id', 'name', 'logo']);
+                ->first(['id', 'name', 'logo']);
         } catch (\Throwable) {
-            return collect();
+            return null;
         }
     }
 

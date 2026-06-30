@@ -55,10 +55,9 @@ img { display: block; max-width: 100%; }
     text-align: center;
 }
 
-.loader-sponsors{width:min(100%,420px);margin:0 auto 18px;overflow:hidden;border-radius:24px;border:1px solid rgba(255,183,86,.14);background:rgba(255,255,255,.03)}
-.loader-sponsors__track{display:flex;align-items:center;gap:18px;width:max-content;padding:18px;animation:loader-marquee 22s linear infinite}
-.loader-sponsors__item{flex:0 0 auto;display:grid;place-items:center;min-width:132px;height:72px;padding:10px 14px;border-radius:18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05)}
-.loader-sponsors__item img{max-width:100%;max-height:48px;object-fit:contain;filter:drop-shadow(0 0 18px rgba(255,144,39,.18))}
+.loader-sponsor{width:min(100%,420px);margin:0 auto 18px}
+.loader-sponsor__item{display:grid;place-items:center;min-height:132px;padding:22px 24px;border-radius:24px;border:1px solid rgba(255,183,86,.14);background:rgba(255,255,255,.03)}
+.loader-sponsor__item img{max-width:min(100%,260px);max-height:88px;object-fit:contain;filter:drop-shadow(0 0 18px rgba(255,144,39,.18))}
 
 .loader-card__progress {
     width: min(100%, 360px);
@@ -185,11 +184,6 @@ img { display: block; max-width: 100%; }
 @keyframes arena-progress {
     from { width: 0; }
     to { width: 100%; }
-}
-
-@keyframes loader-marquee {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
 }
 
 @keyframes arena-pulse {
