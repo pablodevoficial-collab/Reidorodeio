@@ -9,18 +9,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const authChoiceFeedback = document.querySelector('[data-auth-choice-feedback]');
     const loginForm = document.querySelector('[data-login-form]');
     const registerForm = document.querySelector('[data-register-form]');
-    const profileForm = document.querySelector('[data-profile-form]');
     const loginFeedback = document.querySelector('[data-login-feedback]');
     const registerFeedback = document.querySelector('[data-register-feedback]');
-    const profileFeedback = document.querySelector('[data-profile-feedback]');
     const registerMobilePanel = document.querySelector('[data-step-panel="mobile"]');
     const registerPasswordPanel = document.querySelector('[data-step-panel="password"]');
-    const profileCpfPanel = document.querySelector('[data-profile-panel="cpf"]');
-    const profileNamePanel = document.querySelector('[data-profile-panel="name"]');
-    const profileBirthdatePanel = document.querySelector('[data-profile-panel="birthdate"]');
     const checkMobileButton = document.querySelector('[data-check-mobile]');
-    const checkCpfButton = document.querySelector('[data-check-cpf]');
-    const nextProfileButton = document.querySelector('[data-next-profile]');
     const authActionButtons = document.querySelectorAll('[data-auth-action]');
     const authBackButtons = document.querySelectorAll('[data-auth-back]');
 
@@ -33,14 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const digits = (value) => (value || '').replace(/\D+/g, '');
-    const splitName = (fullName) => {
-        const parts = (fullName || '').trim().split(/\s+/).filter(Boolean);
-        return {
-            firstname: parts[0] || '',
-            lastname: parts.slice(1).join(' ') || '',
-        };
-    };
-
     const toggleLoading = (button, loading) => {
         if (!button) return;
         button.classList.toggle('is-loading', loading);
@@ -60,31 +45,21 @@ document.addEventListener('DOMContentLoaded', () => {
         loginForm?.reset();
         registerForm?.reset();
 
-        if (profileForm) {
-            profileForm.reset();
-            hidePanel(profileForm);
-        }
-
         showPanel(authChoicePanel);
         hidePanel(loginForm);
         hidePanel(registerForm);
         showPanel(registerMobilePanel);
         hidePanel(registerPasswordPanel);
-        showPanel(profileCpfPanel);
-        hidePanel(profileNamePanel);
-        hidePanel(profileBirthdatePanel);
 
         showFeedback(authChoiceFeedback, '', '');
         showFeedback(loginFeedback, '', '');
         showFeedback(registerFeedback, '', '');
-        showFeedback(profileFeedback, '', '');
     };
 
     const switchAuthFlow = (mode) => {
         hidePanel(authChoicePanel);
         hidePanel(loginForm);
         hidePanel(registerForm);
-        hidePanel(profileForm);
 
         if (mode === 'login') {
             showPanel(loginForm);
@@ -233,94 +208,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error((registerData.errors || ['Não foi possível cadastrar.']).join(' '));
             }
 
-            showFeedback(registerFeedback, 'Conta criada. Falta completar o perfil.', 'success');
-            hidePanel(registerForm);
-            showPanel(profileForm);
+            showFeedback(registerFeedback, 'Conta criada. Agora escolha sua equipe.', 'success');
+            window.setTimeout(() => {
+                window.location.href = registerData.redirect_url || window.location.href;
+            }, 500);
         } catch (error) {
             showFeedback(registerFeedback, error.message, 'error');
-        } finally {
-            toggleLoading(submitButton, false);
-        }
-    });
-
-    checkCpfButton?.addEventListener('click', async () => {
-        const cpf = digits(profileForm.cpf.value);
-        showFeedback(profileFeedback, 'Verificando CPF...', 'success');
-        toggleLoading(checkCpfButton, true);
-
-        try {
-            const cpfCheckResponse = await fetch(arenaApp?.dataset.checkUserUrl || '/user/check-user', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ field: 'cpf', value: cpf })
-            });
-            const cpfCheckData = await cpfCheckResponse.json();
-
-            if (!cpfCheckData.available) {
-                showFeedback(profileFeedback, cpfCheckData.message, 'error');
-                return;
-            }
-
-            showFeedback(profileFeedback, 'CPF liberado. Agora informe seu nome.', 'success');
-            hidePanel(profileCpfPanel);
-            showPanel(profileNamePanel);
-        } catch (error) {
-            showFeedback(profileFeedback, 'Não foi possível validar seu CPF agora.', 'error');
-        } finally {
-            toggleLoading(checkCpfButton, false);
-        }
-    });
-
-    nextProfileButton?.addEventListener('click', () => {
-        const fullName = profileForm.fullname.value.trim();
-        if (!fullName || fullName.split(/\s+/).length < 2) {
-            showFeedback(profileFeedback, 'Informe nome e sobrenome para continuar.', 'error');
-            return;
-        }
-
-        showFeedback(profileFeedback, 'Perfeito. Falta a data de nascimento.', 'success');
-        hidePanel(profileNamePanel);
-        showPanel(profileBirthdatePanel);
-    });
-
-    profileForm?.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        showFeedback(profileFeedback, 'Finalizando perfil...', 'success');
-
-        const cpf = digits(profileForm.cpf.value);
-        const names = splitName(profileForm.fullname.value);
-        const submitButton = profileForm.querySelector('button[type="submit"]');
-        toggleLoading(submitButton, true);
-
-        try {
-            const profileResponse = await fetch(arenaApp?.dataset.profileUrl || '/user/profile/update', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({
-                    cpf,
-                    firstname: names.firstname,
-                    lastname: names.lastname,
-                    birthdate: profileForm.birthdate.value
-                })
-            });
-            const profileData = await profileResponse.json();
-
-            if (!profileResponse.ok || !profileData.success) {
-                throw new Error((profileData.errors || ['Não foi possível completar o perfil.']).join(' '));
-            }
-
-            showFeedback(profileFeedback, 'Perfil completo. Você receberá avisos dos novos eventos.', 'success');
-            window.setTimeout(() => window.location.reload(), 900);
-        } catch (error) {
-            showFeedback(profileFeedback, error.message, 'error');
         } finally {
             toggleLoading(submitButton, false);
         }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ProfilePhotoRequest;
 use App\Services\ProfilePhotoApprovalService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use App\Rules\FileTypeValidate;
 
 class UserProfileController extends Controller
@@ -37,18 +38,28 @@ class UserProfileController extends Controller
         $user = $request->user();
         
         $validated = $request->validate([
-            'username' => 'required|string|min:3|max:40|alpha_dash|unique:users,username,' . $user->id,
-            'email' => 'required|email|max:255',
-            'whatsapp' => 'required|string|max:20',
-            'birth_date' => 'required|date',
+            'firstname' => 'required|string|max:60',
+            'lastname' => 'required|string|max:120',
+            'cpf' => [
+                'required',
+                'string',
+                'size:11',
+                Rule::unique('users', 'cpf')->ignore($user->id),
+            ],
             'pix_key' => 'required|string|max:255',
             'avatar' => ['nullable', 'image', new FileTypeValidate(['jpg', 'jpeg', 'png', 'webp']), 'max:2048'],
+        ], [
+            'firstname.required' => 'Informe seu nome completo.',
+            'lastname.required' => 'Informe seu nome completo.',
+            'cpf.required' => 'Informe seu CPF.',
+            'cpf.size' => 'Informe um CPF válido com 11 dígitos.',
+            'cpf.unique' => 'Este CPF já está cadastrado em outra conta.',
+            'pix_key.required' => 'Informe sua chave Pix.',
         ]);
 
-        $user->username = $validated['username'];
-        $user->email = $validated['email'];
-        $user->mobile = $validated['whatsapp'];
-        $user->birthdate = $validated['birth_date'];
+        $user->firstname = $validated['firstname'];
+        $user->lastname = $validated['lastname'];
+        $user->cpf = preg_replace('/\D+/', '', (string) $validated['cpf']);
         
         // Auto-detect tip_chave_pix se for CPF, Email, Telefone, ou Aleatoria
         $chave = $validated['pix_key'];
@@ -83,7 +94,7 @@ class UserProfileController extends Controller
             'ok' => true,
             'message' => $photoQueued
                 ? 'Perfil atualizado. Sua foto foi enviada para análise e você receberá um email com o resultado.'
-                : 'Perfil atualizado com sucesso!',
+                : 'Dados do prêmio salvos com sucesso!',
             'photo_pending_review' => $photoQueued,
             'user' => $this->buildProfilePayload($user->fresh()),
         ]);
@@ -128,6 +139,9 @@ class UserProfileController extends Controller
             'username' => $user?->username,
             'email' => $user?->email,
             'mobile' => $user?->mobile,
+            'firstname' => $user?->firstname,
+            'lastname' => $user?->lastname,
+            'cpf' => $user?->cpf,
             'birth_date' => $user?->birthdate ? $user->birthdate->format('Y-m-d') : null,
             'pix_key' => $user?->pix_key,
             'pix_key_type' => $user?->pix_key_type,
@@ -148,12 +162,9 @@ class UserProfileController extends Controller
             return false;
         }
 
-        $hasRealEmail = method_exists($user, 'hasRealEmail') ? (bool) $user->hasRealEmail() : !empty($user->email);
-
-        return $hasRealEmail
-            && trim((string) ($user->username ?? '')) !== ''
-            && trim((string) ($user->mobile ?? '')) !== ''
-            && !empty($user->birthdate)
+        return trim((string) ($user->firstname ?? '')) !== ''
+            && trim((string) ($user->lastname ?? '')) !== ''
+            && trim((string) ($user->cpf ?? '')) !== ''
             && trim((string) ($user->pix_key ?? '')) !== '';
     }
 }

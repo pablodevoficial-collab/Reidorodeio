@@ -51,26 +51,5 @@
             <div class="rr-form-step__feedback" data-register-feedback></div>
         </form>
 
-        <form class="rr-form-step" style="display:none" data-profile-form>
-            <div class="rr-step-panel" data-profile-panel="cpf">
-                <h2>Complete o perfil para receber prêmios</h2>
-                <p>Vamos validar seu CPF antes de seguir.</p>
-                <input type="text" name="cpf" placeholder="CPF" inputmode="numeric" required>
-                <button class="arena-button arena-button--solid rr-step-button" type="button" data-check-cpf><span>Verificar CPF</span></button>
-            </div>
-            <div class="rr-step-panel" style="display:none" data-profile-panel="name">
-                <h2>Qual é o seu nome?</h2>
-                <p>Informe o nome completo do perfil que vai receber prêmios.</p>
-                <input type="text" name="fullname" placeholder="Nome completo" required>
-                <button class="arena-button arena-button--solid rr-step-button" type="button" data-next-profile><span>Continuar</span></button>
-            </div>
-            <div class="rr-step-panel" style="display:none" data-profile-panel="birthdate">
-                <h2>Último passo</h2>
-                <p>Agora confirme sua data de nascimento.</p>
-                <input type="date" name="birthdate" required>
-                <button class="arena-button arena-button--solid rr-step-button" type="submit"><span>Finalizar cadastro</span></button>
-            </div>
-            <div class="rr-form-step__feedback" data-profile-feedback></div>
-        </form>
     </div>
 </div>
