@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const app = document.querySelector('[data-arena-app]');
   if (!app) return;
 
-  const fallbackLogo = '/public/assets/images/logo/logorei.png';
   const grid = document.querySelector('[data-leagues-grid]');
   const feedback = document.querySelector('[data-leagues-feedback]');
   const utility = document.querySelector('.arena-utility');
@@ -15,33 +14,26 @@ document.addEventListener('DOMContentLoaded', () => {
   const profileModal = document.querySelector('[data-profile-modal]');
   const pixModal = document.querySelector('[data-pix-modal]');
   const statusMap = { open: 'Inscrições abertas', closed: 'Inscrições encerradas', always_open: 'Entrada liberada' };
+
   const show = (node, text, cls = '') => {
     if (!node) return;
     node.textContent = text || '';
     node.className = `arena-board__feedback ${cls}`.trim();
   };
+
   const money = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   const dateLabel = (v) => v ? new Date(v).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : 'Sem prazo';
-  const safeImage = (primary, fallback) => primary || fallback || fallbackLogo;
+
   const openModal = (modal) => {
     if (!modal) return;
     modal.removeAttribute('hidden');
     document.body.style.overflow = 'hidden';
   };
+
   const closeModal = (modal) => {
     if (!modal) return;
     modal.setAttribute('hidden', 'hidden');
     document.body.style.overflow = '';
-  };
-  const bindImageFallbacks = (scope) => {
-    if (!scope) return;
-    scope.querySelectorAll('img[data-fallback-src]').forEach((img) => {
-      img.addEventListener('error', () => {
-        const nextSrc = img.dataset.fallbackSrc || fallbackLogo;
-        if (img.src.endsWith(nextSrc)) return;
-        img.src = nextSrc;
-      }, { once: true });
-    });
   };
 
   document.querySelector('[data-open-rules]')?.addEventListener('click', () => openModal(rulesModal));
@@ -63,7 +55,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!utility || !utilityToggle) return;
     if (window.innerWidth > 720) {
       utility.classList.remove('is-open');
-      return utilityToggle.setAttribute('aria-expanded', 'false');
+      utilityToggle.setAttribute('aria-expanded', 'false');
+      return;
     }
     utilityToggle.setAttribute('aria-expanded', utility.classList.contains('is-open') ? 'true' : 'false');
   };
@@ -88,18 +81,26 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!grid) return;
     if (!leagues.length) {
       grid.innerHTML = '';
-      return show(feedback, 'Nenhum bolão oficial encontrado para este evento.', 'is-error');
+      show(feedback, 'Nenhum bolão oficial encontrado para este evento.', 'is-error');
+      return;
     }
 
     show(feedback, 'Arena oficial carregada.');
 
     grid.innerHTML = leagues.map((league) => `
       <article class="arena-card">
+        ${league.organizer?.logo_url ? `
         <div class="arena-card__media">
-          <img src="${safeImage(league.organizer?.logo_url || league.image_url || league.rodeio?.logo_url, fallbackLogo)}" data-fallback-src="${fallbackLogo}" alt="${league.name}">
+          <img src="${league.organizer.logo_url}" alt="${league.organizer?.name || league.name}">
           <span class="arena-card__badge">${statusMap[league.registration_status] || 'Arena oficial'}</span>
+        </div>` : `
+        <div class="arena-card__media arena-card__media--compact">
+          <span class="arena-card__badge">${statusMap[league.registration_status] || 'Arena oficial'}</span>
+        </div>`}
+        <div>
+          <h3>${league.organizer?.name || league.name}</h3>
+          <p>${league.name}${league.modalidade?.nome ? ` • ${league.modalidade.nome}` : ''}${league.divisao ? ` • ${league.divisao}` : ''}</p>
         </div>
-        <div><h3>${league.organizer?.name || league.name}</h3><p>${league.name}${league.modalidade?.nome ? ` • ${league.modalidade.nome}` : ''}${league.divisao ? ` • ${league.divisao}` : ''}</p></div>
         <div class="arena-card__meta">
           <span>Premiação<strong>${league.prize_type === 'physical' ? (league.prize_description || 'Prêmio físico') : money(league.total_prize || league.prize_pool)}</strong></span>
           <span>Meta de entradas<strong>${league.teams_count} / 100</strong></span>
@@ -111,7 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="arena-card__actions">${cardAction(league)}</div>
       </article>`).join('');
 
-    bindImageFallbacks(grid);
     grid.querySelectorAll('[data-card-register]').forEach((n) => n.addEventListener('click', openRegister));
     grid.querySelectorAll('[data-card-rules]').forEach((n) => n.addEventListener('click', () => openModal(rulesModal)));
   };
