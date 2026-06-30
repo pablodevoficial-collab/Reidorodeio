@@ -17,12 +17,20 @@
             };
         };
         $quickLinks = [
-            ['route' => 'admin.live_transmission.index', 'label' => 'Transmissão ao vivo', 'icon' => 'las la-broadcast-tower'],
-            ['route' => 'admin.rodeios.index', 'label' => 'Rodeios', 'icon' => 'las la-calendar'],
+            ['route' => 'admin.fantasy_leagues.index', 'label' => 'Bolões', 'icon' => 'las la-trophy'],
+            ['route' => 'admin.fantasy_leagues.create', 'label' => 'Novo bolão', 'icon' => 'las la-plus-circle'],
+            ['route' => 'admin.fantasy_leagues.entries', 'label' => 'Entradas', 'icon' => 'las la-list-ol'],
+            ['route' => 'admin.fantasy_prizes.index', 'label' => 'Premiações', 'icon' => 'las la-award'],
+            ['route' => 'admin.rodeios.index', 'label' => 'Rodeios', 'icon' => 'las la-calendar-alt'],
             ['route' => 'admin.modalidades.index', 'label' => 'Modalidades', 'icon' => 'las la-list'],
-            ['route' => 'admin.competitors.index', 'label' => 'Competidores', 'icon' => 'las la-horse'],
+            ['route' => 'admin.competitors.index', 'label' => 'Competidores', 'icon' => 'las la-horse-head'],
+            ['route' => 'admin.competitors.requests.index', 'label' => 'Pedidos de competidor', 'icon' => 'las la-clipboard-list'],
             ['route' => 'admin.x1.index', 'label' => 'X1 / Duelo', 'icon' => 'las la-chess-king'],
-            ['route' => 'admin.fantasy_leagues.index', 'label' => 'Bolão', 'icon' => 'las la-trophy'],
+            ['route' => 'admin.live_transmission.index', 'label' => 'Ao vivo', 'icon' => 'las la-broadcast-tower'],
+            ['route' => 'admin.quick_scoring.index', 'label' => 'Pontuação rápida', 'icon' => 'las la-bolt'],
+            ['route' => 'admin.dynamic_selection.index', 'label' => 'Seleção dinâmica', 'icon' => 'las la-vector-square'],
+            ['route' => 'admin.reports.transactions', 'label' => 'Financeiro', 'icon' => 'las la-wallet'],
+            ['route' => 'admin.ticket.index', 'label' => 'Suporte', 'icon' => 'las la-life-ring'],
             ['route' => 'admin.users.all', 'label' => 'Usuários', 'icon' => 'las la-users'],
             ['route' => 'admin.app_control.dashboard', 'label' => 'App Control', 'icon' => 'las la-mobile'],
         ];
@@ -34,8 +42,8 @@
     <div class="rr-admin-dashboard">
         <section class="rr-admin-hero">
             <div class="rr-admin-hero__copy">
-                <span class="rr-admin-kicker">Dashboard do frontend</span>
-                <h2 class="rr-admin-title">Resumo atual do sistema, do período completo e do rodeio em destaque</h2>
+                <span class="rr-admin-kicker">Admin bolão</span>
+                <h2 class="rr-admin-title">Operação do bolão em primeiro plano</h2>
                 <p class="rr-admin-lead">
                     Leitura consolidada do produto sem precisar abrir módulo por módulo:
                     base de usuários, operação ativa, financeiro consolidado e recorte do evento que está puxando o frontend agora.
@@ -58,7 +66,7 @@
                 @if ($currentRodeioSummary)
                     <article class="rr-admin-event-card">
                         <div class="rr-admin-event-card__header">
-                            <span class="rr-admin-event-card__eyebrow">Rodeio atual</span>
+                            <span class="rr-admin-event-card__eyebrow">Bolão atual</span>
                             <span class="rr-admin-status-badge rr-admin-status-badge--{{ $statusClass }}">
                                 {{ $currentRodeioSummary['status_label'] }}
                             </span>
@@ -81,11 +89,11 @@
                         <div class="rr-admin-event-card__chips">
                             <span class="rr-admin-chip">
                                 <i class="las la-layer-group"></i>
-                                {{ $currentRodeioSummary['modalidade_atual'] ?: 'Sem modalidade atual' }}
+                                {{ $currentRodeioSummary['modalidade_atual'] ?: 'Sem modalidade' }}
                             </span>
                             <span class="rr-admin-chip">
                                 <i class="las la-sitemap"></i>
-                                {{ $currentRodeioSummary['divisao_atual'] ?: 'Sem divisão ativa' }}
+                                {{ $currentRodeioSummary['divisao_atual'] ?: 'Sem divisão' }}
                             </span>
                             <span class="rr-admin-chip">
                                 <i class="las la-sync"></i>
@@ -104,9 +112,9 @@
                     </article>
                 @else
                     <article class="rr-admin-empty-card">
-                        <span class="rr-admin-empty-card__eyebrow">Rodeio atual</span>
-                        <h3>Nenhum rodeio em destaque</h3>
-                        <p>Quando houver rodeio ativo, programado ou em transmissão, o painel vai resumir aqui o evento que está puxando o frontend.</p>
+                        <span class="rr-admin-empty-card__eyebrow">Bolão atual</span>
+                        <h3>Nenhum bolão em destaque</h3>
+                        <p>Quando houver bolão ativo, programado ou em transmissão, o painel vai resumir aqui o evento que está puxando o frontend.</p>
                     </article>
                 @endif
             </aside>
@@ -116,8 +124,8 @@
             <div class="rr-admin-section__header">
                 <div>
                     <span class="rr-admin-section__eyebrow">Acesso rápido</span>
-                    <h3 class="rr-admin-section__title">Atalhos operacionais</h3>
-                    <p class="rr-admin-section__subtitle">Entradas rápidas para os módulos que mais impactam o frontend.</p>
+                    <h3 class="rr-admin-section__title">Atalhos do bolão</h3>
+                    <p class="rr-admin-section__subtitle">Entradas rápidas para os módulos que mais impactam a operação.</p>
                 </div>
             </div>
 
@@ -138,8 +146,8 @@
             <div class="rr-admin-section__header">
                 <div>
                     <span class="rr-admin-section__eyebrow">Agora</span>
-                    <h3 class="rr-admin-section__title">Radar do frontend</h3>
-                    <p class="rr-admin-section__subtitle">O que precisa de atenção imediata no produto e na operação.</p>
+                    <h3 class="rr-admin-section__title">Radar do bolão</h3>
+                    <p class="rr-admin-section__subtitle">O que precisa de atenção imediata na operação.</p>
                 </div>
             </div>
 
@@ -183,9 +191,9 @@
         <section class="rr-admin-section">
             <div class="rr-admin-section__header">
                 <div>
-                    <span class="rr-admin-section__eyebrow">Rodeio atual</span>
+                    <span class="rr-admin-section__eyebrow">Bolão atual</span>
                     <h3 class="rr-admin-section__title">Resumo operacional do evento em destaque</h3>
-                    <p class="rr-admin-section__subtitle">Recorte direto de modalidades, pontuação, X1 e bolão dentro do rodeio que está puxando o frontend agora.</p>
+                    <p class="rr-admin-section__subtitle">Recorte direto de modalidades, pontuação, X1 e bolão dentro do evento atual.</p>
                 </div>
             </div>
 
@@ -193,8 +201,8 @@
                 <div class="rr-admin-current-grid">
                     <article class="rr-admin-panel">
                         <div class="rr-admin-panel__header">
-                            <h4>Radar técnico do rodeio</h4>
-                            <span>Estado geral do evento</span>
+                            <h4>Radar técnico do bolão</h4>
+                            <span>Estado geral da operação</span>
                         </div>
                         <div class="rr-admin-metrics-grid rr-admin-metrics-grid--compact">
                             @foreach ($currentRodeioSummary['pulse'] as $metric)
@@ -212,7 +220,7 @@
                     <article class="rr-admin-panel">
                         <div class="rr-admin-panel__header">
                             <h4>X1 dentro do rodeio</h4>
-                            <span>Salas, volume e receita do duelo</span>
+                            <span>Salas, volume e receita</span>
                         </div>
                         <div class="rr-admin-metrics-grid rr-admin-metrics-grid--compact">
                             @foreach ($currentRodeioSummary['x1'] as $metric)
@@ -247,9 +255,9 @@
                 </div>
             @else
                 <article class="rr-admin-empty-card rr-admin-empty-card--full">
-                    <span class="rr-admin-empty-card__eyebrow">Sem rodeio atual</span>
+                    <span class="rr-admin-empty-card__eyebrow">Sem bolão atual</span>
                     <h3>O bloco do evento atual aparece automaticamente</h3>
-                    <p>Assim que houver rodeio programado, ao vivo ou ativo, esta área passa a consolidar o recorte daquele evento para facilitar a operação.</p>
+                    <p>Assim que houver bolão programado, ao vivo ou ativo, esta área passa a consolidar o recorte daquele evento para facilitar a operação.</p>
                 </article>
             @endif
         </section>
