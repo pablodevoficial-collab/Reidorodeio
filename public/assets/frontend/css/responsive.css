@@ -32,9 +32,8 @@
         border-radius: 24px;
     }
 
-    .loader-card__logo,
-    .arena-hero__logo {
-        width: min(82vw, 320px);
+    .loader-title__line {
+        font-size: clamp(3.3rem, 18vw, 5rem);
     }
 
     .arena-button {

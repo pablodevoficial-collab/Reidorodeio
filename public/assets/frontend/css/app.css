@@ -55,9 +55,37 @@ img { display: block; max-width: 100%; }
     text-align: center;
 }
 
-.loader-sponsor{width:min(100%,420px);margin:0 auto 18px}
-.loader-sponsor__item{display:grid;place-items:center;min-height:132px;padding:22px 24px;border-radius:24px;border:1px solid rgba(255,183,86,.14);background:rgba(255,255,255,.03)}
-.loader-sponsor__item img{max-width:min(100%,260px);max-height:88px;object-fit:contain;filter:drop-shadow(0 0 18px rgba(255,144,39,.18))}
+.loader-title{
+    display:grid;
+    gap:6px;
+    justify-items:center;
+    margin:0 auto 18px;
+    padding:20px 16px 8px;
+    perspective:900px;
+}
+
+.loader-title__line{
+    display:block;
+    font-family:'Teko', sans-serif;
+    font-size:clamp(4rem, 12vw, 6.8rem);
+    line-height:.82;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:#ffe3b0;
+    transform:skewX(-8deg) rotateX(18deg);
+    text-shadow:
+        0 1px 0 #fff1d0,
+        0 2px 0 #f2b45a,
+        0 3px 0 #dd7a16,
+        0 4px 0 #a84404,
+        0 18px 30px rgba(0, 0, 0, .42);
+    animation:loader-title-float 2.6s ease-in-out infinite;
+}
+
+.loader-title__line--accent{
+    color:#ffb347;
+    animation-delay:.18s;
+}
 
 .loader-card__progress {
     width: min(100%, 360px);
@@ -184,6 +212,11 @@ img { display: block; max-width: 100%; }
 @keyframes arena-progress {
     from { width: 0; }
     to { width: 100%; }
+}
+
+@keyframes loader-title-float {
+    0%, 100% { transform: skewX(-8deg) rotateX(18deg) translateY(0); }
+    50% { transform: skewX(-8deg) rotateX(18deg) translateY(-4px); }
 }
 
 @keyframes arena-pulse {

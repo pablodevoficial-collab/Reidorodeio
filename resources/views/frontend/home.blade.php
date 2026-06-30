@@ -7,16 +7,10 @@
     <section class="loader-card" aria-labelledby="loader-title">
         <h1 class="sr-only" id="loader-title">Rei do Rodeio</h1>
 
-        @if($loaderSponsor)
-            <div class="loader-sponsor" aria-label="Patrocinador da arena">
-                <div class="loader-sponsor__item">
-                    <img
-                        src="{{ $loaderSponsorLogoUrl }}"
-                        alt="{{ $loaderSponsor->name }}"
-                    >
-                </div>
-            </div>
-        @endif
+        <div class="loader-title" aria-hidden="true">
+            <span class="loader-title__line">Bolão</span>
+            <span class="loader-title__line loader-title__line--accent">de Rodeio</span>
+        </div>
 
         <div class="loader-card__progress" aria-hidden="true">
             <span class="loader-card__bar"></span>
