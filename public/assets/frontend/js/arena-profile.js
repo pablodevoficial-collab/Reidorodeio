@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const feedback = document.querySelector('[data-profile-sheet-feedback]');
   const pixTitle = document.querySelector('[data-pix-status-title]');
   const pixCopy = document.querySelector('[data-pix-status-copy]');
+  const avatarInput = form.querySelector('input[name="avatar"]');
+  const avatarPreview = document.querySelector('[data-profile-photo-preview]');
   const show = (text, cls = '') => {
     if (!feedback) return;
     feedback.textContent = text || '';
@@ -25,9 +27,25 @@ document.addEventListener('DOMContentLoaded', () => {
     form.cpf.value = user.cpf || '';
     form.fullname.value = fullName;
     form.pix_key.value = user.pix_key || '';
+    if (avatarPreview && user.avatar_url) {
+      avatarPreview.innerHTML = `<img src="${user.avatar_url}" alt="">`;
+    }
     if (pixTitle) pixTitle.textContent = user.pix_key ? 'Pix pronto para premiação' : 'Cadastre sua chave Pix';
     if (pixCopy) pixCopy.textContent = user.pix_key ? `${user.pix_key_type || 'pix'}: ${user.pix_key}` : 'Sem chave Pix cadastrada no perfil.';
   };
+
+  avatarInput?.addEventListener('change', () => {
+    const file = avatarInput.files?.[0];
+    if (!file || !avatarPreview) return;
+
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      avatarInput.value = '';
+      show('Envie uma foto JPG, PNG ou WEBP.', 'is-error');
+      return;
+    }
+
+    avatarPreview.innerHTML = `<img src="${URL.createObjectURL(file)}" alt="">`;
+  });
 
   async function loadProfile() {
     try {
@@ -60,6 +78,9 @@ document.addEventListener('DOMContentLoaded', () => {
     payload.append('firstname', names.firstname);
     payload.append('lastname', names.lastname);
     payload.append('pix_key', form.pix_key.value.trim());
+    if (avatarInput?.files?.[0]) {
+      payload.append('avatar', avatarInput.files[0]);
+    }
 
     try {
       const response = await fetch(app.dataset.profileApiUrl, {

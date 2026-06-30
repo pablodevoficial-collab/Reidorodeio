@@ -144,6 +144,13 @@
 .arena-sheet__stack,.arena-form{display:grid;gap:14px}
 .arena-sheet__stack article{padding:14px 14px 16px;border-radius:18px;background:rgba(255,255,255,.012);border:1px solid rgba(255,255,255,.05)}
 .arena-sheet__stack strong{display:block;margin-bottom:6px;color:var(--gold)}
+.arena-profile-photo{display:flex;align-items:center;gap:14px;padding:12px;border:1px solid rgba(255,202,114,.18);border-radius:18px;background:rgba(255,255,255,.018);cursor:pointer}
+.arena-profile-photo__preview{width:62px;height:62px;border-radius:18px;display:grid;place-items:center;overflow:hidden;flex:0 0 auto;background:linear-gradient(135deg,rgba(255,202,114,.24),rgba(255,122,26,.18));border:1px solid rgba(255,202,114,.28);color:var(--gold);font:900 .7rem/1 'Barlow',sans-serif;text-transform:uppercase;letter-spacing:.12em}
+.arena-profile-photo__preview img{width:100%;height:100%;display:block;object-fit:cover}
+.arena-profile-photo__text{display:grid;gap:4px;color:var(--text)}
+.arena-profile-photo__text strong{font:900 .9rem/1.1 'Barlow',sans-serif;text-transform:uppercase;letter-spacing:.08em}
+.arena-profile-photo__text small{color:var(--muted);font-size:.8rem;line-height:1.3}
+.arena-profile-photo input{display:none}
 .arena-form input{min-height:54px;padding:0 16px;border:1px solid rgba(255,255,255,.1);border-radius:14px;background:rgba(255,255,255,.012);color:var(--text);font:inherit}
 .arena-utility__toggle-label{font:700 .88rem/1 'Barlow',sans-serif;letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
 .arena-utility__toggle-arrow{width:12px;height:12px;border-right:2px solid #ffca72;border-bottom:2px solid #ffca72;transform:rotate(-135deg);transition:transform .28s ease}
