@@ -315,6 +315,7 @@ Route::middleware(['admin', 'admin.permissions'])->group(function () {
 
     Route::controller(ProfilePhotoApprovalController::class)->name('users.profile_photos.')->prefix('users/profile-photos')->group(function () {
         Route::get('/', 'index')->name('index');
+        Route::get('{profilePhotoRequest}/image', 'image')->name('image');
         Route::post('{profilePhotoRequest}/approve', 'approve')->name('approve');
         Route::post('{profilePhotoRequest}/reject', 'reject')->name('reject');
     });

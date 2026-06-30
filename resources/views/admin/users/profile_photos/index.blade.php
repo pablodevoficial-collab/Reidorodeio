@@ -143,7 +143,7 @@
                             $fullName = trim(($user->firstname ?? '') . ' ' . ($user->lastname ?? ''));
                             $displayName = $fullName !== '' ? $fullName : ($user->username ?? 'Usuário');
                             $currentAvatar = $user && $user->image ? asset('assets/images/user/profile/' . $user->image) : asset('assets/images/logo_icon/favicon.png');
-                            $pendingAvatar = $requestItem->image_url ?: asset('assets/images/logo_icon/favicon.png');
+                            $pendingAvatar = route('admin.users.profile_photos.image', $requestItem);
                         @endphp
                         <tr>
                             <td>
@@ -151,13 +151,13 @@
                                     <img src="{{ $currentAvatar }}" alt="Foto atual de {{ $displayName }}">
                                     <div>
                                         <strong>{{ $displayName }}</strong>
-                                        <span>@{{ $user->username ?? 'sem-username' }}</span>
+                                        <span>{{ $user?->username ? '@' . $user->username : 'sem username' }}</span>
                                         <span>{{ $user->email ?? '-' }} | {{ $user->mobile ?? '-' }}</span>
                                     </div>
                                 </div>
                             </td>
                             <td>
-                                <img src="{{ $pendingAvatar }}" style="width:54px;height:54px;object-fit:cover;border-radius:12px;border:1px solid rgba(255,255,255,.1);">
+                                <img src="{{ $pendingAvatar }}" style="width:54px;height:54px;object-fit:cover;border-radius:12px;border:1px solid rgba(255,255,255,.1);" onerror="this.src='{{ asset('assets/images/logo_icon/favicon.png') }}'">
                             </td>
                             <td>
                                 <div>{{ $requestItem->created_at?->format('d/m/Y') }}</div>
@@ -180,7 +180,7 @@
                                         <button type="button" class="rr-btn rr-btn--reject" onclick="openRejectModal({{ $requestItem->id }}, '{{ route('admin.users.profile_photos.reject', $requestItem) }}')"><i class="las la-times-circle"></i> Rejeitar</button>
                                     @endif
                                     
-                                    <button type="button" class="rr-btn rr-btn--open" onclick="openPhotoModal('{{ $currentAvatar }}', '{{ $pendingAvatar }}', '{{ $displayName }}')"><i class="las la-image"></i> Abrir Foto</button>
+                                    <button type="button" class="rr-btn rr-btn--open" onclick='openPhotoModal(@json($currentAvatar), @json($pendingAvatar), @json($displayName))'><i class="las la-image"></i> Abrir Foto</button>
                                 </div>
                             </td>
                         </tr>

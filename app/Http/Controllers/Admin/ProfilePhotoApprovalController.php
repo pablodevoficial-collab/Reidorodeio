@@ -7,6 +7,7 @@ use App\Models\ProfilePhotoRequest;
 use App\Services\ProfilePhotoApprovalService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ProfilePhotoApprovalController extends Controller
@@ -59,5 +60,17 @@ class ProfilePhotoApprovalController extends Controller
         $this->profilePhotoApprovalService->reject($profilePhotoRequest, auth('admin')->user(), $notes !== '' ? $notes : 'Foto rejeitada na moderação.');
 
         return back()->withNotify([['success', 'Foto rejeitada e usuário notificado.']]);
+    }
+
+    public function image(ProfilePhotoRequest $profilePhotoRequest)
+    {
+        $path = trim((string) $profilePhotoRequest->image_path);
+
+        abort_if($path === '', 404);
+        abort_unless(Storage::disk('public')->exists($path), 404);
+
+        return response()->file(Storage::disk('public')->path($path), [
+            'Cache-Control' => 'private, max-age=300',
+        ]);
     }
 }
