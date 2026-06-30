@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const money = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   const dateLabel = (v) => v ? new Date(v).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : 'Sem prazo';
+  const sponsorLabel = (league) => league.organizer?.name || league.name;
+  const sponsorInitial = (league) => (sponsorLabel(league).trim().charAt(0) || 'B').toUpperCase();
 
   const openModal = (modal) => {
     if (!modal) return;
@@ -91,14 +93,16 @@ document.addEventListener('DOMContentLoaded', () => {
       <article class="arena-card">
         ${league.organizer?.logo_url ? `
         <div class="arena-card__media">
-          <img src="${league.organizer.logo_url}" alt="${league.organizer?.name || league.name}">
+          <img src="${league.organizer.logo_url}" alt="${sponsorLabel(league)}" onerror="this.style.display='none';this.nextElementSibling.hidden=false;">
+          <span class="arena-card__logo-fallback" hidden>${sponsorInitial(league)}</span>
           <span class="arena-card__badge">${statusMap[league.registration_status] || 'Arena oficial'}</span>
         </div>` : `
         <div class="arena-card__media arena-card__media--compact">
+          <span class="arena-card__logo-fallback">${sponsorInitial(league)}</span>
           <span class="arena-card__badge">${statusMap[league.registration_status] || 'Arena oficial'}</span>
         </div>`}
         <div>
-          <h3>${league.organizer?.name || league.name}</h3>
+          <h3>${sponsorLabel(league)}</h3>
           <p>${league.name}${league.modalidade?.nome ? ` • ${league.modalidade.nome}` : ''}${league.divisao ? ` • ${league.divisao}` : ''}</p>
         </div>
         <div class="arena-card__meta">
