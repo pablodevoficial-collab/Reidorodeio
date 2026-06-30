@@ -12,8 +12,12 @@
 .arena-utility__actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .arena-tool{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 12px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.012);color:var(--text);font:700 .86rem/1 'Barlow',sans-serif}
 .arena-logout{display:grid;place-items:center;width:42px;height:42px;margin-left:auto;border-radius:50%;background:rgba(192,34,34,.16);border:1px solid rgba(255,93,93,.4);color:#ff5d5d;font-size:1.2rem}
-.arena-chip{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 16px;border:1px solid rgba(255,255,255,.08);border-radius:999px;background:rgba(255,255,255,.012);color:var(--text);font:700 .92rem/1 'Barlow',sans-serif}
+.arena-chip{display:inline-flex;align-items:center;justify-content:center;min-height:46px;min-width:112px;padding:0 16px;border:1px solid rgba(255,255,255,.08);border-radius:999px;background:rgba(255,255,255,.012);color:var(--text);font:700 .92rem/1 'Barlow',sans-serif;transition:background .2s ease,border-color .2s ease,color .2s ease,box-shadow .2s ease}
+.arena-chip.is-loading{color:transparent;position:relative;pointer-events:none}
+.arena-chip.is-loading::after{content:"";position:absolute;width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.24);border-top-color:var(--gold);animation:refreshSpin .7s linear infinite}
+.arena-chip.is-success{background:linear-gradient(135deg,#2bd46f,#0f9e4a);border-color:rgba(87,255,153,.42);color:#04140a;box-shadow:0 10px 28px rgba(43,212,111,.22);font-size:1.2rem}
 .arena-chip--accent{background:linear-gradient(135deg,#ffca72,#ff7a1a 62%,#ffbf5b);color:#281402;border-color:transparent}
+@keyframes refreshSpin{to{transform:rotate(360deg)}}
 .arena-sheet h2{margin:0;font-family:'Teko',sans-serif;font-size:clamp(3.1rem,7vw,5.6rem);line-height:.9;letter-spacing:.04em}
 .arena-sheet p{margin:0;color:var(--muted);line-height:1.6}
 .arena-board{padding:26px 24px 28px;display:grid;gap:18px}
@@ -111,44 +115,6 @@
 .arena-button--ghost{
   background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
   border-color:rgba(255,255,255,.12);
-}
-.arena-card__value{display:inline-block;position:relative;transform-origin:center;transition:transform .2s ease, filter .2s ease, opacity .2s ease}
-.arena-card.is-refreshing .arena-card__value{
-  min-width:max-content;
-  min-height:1.2em;
-  padding:0;
-  overflow:hidden;
-  color:transparent;
-  filter:brightness(1.18);
-}
-.arena-card.is-refreshing .arena-card__value::before{
-  content:attr(data-slot-text);
-  position:absolute;
-  inset:0;
-  color:var(--text);
-  white-space:nowrap;
-  font:inherit;
-  line-height:inherit;
-  text-shadow:0 0 10px rgba(255,184,73,.45);
-  animation:slotTextRoll .32s linear infinite;
-}
-.arena-card.is-refreshing .arena-card__value::after{
-  content:attr(data-slot-text);
-  position:absolute;
-  inset:0;
-  color:var(--gold);
-  white-space:nowrap;
-  font:inherit;
-  line-height:inherit;
-  opacity:.55;
-  animation:slotTextRoll .32s linear infinite reverse;
-}
-@keyframes slotTextRoll{
-  0%{transform:translateY(-115%);opacity:.15}
-  22%{transform:translateY(-42%);opacity:.55}
-  48%{transform:translateY(0);opacity:1}
-  74%{transform:translateY(42%);opacity:.55}
-  100%{transform:translateY(115%);opacity:.15}
 }
 .arena-sheet{width:min(100% - 20px,520px);margin:min(10vh,72px) auto 0;padding:28px 22px}
 .arena-ranking{width:min(100% - 20px,760px);max-height:min(88vh,820px);display:grid;grid-template-rows:auto auto auto minmax(0,1fr);overflow:hidden}

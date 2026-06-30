@@ -22,8 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const refreshButton = document.querySelector('[data-refresh-leagues]');
   const statusMap = { open: 'Inscrições abertas', closed: 'Inscrições encerradas', always_open: 'Entrada liberada' };
   const rankingCache = new Map();
-  const minRefreshMs = 3000;
-  let isRefreshing = false;
+  const successRefreshMs = 3000;
   let refreshRunId = 0;
 
   const show = (node, text, cls = '') => {
@@ -35,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const money = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   const dateLabel = (v) => v ? new Date(v).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : 'Sem prazo';
   const sponsorLabel = (league) => league.organizer?.name || league.name;
-  const slotValue = (value) => `<strong class="arena-card__value" data-slot-text="${String(value).replace(/"/g, '&quot;')}">${value}</strong>`;
+  const cardValue = (value) => `<strong>${value}</strong>`;
 
   const openModal = (modal) => {
     if (!modal) return;
@@ -64,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (supportUrl) window.open(supportUrl, '_blank', 'noopener,noreferrer');
   });
 
-  refreshButton?.addEventListener('click', () => loadLeagues());
+  refreshButton?.addEventListener('click', () => loadLeagues(true));
 
   const syncUtilityState = () => {
     if (!utility || !utilityToggle) return;
@@ -94,12 +93,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const rankingAction = (league) => `<button class="arena-button arena-button--ghost" data-open-ranking data-league-id="${league.id}" data-league-name="${league.name}">Ranking</button>`;
 
+  const setRefreshButtonState = (state) => {
+    if (!refreshButton) return;
+    refreshButton.classList.toggle('is-loading', state === 'loading');
+    refreshButton.classList.toggle('is-success', state === 'success');
+    refreshButton.disabled = state === 'loading' || state === 'success';
+    refreshButton.textContent = state === 'success' ? '✓' : 'Atualizar';
+  };
+
   const setRefreshState = (active) => {
-    isRefreshing = active;
-    if (refreshButton) refreshButton.disabled = active;
-    grid?.querySelectorAll('.arena-card').forEach((card) => {
-      card.classList.toggle('is-refreshing', active);
-    });
+    setRefreshButtonState(active ? 'loading' : 'idle');
   };
 
   const render = (leagues) => {
@@ -119,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const deadline = dateLabel(league.registration_deadline || league.closes_at);
 
       return `
-      <article class="arena-card ${isRefreshing ? 'is-refreshing' : ''}">
+      <article class="arena-card">
         <div class="arena-card__media">
           <span class="arena-card__badge">${statusMap[league.registration_status] || 'Arena oficial'}</span>
         </div>
@@ -128,12 +131,12 @@ document.addEventListener('DOMContentLoaded', () => {
           <p>${league.name}${league.modalidade?.nome ? ` • ${league.modalidade.nome}` : ''}${league.divisao ? ` • ${league.divisao}` : ''}</p>
         </div>
         <div class="arena-card__meta">
-          <span>Premiação${slotValue(prize)}</span>
-          <span>Entradas${slotValue(entries)}</span>
+          <span>Premiação${cardValue(prize)}</span>
+          <span>Entradas${cardValue(entries)}</span>
         </div>
         <div class="arena-card__foot">
-          <span>Entrada${slotValue(price)}</span>
-          <span>Prazo${slotValue(deadline)}</span>
+          <span>Entrada${cardValue(price)}</span>
+          <span>Prazo${cardValue(deadline)}</span>
         </div>
         <div class="arena-card__actions">${cardAction(league)}</div>
         <div class="arena-card__actions arena-card__actions--secondary">${rankingAction(league)}</div>
@@ -239,11 +242,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  async function loadLeagues() {
+  async function loadLeagues(showButtonFeedback = false) {
     show(feedback, 'Carregando bolões oficiais...');
     const runId = ++refreshRunId;
-    const startedAt = Date.now();
-    setRefreshState(true);
+    if (showButtonFeedback) setRefreshState(true);
     try {
       let leagues = (await fetchLeagues(true)).filter((item) => item.is_active || item.event_finalized);
       if (!leagues.length) {
@@ -254,13 +256,13 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (error) {
       show(feedback, 'Não foi possível carregar os bolões da arena.', 'is-error');
     } finally {
-      const elapsed = Date.now() - startedAt;
-      if (elapsed < minRefreshMs) {
-        await new Promise((resolve) => setTimeout(resolve, minRefreshMs - elapsed));
+      if (showButtonFeedback && runId === refreshRunId) {
+        setRefreshButtonState('success');
+        await new Promise((resolve) => setTimeout(resolve, successRefreshMs));
+        setRefreshState(false);
       }
-      if (runId === refreshRunId) setRefreshState(false);
     }
   }
 
-  loadLeagues();
+  loadLeagues(false);
 });
