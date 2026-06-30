@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return money((prizePool * percent) / 100);
     };
     const participantLabel = (item) => item ? (item.display_name || item.user_name || 'Usuário') : 'Aguardando entrada';
-    const teamLabel = (item) => item ? (item.team_name || 'Equipe oficial') : 'Vaga premiada disponível';
+    const teamLabel = (item) => item ? (item.team_name || 'Equipe oficial') : 'Aguardando entrada';
 
     const podium = [1, 2, 3].map((position) => {
       const item = rankingByPosition.get(position);
